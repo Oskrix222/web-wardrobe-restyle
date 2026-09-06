@@ -1,0 +1,112 @@
+@use "../brandbook" as *;
+
+.site-header {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid var(--border-soft);
+  background-color: color-mix(in oklch, var(--background) 90%, transparent);
+  backdrop-filter: blur(12px);
+
+  &__bar {
+    @include container;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: $space-4;
+    height: $header-height;
+  }
+
+  &__logo {
+    min-width: 0;
+    font-family: $font-display;
+    font-size: $text-2xl;
+    letter-spacing: $tracking-tight;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__nav {
+    display: none;
+    align-items: center;
+    gap: $space-1;
+
+    @include lg {
+      display: flex;
+    }
+  }
+
+  &__link {
+    padding: $space-2 $space-3;
+    border-radius: $radius-md;
+    font-size: $text-sm;
+    font-weight: $weight-medium;
+    color: color-mix(in oklch, var(--foreground) 80%, transparent);
+    transition:
+      background-color $transition-base,
+      color $transition-base;
+
+    &:hover {
+      background-color: var(--secondary);
+      color: var(--foreground);
+    }
+  }
+
+  &__cta {
+    margin-left: $space-3;
+    flex-shrink: 0;
+  }
+
+  &__toggle {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+
+    svg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    @include lg {
+      display: none;
+    }
+  }
+
+  &__mobile {
+    border-top: 1px solid var(--border-soft);
+    background-color: var(--background);
+    padding: $space-4;
+
+    @include lg {
+      display: none;
+    }
+  }
+
+  &__mobile-nav {
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
+  }
+
+  &__mobile-link {
+    padding: $space-3;
+    border-radius: $radius-md;
+    font-size: $text-sm;
+    font-weight: $weight-medium;
+    color: color-mix(in oklch, var(--foreground) 80%, transparent);
+
+    &:hover {
+      background-color: var(--secondary);
+    }
+  }
+
+  &__mobile-cta {
+    margin-top: $space-2;
+  }
+}

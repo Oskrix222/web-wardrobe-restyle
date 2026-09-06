@@ -1,0 +1,87 @@
+@use "../brandbook" as *;
+
+.testimonials {
+  &__rating {
+    margin-top: $space-3;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-2;
+  }
+
+  &__rating-text {
+    font-size: $text-sm;
+    color: var(--muted-foreground);
+  }
+
+  &__list {
+    margin-top: $space-10;
+    display: grid;
+    gap: $space-6;
+
+    @include sm {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @include lg {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  &__head-row {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+  }
+
+  &__avatar {
+    @include icon-circle(2.5rem);
+    font-family: $font-display;
+    font-size: $text-lg;
+    color: var(--terracotta);
+  }
+
+  &__name {
+    font-size: $text-sm;
+    font-weight: $weight-semibold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__when {
+    font-size: $text-xs;
+    color: var(--muted-foreground);
+  }
+
+  &__stars {
+    margin-top: $space-4;
+  }
+
+  &__quote {
+    margin-top: $space-3;
+    font-size: $text-sm;
+    line-height: $leading-relaxed;
+    color: var(--muted-foreground);
+  }
+
+  &__brands {
+    margin-top: $space-12;
+    padding-top: $space-8;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    column-gap: $space-10;
+    row-gap: $space-4;
+  }
+
+  &__brand {
+    font-family: $font-display;
+    font-size: $text-xl;
+    text-transform: uppercase;
+    letter-spacing: $tracking-wide;
+    color: color-mix(in oklch, var(--muted-foreground) 60%, transparent);
+  }
+}
