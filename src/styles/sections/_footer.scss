@@ -1,0 +1,71 @@
+@use "../brandbook" as *;
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  background-color: var(--foreground);
+  color: var(--background);
+  padding-block: $space-16;
+
+  &__grid {
+    display: grid;
+    gap: $space-10;
+
+    @include sm {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @include lg {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  &__brand {
+    font-family: $font-display;
+    font-size: $text-2xl;
+  }
+
+  &__about {
+    margin-top: $space-4;
+    font-size: $text-sm;
+    line-height: $leading-relaxed;
+    color: color-mix(in oklch, var(--background) 70%, transparent);
+  }
+
+  &__heading {
+    font-family: $font-mono;
+    font-size: $text-xs;
+    text-transform: uppercase;
+    letter-spacing: $tracking-widest;
+    color: color-mix(in oklch, var(--background) 50%, transparent);
+  }
+
+  &__list {
+    margin-top: $space-4;
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+    font-size: $text-sm;
+    color: color-mix(in oklch, var(--background) 80%, transparent);
+
+    a:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__bottom {
+    margin-top: $space-12;
+    padding-top: $space-8;
+    border-top: 1px solid color-mix(in oklch, var(--background) 10%, transparent);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-3;
+    font-size: $text-xs;
+    color: color-mix(in oklch, var(--background) 50%, transparent);
+
+    @include sm {
+      flex-direction: row;
+    }
+  }
+}

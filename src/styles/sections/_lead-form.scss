@@ -1,0 +1,29 @@
+@use "../brandbook" as *;
+
+.lead-form {
+  scroll-margin-top: $space-24;
+
+  &__title {
+    @include heading($text-3xl, $text-4xl);
+    margin-top: $space-3;
+  }
+
+  &__intro {
+    margin-top: $space-2;
+    font-size: $text-sm;
+    color: var(--muted-foreground);
+  }
+
+  &__form {
+    margin-top: $space-8;
+    display: flex;
+    flex-direction: column;
+    gap: $space-5;
+  }
+
+  &__consent {
+    text-align: center;
+    font-size: $text-xs;
+    color: var(--muted-foreground);
+  }
+}
