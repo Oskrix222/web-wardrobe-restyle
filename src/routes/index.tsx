@@ -10,6 +10,7 @@ import { GroupInsurance } from "@/components/site/GroupInsurance";
 import { Testimonials } from "@/components/site/Testimonials";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Footer } from "@/components/site/Footer";
+import { Box } from "@/components/ui/Box";
 
 const title = "KAMIEŃ — Ubezpieczenia na życie, majątek i dla firm";
 const description =
@@ -94,7 +95,7 @@ function Index() {
   );
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="page">
       <Header onContact={goToForm} />
 
       <main>
@@ -104,29 +105,27 @@ function Index() {
         <GroupInsurance onPick={pick} />
         <Testimonials />
 
-        <section className="border-t border-border bg-secondary/30 py-20 sm:py-24">
-          <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
+        <section className="benefits section section--soft">
+          <div className="benefits__grid">
             <div>
-              <span className="font-mono text-xs font-medium uppercase tracking-widest text-terracotta">
-                Dlaczego KAMIEŃ
-              </span>
-              <h2 className="mt-3 font-display text-4xl leading-tight sm:text-5xl">
+              <span className="eyebrow">Dlaczego KAMIEŃ</span>
+              <h2 className="benefits__title">
                 UBEZPIECZENIA,
                 <br />
                 KTÓRE ROZUMIESZ
               </h2>
-              <p className="mt-5 max-w-lg text-base leading-relaxed text-muted-foreground">
+              <p className="benefits__text">
                 Nie wciskamy gotowych produktów. Najpierw słuchamy, potem dopasowujemy ochronę do
                 Twoich realnych potrzeb — bez nadmiarowych klauzul i ukrytych wykluczeń.
               </p>
 
-              <div className="mt-10 grid gap-6 sm:grid-cols-2">
+              <div className="benefits__cards">
                 {benefits.map(({ icon: Icon, title: heading, text }) => (
-                  <div key={heading} className="rounded-xl border border-border bg-card p-6">
-                    <Icon className="h-6 w-6 text-terracotta" />
-                    <h3 className="mt-4 font-display text-xl">{heading}</h3>
-                    <p className="mt-2 text-sm text-muted-foreground">{text}</p>
-                  </div>
+                  <Box key={heading}>
+                    <Icon className="benefits__icon" aria-hidden="true" />
+                    <h3 className="benefits__card-title">{heading}</h3>
+                    <p className="benefits__card-text">{text}</p>
+                  </Box>
                 ))}
               </div>
             </div>

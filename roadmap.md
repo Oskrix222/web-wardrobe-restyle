@@ -1,0 +1,4 @@
+- [x] Skopiować projekt z repozytorium insurance-easy-way
+- [x] Usunąć Tailwind, przepisać całą stylistykę na SCSS (brandbook + plik na komponent)
+- [x] Reużywalne komponenty: przycisk, pola formularza, boxy
+- [ ] Tabela leads w Lovable Cloud + weryfikacja formularza
