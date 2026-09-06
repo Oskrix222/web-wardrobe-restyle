@@ -1,0 +1,22 @@
+// Entry point for all styling. SCSS only — no Tailwind.
+// 1. brandbook: colours, fonts, spacing and other shared values
+// 2. base: resets, typography, layout helpers, animations
+// 3. components: reusable pieces (buttons, form fields, boxes)
+// 4. sections: one file per part of the page
+@use "brandbook";
+@use "base";
+
+@use "components/button";
+@use "components/form";
+@use "components/box";
+@use "components/message";
+
+@use "sections/header";
+@use "sections/hero";
+@use "sections/about";
+@use "sections/categories";
+@use "sections/group-insurance";
+@use "sections/testimonials";
+@use "sections/benefits";
+@use "sections/lead-form";
+@use "sections/footer";

@@ -1,0 +1,94 @@
+@use "../brandbook" as *;
+
+// Reusable form primitives: label, input, textarea, select, field wrapper.
+.label {
+  display: block;
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+  color: var(--foreground);
+}
+
+%control {
+  width: 100%;
+  font-family: $font-body;
+  font-size: $text-sm;
+  color: var(--foreground);
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: $radius-md;
+  padding: $space-2 $space-3;
+  transition:
+    border-color $transition-base,
+    box-shadow $transition-base;
+
+  &::placeholder {
+    color: var(--muted-foreground);
+  }
+
+  &:hover:not(:disabled) {
+    border-color: var(--terracotta-line);
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--terracotta);
+    box-shadow: 0 0 0 3px var(--terracotta-tint);
+  }
+
+  &[aria-invalid="true"] {
+    border-color: var(--destructive);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.input {
+  @extend %control;
+  height: 2.5rem;
+}
+
+.textarea {
+  @extend %control;
+  min-height: 6rem;
+  resize: vertical;
+  line-height: $leading-relaxed;
+}
+
+.select {
+  @extend %control;
+  height: 2.5rem;
+  appearance: none;
+  padding-right: $space-10;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right $space-3 center;
+  background-size: 1rem 1rem;
+  cursor: pointer;
+
+  &[data-placeholder="true"] {
+    color: var(--muted-foreground);
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+
+  &__error {
+    font-size: $text-xs;
+    color: var(--destructive);
+  }
+
+  &__row {
+    display: grid;
+    gap: $space-5;
+
+    @include sm {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+}

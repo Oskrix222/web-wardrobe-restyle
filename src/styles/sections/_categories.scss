@@ -1,0 +1,75 @@
+@use "../brandbook" as *;
+
+.categories {
+  &__head {
+    margin-bottom: $space-12;
+    text-align: center;
+  }
+
+  &__intro {
+    margin-inline: auto;
+    margin-top: $space-4;
+    max-width: 42rem;
+    color: var(--muted-foreground);
+  }
+
+  &__grid {
+    display: grid;
+    gap: $space-6;
+
+    @include sm {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @include lg {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__title {
+    margin-top: $space-5;
+    font-family: $font-display;
+    font-size: $text-2xl;
+  }
+
+  &__text {
+    margin-top: $space-3;
+    font-size: $text-sm;
+    line-height: $leading-relaxed;
+    color: var(--muted-foreground);
+  }
+
+  &__points {
+    margin-top: $space-5;
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+  }
+
+  &__point {
+    display: flex;
+    align-items: flex-start;
+    gap: $space-2;
+    padding: $space-2 $space-3;
+    border-radius: $radius-md;
+    background-color: color-mix(in oklch, var(--secondary) 60%, transparent);
+    font-size: $text-sm;
+
+    svg {
+      margin-top: 0.125rem;
+      width: 1rem;
+      height: 1rem;
+      flex-shrink: 0;
+      color: var(--terracotta);
+    }
+  }
+
+  &__cta {
+    margin-top: $space-6;
+  }
+}

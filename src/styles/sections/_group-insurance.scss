@@ -1,0 +1,61 @@
+@use "../brandbook" as *;
+
+.group-insurance {
+  &__grid {
+    @include container;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $space-10;
+
+    @include lg {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: center;
+    }
+  }
+
+  &__title {
+    @include heading;
+    margin-top: $space-3;
+  }
+
+  &__text {
+    margin-top: $space-4;
+    max-width: 32rem;
+    color: var(--muted-foreground);
+  }
+
+  &__perks {
+    margin-top: $space-8;
+    display: grid;
+    gap: $space-3;
+
+    @include sm {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  &__perk {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-4;
+    font-size: $text-sm;
+  }
+
+  &__cta {
+    margin-top: $space-8;
+  }
+
+  &__image {
+    height: 16rem;
+    width: 100%;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    border-radius: $radius-2xl;
+
+    @include sm {
+      height: 24rem;
+    }
+  }
+}

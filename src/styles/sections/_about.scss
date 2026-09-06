@@ -1,0 +1,102 @@
+@use "../brandbook" as *;
+
+.about {
+  &__grid {
+    @include container;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $space-10;
+
+    @include lg {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  &__text {
+    margin-top: $space-5;
+    color: var(--muted-foreground);
+    line-height: $leading-relaxed;
+  }
+
+  &__figures {
+    margin-top: $space-8;
+    display: grid;
+    gap: $space-6;
+
+    @include sm {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  &__figure-image {
+    height: 12rem;
+    width: 100%;
+    object-fit: cover;
+    border-radius: $radius-xl;
+  }
+
+  &__caption {
+    margin-top: $space-3;
+    font-size: $text-sm;
+    line-height: $leading-relaxed;
+    color: var(--muted-foreground);
+  }
+
+  &__actions {
+    margin-top: $space-8;
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+
+    @include sm {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  &__aside {
+    display: flex;
+    flex-direction: column;
+    gap: $space-6;
+  }
+
+  &__aside-image {
+    height: 14rem;
+    width: 100%;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    border-radius: $radius-2xl;
+
+    @include sm {
+      height: 18rem;
+    }
+  }
+
+  &__stats {
+    display: grid;
+    gap: $space-4;
+
+    @include sm {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  &__stat {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-5;
+  }
+
+  &__stat-value {
+    font-family: $font-display;
+    font-size: $text-2xl;
+  }
+
+  &__stat-label {
+    margin-top: $space-1;
+    font-size: $text-sm;
+    color: var(--muted-foreground);
+  }
+}
