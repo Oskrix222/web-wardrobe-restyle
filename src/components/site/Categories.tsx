@@ -1,5 +1,6 @@
 import { Heart, Home, Plane, Car, Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
+import { Box, IconCircle } from "@/components/ui/Box";
 
 export const categories = [
   {
@@ -34,46 +35,36 @@ export const categories = [
 
 export function Categories({ onPick }: { onPick: (value: string) => void }) {
   return (
-    <section id="oferta" className="py-20 sm:py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-12 text-center">
-          <span className="font-mono text-xs font-medium uppercase tracking-widest text-terracotta">
-            Oferta
-          </span>
-          <h2 className="mt-3 font-display text-4xl sm:text-5xl">WYBIERZ SWOJĄ OCHRONĘ</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
+    <section id="oferta" className="categories section">
+      <div className="container">
+        <div className="categories__head">
+          <span className="eyebrow">Oferta</span>
+          <h2 className="section-heading">WYBIERZ SWOJĄ OCHRONĘ</h2>
+          <p className="categories__intro">
             Zabezpieczamy kompleksowo — pojedyncza polisa albo pakiet dopasowany do całej rodziny.
           </p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {categories.map(({ value, title, icon: Icon, intro, points }) => (
-            <article
-              key={value}
-              className="flex flex-col rounded-2xl border border-border bg-card p-6 transition-colors hover:border-terracotta/40"
-            >
-              <span className="grid h-12 w-12 place-items-center rounded-full bg-terracotta/10">
-                <Icon className="h-6 w-6 text-terracotta" />
-              </span>
-              <h3 className="mt-5 font-display text-2xl">{title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{intro}</p>
+        <div className="categories__grid">
+          {categories.map(({ value, title, icon, intro, points }) => (
+            <Box as="article" key={value} interactive className="categories__card">
+              <IconCircle icon={icon} />
+              <h3 className="categories__title">{title}</h3>
+              <p className="categories__text">{intro}</p>
 
-              <ul className="mt-5 space-y-2">
+              <ul className="categories__points">
                 {points.map((point) => (
-                  <li
-                    key={point}
-                    className="flex items-start gap-2 rounded-lg bg-secondary/60 px-3 py-2 text-sm"
-                  >
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-terracotta" />
-                    <span className="min-w-0">{point}</span>
+                  <li key={point} className="categories__point">
+                    <Check aria-hidden="true" />
+                    <span>{point}</span>
                   </li>
                 ))}
               </ul>
 
-              <Button className="mt-6 w-full" onClick={() => onPick(value)}>
+              <Button block className="categories__cta" onClick={() => onPick(value)}>
                 Zostaw kontakt
               </Button>
-            </article>
+            </Box>
           ))}
         </div>
       </div>

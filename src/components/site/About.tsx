@@ -1,5 +1,6 @@
 import { Award, HeartHandshake, Clock, ShieldCheck, Phone } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/Button";
+import { Box, IconCircle } from "@/components/ui/Box";
 import advisorImage from "@/assets/advisor.jpg";
 import teamImage from "@/assets/team-business.jpg";
 
@@ -12,31 +13,29 @@ const stats = [
 
 export function About({ onContact }: { onContact: () => void }) {
   return (
-    <section id="o-nas" className="border-t border-border bg-secondary/30 py-20 sm:py-24">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
-        <div className="rounded-2xl border border-border bg-card p-6 sm:p-10">
-          <span className="font-mono text-xs font-medium uppercase tracking-widest text-terracotta">
-            Poznaj nas
-          </span>
-          <h2 className="mt-3 font-display text-4xl sm:text-5xl">O NAS</h2>
-          <p className="mt-5 text-base leading-relaxed text-muted-foreground">
+    <section id="o-nas" className="about section section--soft">
+      <div className="about__grid">
+        <Box panel>
+          <span className="eyebrow">Poznaj nas</span>
+          <h2 className="section-heading">O NAS</h2>
+          <p className="about__text">
             W branży ubezpieczeniowej pracuję od 2005 roku. Specjalizuję się w ubezpieczeniach na
             życie i zdrowie dla klientów indywidualnych oraz w polisach grupowych dla firm.
             Zapraszam do kontaktu — wspólnie wybierzemy najlepsze rozwiązanie.
           </p>
 
-          <div className="mt-8 grid gap-6 sm:grid-cols-2">
+          <div className="about__figures">
             <figure>
               <img
                 src={advisorImage}
                 alt="Doradca ubezpieczeniowy KAMIEŃ w biurze"
-                className="h-48 w-full rounded-xl object-cover"
+                className="about__figure-image"
                 width={1024}
                 height={1280}
                 loading="lazy"
                 decoding="async"
               />
-              <figcaption className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              <figcaption className="about__caption">
                 Jeden doradca prowadzi Twoją sprawę od pierwszej rozmowy aż po wypłatę świadczenia.
               </figcaption>
             </figure>
@@ -44,56 +43,46 @@ export function About({ onContact }: { onContact: () => void }) {
               <img
                 src={teamImage}
                 alt="Zespół firmy objęty ubezpieczeniem grupowym"
-                className="h-48 w-full rounded-xl object-cover"
+                className="about__figure-image"
                 width={1280}
                 height={1024}
                 loading="lazy"
                 decoding="async"
               />
-              <figcaption className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              <figcaption className="about__caption">
                 Obsługujemy też małe firmy — polisy grupowe już od kilku osób w zespole.
               </figcaption>
             </figure>
           </div>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Button onClick={onContact} className="sm:w-auto">
-              Zostaw kontakt
-            </Button>
-            <a
-              href="tel:+48123456789"
-              className="inline-flex items-center justify-center gap-2 rounded-md border border-input px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
-            >
-              <Phone className="h-4 w-4" />
+          <div className="about__actions">
+            <Button onClick={onContact}>Zostaw kontakt</Button>
+            <ButtonLink href="tel:+48123456789" variant="outline">
+              <Phone className="btn__icon" aria-hidden="true" />
               +48 123 456 789
-            </a>
+            </ButtonLink>
           </div>
-        </div>
+        </Box>
 
-        <div className="flex flex-col gap-6">
+        <div className="about__aside">
           <img
             src={teamImage}
             alt="Spotkanie doradcy z klientami"
-            className="h-56 w-full rounded-2xl border border-border object-cover sm:h-72"
+            className="about__aside-image"
             width={1280}
             height={1024}
             loading="lazy"
             decoding="async"
           />
-          <div className="grid gap-4 sm:grid-cols-2">
-            {stats.map(({ value, label, icon: Icon }) => (
-              <div
-                key={label}
-                className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-border bg-card p-5"
-              >
-                <div className="min-w-0">
-                  <p className="font-display text-2xl">{value}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{label}</p>
+          <div className="about__stats">
+            {stats.map(({ value, label, icon }) => (
+              <Box key={label} className="about__stat">
+                <div>
+                  <p className="about__stat-value">{value}</p>
+                  <p className="about__stat-label">{label}</p>
                 </div>
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-terracotta/10">
-                  <Icon className="h-5 w-5 text-terracotta" />
-                </span>
-              </div>
+                <IconCircle icon={icon} size="md" />
+              </Box>
             ))}
           </div>
         </div>
