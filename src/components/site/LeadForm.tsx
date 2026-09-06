@@ -4,17 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Button } from "@/components/ui/Button";
+import { Box } from "@/components/ui/Box";
+import { Field, Input, Select, Textarea } from "@/components/ui/Field";
 import { submitLead, leadSchema, type LeadFormData } from "@/lib/leads.functions";
 
 export const insuranceOptions = [
@@ -57,21 +49,15 @@ export function LeadForm({ preselected }: { preselected?: string | undefined }) 
   };
 
   return (
-    <div
-      id="kontakt"
-      className="scroll-mt-24 rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-10"
-    >
-      <span className="font-mono text-xs font-medium uppercase tracking-widest text-terracotta">
-        Formularz kontaktowy
-      </span>
-      <h2 className="mt-3 font-display text-3xl sm:text-4xl">ZOSTAW KONTAKT</h2>
-      <p className="mt-2 text-sm text-muted-foreground">
+    <Box id="kontakt" panel shadow className="lead-form">
+      <span className="eyebrow">Formularz kontaktowy</span>
+      <h2 className="lead-form__title">ZOSTAW KONTAKT</h2>
+      <p className="lead-form__intro">
         Wypełnij dane — doradca przygotuje ofertę i oddzwoni w ciągu 24h.
       </p>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5" noValidate>
-        <div className="space-y-2">
-          <Label htmlFor="name">Imię i nazwisko *</Label>
+      <form onSubmit={handleSubmit(onSubmit)} className="lead-form__form" noValidate>
+        <Field label="Imię i nazwisko *" htmlFor="name" error={errors.name?.message}>
           <Input
             id="name"
             autoComplete="name"
@@ -79,12 +65,10 @@ export function LeadForm({ preselected }: { preselected?: string | undefined }) 
             {...register("name")}
             aria-invalid={errors.name ? "true" : "false"}
           />
-          {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
-        </div>
+        </Field>
 
-        <div className="grid gap-5 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="phone">Telefon *</Label>
+        <div className="field__row">
+          <Field label="Telefon *" htmlFor="phone" error={errors.phone?.message}>
             <Input
               id="phone"
               type="tel"
@@ -93,10 +77,8 @@ export function LeadForm({ preselected }: { preselected?: string | undefined }) 
               {...register("phone")}
               aria-invalid={errors.phone ? "true" : "false"}
             />
-            {errors.phone && <p className="text-xs text-destructive">{errors.phone.message}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">E-mail</Label>
+          </Field>
+          <Field label="E-mail" htmlFor="email" error={errors.email?.message}>
             <Input
               id="email"
               type="email"
@@ -105,34 +87,27 @@ export function LeadForm({ preselected }: { preselected?: string | undefined }) 
               {...register("email")}
               aria-invalid={errors.email ? "true" : "false"}
             />
-            {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
-          </div>
+          </Field>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="insuranceType">Rodzaj ubezpieczenia *</Label>
+        <Field
+          label="Rodzaj ubezpieczenia *"
+          htmlFor="insuranceType"
+          error={errors.insuranceType?.message}
+        >
           <Select
-            value={selectedType}
-            onValueChange={(value) => setValue("insuranceType", value, { shouldValidate: true })}
-          >
-            <SelectTrigger id="insuranceType" aria-invalid={errors.insuranceType ? "true" : "false"}>
-              <SelectValue placeholder="Wybierz rodzaj ubezpieczenia" />
-            </SelectTrigger>
-            <SelectContent>
-              {insuranceOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.insuranceType && (
-            <p className="text-xs text-destructive">{errors.insuranceType.message}</p>
-          )}
-        </div>
+            id="insuranceType"
+            options={insuranceOptions}
+            placeholder="Wybierz rodzaj ubezpieczenia"
+            value={selectedType ?? ""}
+            onChange={(event) =>
+              setValue("insuranceType", event.target.value, { shouldValidate: true })
+            }
+            aria-invalid={errors.insuranceType ? "true" : "false"}
+          />
+        </Field>
 
-        <div className="space-y-2">
-          <Label htmlFor="message">Wiadomość</Label>
+        <Field label="Wiadomość" htmlFor="message" error={errors.message?.message}>
           <Textarea
             id="message"
             rows={4}
@@ -140,17 +115,16 @@ export function LeadForm({ preselected }: { preselected?: string | undefined }) 
             {...register("message")}
             aria-invalid={errors.message ? "true" : "false"}
           />
-          {errors.message && <p className="text-xs text-destructive">{errors.message.message}</p>}
-        </div>
+        </Field>
 
-        <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+        <Button type="submit" size="lg" block disabled={isSubmitting}>
           {isSubmitting ? "Wysyłanie..." : "Wyślij zgłoszenie"}
         </Button>
 
-        <p className="text-center text-xs text-muted-foreground">
+        <p className="lead-form__consent">
           Wysyłając formularz, zgadzasz się na kontakt w sprawie oferty ubezpieczenia.
         </p>
       </form>
-    </div>
+    </Box>
   );
 }
