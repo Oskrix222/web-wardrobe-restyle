@@ -1,0 +1,42 @@
+@use "../brandbook" as *;
+
+// Full-page message screens (404 and error boundary).
+.message-page {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: $space-4;
+  background-color: var(--background);
+
+  &__inner {
+    max-width: 28rem;
+    text-align: center;
+  }
+
+  &__code {
+    font-family: $font-display;
+    font-size: $text-7xl;
+    color: var(--foreground);
+  }
+
+  &__title {
+    margin-top: $space-4;
+    font-size: $text-xl;
+    color: var(--foreground);
+  }
+
+  &__text {
+    margin-top: $space-2;
+    font-size: $text-sm;
+    color: var(--muted-foreground);
+  }
+
+  &__actions {
+    margin-top: $space-6;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: $space-2;
+  }
+}
