@@ -30,7 +30,7 @@ export type ButtonProps = BaseProps & ButtonHTMLAttributes<HTMLButtonElement>;
 
 export function Button({ variant, size, block, className, children, ...rest }: ButtonProps) {
   return (
-    <button className={classes({ variant, size, block }, className)} {...rest}>
+    <button className={classes(variant, size, block, className)} {...rest}>
       {children}
     </button>
   );
@@ -41,7 +41,7 @@ export type ButtonLinkProps = BaseProps & AnchorHTMLAttributes<HTMLAnchorElement
 /** Same look as Button, rendered as a link. */
 export function ButtonLink({ variant, size, block, className, children, ...rest }: ButtonLinkProps) {
   return (
-    <a className={classes({ variant, size, block }, className)} {...rest}>
+    <a className={classes(variant, size, block, className)} {...rest}>
       {children}
     </a>
   );
