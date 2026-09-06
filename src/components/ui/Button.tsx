@@ -11,7 +11,12 @@ type BaseProps = {
   children?: ReactNode;
 };
 
-function classes({ variant = "primary", size = "md", block = false }: BaseProps, extra?: string) {
+function classes(
+  variant: ButtonVariant = "primary",
+  size: ButtonSize = "md",
+  block = false,
+  extra?: string,
+) {
   return cn(
     "btn",
     `btn--${variant}`,
