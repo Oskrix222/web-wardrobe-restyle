@@ -195,6 +195,62 @@ $screen-xl: 1280px;
   background-color: var(--terracotta-tint);
 }
 
+// Blog post images with a preset width (data-size) and alignment (data-align),
+// shared by the editor and the public post so both look the same. Left/right
+// images float with text beside them; on phones every image goes full width.
+@mixin sized-images {
+  &::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    margin: $space-4 auto;
+    border-radius: $radius-lg;
+
+    &[data-size="small"] {
+      width: 33%;
+    }
+
+    &[data-size="medium"] {
+      width: 50%;
+    }
+
+    &[data-size="large"] {
+      width: 75%;
+    }
+
+    &[data-align="left"]:not([data-size="full"]) {
+      float: left;
+      margin: $space-1 $space-5 $space-3 0;
+    }
+
+    &[data-align="right"]:not([data-size="full"]) {
+      float: right;
+      margin: $space-1 0 $space-3 $space-5;
+    }
+
+    // Same specificity as the float rules above and later in source, so it wins.
+    @media (max-width: #{$screen-sm - 1px}) {
+      &[data-size][data-align] {
+        width: 100%;
+        float: none;
+        margin: $space-4 0;
+      }
+    }
+  }
+
+  h2,
+  h3 {
+    clear: both;
+  }
+}
+
 // -------------------- RUNTIME THEME TOKENS -------------------
 // SCSS variables above are build-time; these CSS variables carry the
 // values into the browser so light/dark switching works.

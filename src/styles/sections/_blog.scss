@@ -342,6 +342,7 @@
   }
 
   &__content {
+    @include sized-images;
     margin-top: $space-8;
     line-height: $leading-relaxed;
     color: var(--foreground);
@@ -389,11 +390,6 @@
       font-style: italic;
     }
 
-    img {
-      margin-top: $space-4;
-      width: 100%;
-      border-radius: $radius-lg;
-    }
 
     a {
       color: var(--terracotta);

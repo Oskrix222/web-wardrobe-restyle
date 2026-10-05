@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
-import { useEditor, EditorContent, type Editor } from "@tiptap/react";
+import { useEditor, useEditorState, EditorContent, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import ImageExtension from "@tiptap/extension-image";
 import LinkExtension from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import {
@@ -15,6 +14,9 @@ import {
   ImageIcon,
   Undo2,
   Redo2,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -22,6 +24,7 @@ import { Button } from "@/components/ui/Button";
 import { Field, Input, Select, Textarea } from "@/components/ui/Field";
 import { slugify, uploadBlogImage, type AdminBlogPostInput } from "@/lib/blog-admin";
 import type { Json } from "@/integrations/supabase/types";
+import { BlogImage, IMAGE_SIZES, type ImageAlign, type ImageSize } from "./blog-image";
 
 export type PostEditorValue = {
   title: string;
@@ -35,10 +38,38 @@ export type PostEditorValue = {
 
 const EMPTY_DOC = { type: "doc", content: [{ type: "paragraph" }] };
 
+const ALIGN_BUTTONS: { value: ImageAlign; label: string; icon: typeof AlignLeft }[] = [
+  { value: "left", label: "Zdjęcie do lewej (tekst obok)", icon: AlignLeft },
+  { value: "center", label: "Zdjęcie na środku", icon: AlignCenter },
+  { value: "right", label: "Zdjęcie do prawej (tekst obok)", icon: AlignRight },
+];
+
 function EditorToolbar({ editor }: { editor: Editor | null }) {
   const imageInputRef = useRef<HTMLInputElement>(null);
+  // Re-render the toolbar when the selection changes, so active states and the
+  // image controls follow the cursor.
+  const state = useEditorState({
+    editor,
+    selector: ({ editor: e }) =>
+      e
+        ? {
+            // Formatting flags are read below via editor.isActive; listing them
+            // here is what makes the toolbar re-render when they change.
+            marks: ["bold", "italic", "bulletList", "orderedList", "blockquote"].map((name) =>
+              e.isActive(name),
+            ),
+            heading: e.isActive("heading", { level: 2 }),
+            image: e.isActive("image"),
+            imageSize: e.getAttributes("image")["size"] as ImageSize | undefined,
+            imageAlign: e.getAttributes("image")["align"] as ImageAlign | undefined,
+          }
+        : null,
+  });
 
   if (!editor) return null;
+
+  const setImageAttrs = (attrs: { size?: ImageSize; align?: ImageAlign }) =>
+    editor.chain().focus().updateAttributes("image", attrs).run();
 
   const addImage = async (file: File) => {
     try {
@@ -133,6 +164,36 @@ function EditorToolbar({ editor }: { editor: Editor | null }) {
       <button type="button" onClick={() => editor.chain().focus().redo().run()} aria-label="Ponów">
         <Redo2 aria-hidden="true" />
       </button>
+
+      {state?.image ? (
+        <div className="post-editor__image-tools" role="group" aria-label="Ustawienia zdjęcia">
+          <span className="post-editor__image-tools-label">Zdjęcie:</span>
+          {IMAGE_SIZES.map(({ value, label }) => (
+            <button
+              key={value}
+              type="button"
+              className={(state.imageSize ?? "full") === value ? "is-active" : ""}
+              onClick={() => setImageAttrs({ size: value })}
+              aria-label={`Szerokość ${label}`}
+            >
+              {label}
+            </button>
+          ))}
+          <span className="post-editor__image-tools-sep" aria-hidden="true" />
+          {ALIGN_BUTTONS.map(({ value, label, icon: Icon }) => (
+            <button
+              key={value}
+              type="button"
+              className={(state.imageAlign ?? "center") === value ? "is-active" : ""}
+              onClick={() => setImageAttrs({ align: value })}
+              aria-label={label}
+              title={label}
+            >
+              <Icon aria-hidden="true" />
+            </button>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -159,7 +220,7 @@ export function PostEditor({
   const editor = useEditor({
     extensions: [
       StarterKit,
-      ImageExtension,
+      BlogImage,
       LinkExtension.configure({ openOnClick: false }),
       Placeholder.configure({ placeholder: "Zacznij pisać treść wpisu…" }),
     ],
