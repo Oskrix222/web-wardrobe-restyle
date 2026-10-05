@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
 
 import type { Database } from "@/integrations/supabase/types";
@@ -20,6 +21,8 @@ const leadSchema = z.object({
   consent: z.boolean().refine((value) => value, {
     message: "Zgoda na przetwarzanie danych jest wymagana",
   }),
+  // Honeypot: hidden from people, bots tend to fill every field.
+  website: z.string().optional(),
 });
 
 export { leadSchema };
@@ -28,6 +31,9 @@ export type LeadFormData = z.infer<typeof leadSchema>;
 export const submitLead = createServerFn({ method: "POST" })
   .validator((data) => leadSchema.parse(data))
   .handler(async ({ data }) => {
+    // Bot filled the hidden field: pretend it worked, store and send nothing.
+    if (data.website) return { success: true };
+
     const { createClient } = await import("@supabase/supabase-js");
 
     // VITE_* values are inlined at build time, so the server needs no runtime vars.
@@ -53,6 +59,9 @@ export const submitLead = createServerFn({ method: "POST" })
     if (error) {
       throw new Error("Nie udało się wysłać zgłoszenia. Spróbuj ponownie później.");
     }
+
+    const { notifyNewLead } = await import("./lead-notify");
+    await notifyNewLead(data, new URL(getRequest().url).origin);
 
     return { success: true };
   });

@@ -103,6 +103,7 @@ function PrivacyPolicy() {
                 Supabase Inc. — baza danych, w której przechowujemy zgłoszenia (serwery w UE),
               </li>
               <li>Cloudflare, Inc. — hosting i zabezpieczenie strony,</li>
+              <li>Resend — wysyłka powiadomienia e-mail o nowym zgłoszeniu na skrzynkę doradcy,</li>
               <li>
                 Google Ireland Ltd. — Google Analytics i Google Ads, wyłącznie jeśli wyrazisz zgodę
                 na cookies (zob. pkt 8).

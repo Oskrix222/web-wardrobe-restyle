@@ -6,5 +6,10 @@
   "compatibility_date": "2025-09-01",
   // Keep variables set in the Cloudflare dashboard across deploys.
   "keep_vars": true,
-  "observability": { "enabled": true }
+  "observability": { "enabled": true },
+  // Non-secret runtime settings. RESEND_API_KEY is a Secret set in the dashboard.
+  "vars": {
+    // Comma-separated list of addresses that get an e-mail for every new lead.
+    "LEAD_NOTIFY_EMAIL": "kubowiczoskar@gmail.com"
+  }
 }

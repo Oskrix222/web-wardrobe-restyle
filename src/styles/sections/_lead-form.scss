@@ -52,3 +52,12 @@
     }
   }
 }
+
+// Spam honeypot field — kept in the DOM for bots, out of sight for people.
+.lead-form__trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

@@ -31,7 +31,14 @@ export function LeadForm({ preselected }: { preselected?: string | undefined }) 
     formState: { errors, isSubmitting },
   } = useForm<LeadFormData>({
     resolver: zodResolver(leadSchema),
-    defaultValues: { name: "", phone: "", insuranceType: "", message: "", consent: false },
+    defaultValues: {
+      name: "",
+      phone: "",
+      insuranceType: "",
+      message: "",
+      consent: false,
+      website: "",
+    },
   });
 
   const selectedType = watch("insuranceType");
@@ -60,6 +67,18 @@ export function LeadForm({ preselected }: { preselected?: string | undefined }) 
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="lead-form__form" noValidate>
+        {/* Honeypot for spam bots — invisible and skipped by keyboard users. */}
+        <div className="lead-form__trap" aria-hidden="true">
+          <label htmlFor="website">Strona www</label>
+          <input
+            id="website"
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            {...register("website")}
+          />
+        </div>
+
         <Field label="Imię *" htmlFor="name" error={errors.name?.message}>
           <Input
             id="name"
