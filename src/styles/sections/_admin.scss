@@ -1,0 +1,818 @@
+@use "../brandbook" as *;
+
+// -------------------- LOGIN ----------------------------------
+.admin-auth {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-4;
+  background-color: var(--secondary-soft);
+
+  &__card {
+    width: 100%;
+    max-width: 24rem;
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+    padding: $space-8;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: $radius-2xl;
+    box-shadow: $shadow-md;
+  }
+
+  &__title {
+    @include heading($text-2xl, $text-2xl);
+    margin-top: $space-2;
+  }
+
+  &__hint {
+    font-size: $text-xs;
+    color: var(--muted-foreground);
+    line-height: $leading-relaxed;
+  }
+}
+
+// -------------------- SHELL ------------------------------------
+.admin-shell {
+  min-height: 100vh;
+  background-color: var(--secondary-soft);
+
+  &__loading {
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    color: var(--muted-foreground);
+  }
+
+  &__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: $space-4;
+    padding: $space-4 $space-6;
+    background-color: var(--card);
+    border-bottom: 1px solid var(--border);
+  }
+
+  &__brand {
+    font-family: $font-display;
+    font-size: $text-lg;
+    color: var(--foreground);
+  }
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    gap: $space-5;
+    font-size: $text-sm;
+
+    a,
+    button {
+      color: var(--muted-foreground);
+      font-family: inherit;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+
+      &:hover,
+      &.is-active {
+        color: var(--terracotta);
+      }
+
+      &.is-active {
+        font-weight: $weight-semibold;
+      }
+    }
+  }
+
+  &__content {
+    padding: $space-8 $space-6;
+    max-width: 64rem;
+    margin-inline: auto;
+  }
+}
+
+// -------------------- POST LIST --------------------------------
+.admin-blog-list {
+  h1 {
+    @include heading($text-2xl, $text-2xl);
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-4;
+  }
+
+  &__date {
+    white-space: nowrap;
+    color: var(--muted-foreground);
+  }
+
+  &__table {
+    margin-top: $space-6;
+    width: 100%;
+
+    // Narrow screens scroll the table sideways instead of squashing columns.
+    @media (max-width: #{$screen-md - 1px}) {
+      display: block;
+      overflow-x: auto;
+    }
+
+    border-collapse: collapse;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: $radius-xl;
+    overflow: hidden;
+
+    th,
+    td {
+      padding: $space-3 $space-4;
+      text-align: left;
+      font-size: $text-sm;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      font-family: $font-mono;
+      font-size: $text-xs;
+      text-transform: uppercase;
+      letter-spacing: $tracking-wide;
+      color: var(--muted-foreground);
+
+      svg {
+        width: 1rem;
+        height: 1rem;
+      }
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  &__title {
+    display: block;
+    font-weight: $weight-semibold;
+  }
+
+  &__slug {
+    display: block;
+    margin-top: 0.125rem;
+    font-size: $text-xs;
+    color: var(--muted-foreground);
+  }
+
+  &__status {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: $radius-full;
+    background-color: var(--secondary);
+    font-size: $text-xs;
+    font-weight: $weight-medium;
+
+    &.is-published {
+      background-color: var(--terracotta-tint);
+      color: var(--terracotta);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: $space-3;
+
+    a,
+    button {
+      display: grid;
+      place-items: center;
+      color: var(--muted-foreground);
+      background: none;
+      border: none;
+      cursor: pointer;
+
+      svg {
+        width: 1rem;
+        height: 1rem;
+      }
+
+      &:hover {
+        color: var(--terracotta);
+      }
+    }
+  }
+}
+
+// -------------------- EDITOR ------------------------------------
+.admin-blog-editor h1 {
+  @include heading($text-2xl, $text-2xl);
+  margin-bottom: $space-6;
+}
+
+.post-editor {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+
+  &__fields {
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+    padding: $space-6;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: $radius-xl;
+  }
+
+  &__cover {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+    align-items: flex-start;
+  }
+
+  &__cover-preview {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+
+    img {
+      width: 10rem;
+      height: 6rem;
+      object-fit: cover;
+      border-radius: $radius-md;
+      border: 1px solid var(--border);
+    }
+
+    button {
+      font-size: $text-xs;
+      color: var(--destructive);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+  }
+
+  &__editor {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: $radius-xl;
+    overflow: hidden;
+  }
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: $space-1;
+    padding: $space-2;
+    border-bottom: 1px solid var(--border);
+    background-color: var(--secondary-soft);
+
+    button {
+      display: grid;
+      place-items: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: $radius-md;
+      border: none;
+      background: none;
+      color: var(--foreground);
+      cursor: pointer;
+
+      svg {
+        width: 1rem;
+        height: 1rem;
+      }
+
+      &:hover {
+        background-color: var(--secondary);
+      }
+
+      &.is-active {
+        background-color: var(--terracotta-tint);
+        color: var(--terracotta);
+      }
+    }
+  }
+
+  &__toolbar-spacer {
+    flex: 1;
+  }
+
+  &__content {
+    padding: $space-5;
+    min-height: 16rem;
+
+    .ProseMirror {
+      outline: none;
+      line-height: $leading-relaxed;
+
+      p.is-editor-empty:first-child::before {
+        content: attr(data-placeholder);
+        float: left;
+        height: 0;
+        color: var(--muted-foreground);
+        pointer-events: none;
+      }
+
+      h2 {
+        margin-top: $space-5;
+        font-family: $font-display;
+        font-weight: $weight-normal;
+        font-size: $text-xl;
+      }
+
+      ul,
+      ol {
+        padding-left: $space-6;
+      }
+
+      img {
+        max-width: 100%;
+        border-radius: $radius-md;
+      }
+
+      blockquote {
+        padding-left: $space-4;
+        border-left: 3px solid var(--terracotta-line);
+        color: var(--muted-foreground);
+      }
+    }
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: $space-3;
+  }
+}
+
+// -------------------- STATS ------------------------------------
+.admin-stats {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+
+  h1 {
+    @include heading($text-2xl, $text-2xl);
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: $space-4;
+  }
+
+  &__range {
+    display: inline-flex;
+    padding: $space-1;
+    border: 1px solid var(--border);
+    border-radius: $radius-full;
+    background-color: var(--card);
+
+    button {
+      padding: $space-1 $space-4;
+      border: none;
+      border-radius: $radius-full;
+      background: none;
+      font-size: $text-sm;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      transition:
+        background-color $transition-fast,
+        color $transition-fast;
+
+      &.is-active {
+        background-color: var(--terracotta);
+        color: var(--on-accent);
+      }
+    }
+  }
+
+  &__notice {
+    display: flex;
+    gap: $space-3;
+    align-items: flex-start;
+    padding: $space-4;
+    border: 1px solid var(--terracotta-line);
+    border-radius: $radius-lg;
+    background-color: var(--terracotta-tint);
+    font-size: $text-sm;
+
+    svg {
+      flex-shrink: 0;
+      width: 1.1rem;
+      height: 1.1rem;
+      color: var(--terracotta);
+    }
+  }
+
+  &__kpis {
+    display: grid;
+    gap: $space-4;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    @include lg {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  &__kpi {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
+    padding: $space-5;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: $radius-xl;
+
+    > svg {
+      position: absolute;
+      top: $space-5;
+      right: $space-5;
+      width: 1.1rem;
+      height: 1.1rem;
+      color: var(--terracotta);
+    }
+  }
+
+  &__kpi-label {
+    font-family: $font-mono;
+    font-size: $text-xs;
+    text-transform: uppercase;
+    letter-spacing: $tracking-wide;
+    color: var(--muted-foreground);
+    padding-right: $space-6;
+  }
+
+  &__kpi-value {
+    font-family: $font-display;
+    font-size: $text-4xl;
+    line-height: $leading-tight;
+  }
+
+  &__kpi-hint {
+    font-size: $text-xs;
+    color: var(--muted-foreground);
+  }
+
+  &__card {
+    padding: $space-6;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: $radius-xl;
+
+    h2 {
+      margin-bottom: $space-5;
+      font-family: $font-display;
+      font-weight: $weight-normal;
+      font-size: $text-xl;
+    }
+
+    code {
+      font-family: $font-mono;
+      font-size: 0.85em;
+    }
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: $text-sm;
+
+    @media (max-width: #{$screen-md - 1px}) {
+      display: block;
+      overflow-x: auto;
+    }
+
+    th,
+    td {
+      padding: $space-3 $space-2;
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+      white-space: normal;
+    }
+
+    th {
+      font-family: $font-mono;
+      font-size: $text-xs;
+      font-weight: $weight-normal;
+      text-transform: uppercase;
+      letter-spacing: $tracking-wide;
+      color: var(--muted-foreground);
+    }
+
+    td a {
+      font-weight: $weight-semibold;
+
+      &:hover {
+        color: var(--terracotta);
+      }
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  &__integrations {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: $radius-lg;
+
+    li {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: $space-1 $space-4;
+      padding: $space-3 $space-4;
+      font-size: $text-sm;
+      border-bottom: 1px solid var(--border);
+
+      @include sm {
+        grid-template-columns: 1.2fr 1.5fr auto;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      > span:first-child {
+        font-weight: $weight-semibold;
+      }
+
+      > span:nth-child(2) {
+        color: var(--muted-foreground);
+        font-size: $text-xs;
+        order: 3;
+        grid-column: 1 / -1;
+
+        @include sm {
+          order: 0;
+          grid-column: auto;
+        }
+
+        &.is-on {
+          color: oklch(0.5 0.12 150);
+          font-weight: $weight-semibold;
+        }
+      }
+    }
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      gap: $space-1;
+      color: var(--terracotta);
+      font-weight: $weight-semibold;
+
+      svg {
+        width: 0.85rem;
+        height: 0.85rem;
+      }
+    }
+  }
+
+  &__report {
+    margin-top: $space-5;
+    width: 100%;
+    height: 42rem;
+    border: 1px solid var(--border);
+    border-radius: $radius-lg;
+  }
+
+  &__report-empty {
+    margin-top: $space-5;
+    display: flex;
+    gap: $space-4;
+    align-items: flex-start;
+    padding: $space-6;
+    border: 1px dashed var(--border);
+    border-radius: $radius-lg;
+    font-size: $text-sm;
+    line-height: $leading-relaxed;
+    color: var(--muted-foreground);
+
+    svg {
+      flex-shrink: 0;
+      width: 1.75rem;
+      height: 1.75rem;
+      color: var(--terracotta);
+    }
+  }
+}
+
+.stats-chart {
+  &__legend {
+    display: flex;
+    gap: $space-5;
+    margin-bottom: $space-4;
+    font-size: $text-xs;
+    color: var(--muted-foreground);
+  }
+
+  &__key {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+
+    &::before {
+      content: "";
+      width: 0.7rem;
+      height: 0.7rem;
+      border-radius: 3px;
+    }
+
+    &--views::before {
+      background-color: var(--terracotta-line);
+    }
+
+    &--clicks::before {
+      background-color: var(--terracotta);
+    }
+  }
+
+  &__plot {
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+    height: 14rem;
+    padding-bottom: $space-6;
+    border-bottom: 1px solid var(--border);
+  }
+
+  &__col {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-width: 0;
+  }
+
+  &__bar {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 2px;
+    border-radius: 3px 3px 0 0;
+    background-color: var(--terracotta-line);
+    overflow: hidden;
+    transition: background-color $transition-fast;
+  }
+
+  &__col:hover &__bar {
+    background-color: var(--clay);
+  }
+
+  &__bar-inner {
+    background-color: var(--terracotta);
+  }
+
+  &__label {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-top: $space-2;
+    transform: translateX(-50%);
+    font-size: 0.65rem;
+    white-space: nowrap;
+    color: var(--muted-foreground);
+  }
+}
+
+// -------------------- LEADS ------------------------------------
+.admin-leads {
+  h1 {
+    @include heading($text-2xl, $text-2xl);
+  }
+
+  &__hint {
+    margin-top: $space-2;
+    font-size: $text-sm;
+    color: var(--muted-foreground);
+  }
+
+  &__list {
+    margin-top: $space-6;
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+  }
+
+  &__item {
+    position: relative;
+    padding: $space-5;
+    padding-right: $space-12;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: $radius-xl;
+  }
+
+  &__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: $space-2 $space-4;
+  }
+
+  &__name {
+    font-weight: $weight-semibold;
+  }
+
+  &__type {
+    padding: 0.15rem 0.6rem;
+    border-radius: $radius-full;
+    background-color: var(--terracotta-tint);
+    color: var(--terracotta);
+    font-size: $text-xs;
+    font-weight: $weight-medium;
+  }
+
+  &__date {
+    font-size: $text-xs;
+    color: var(--muted-foreground);
+  }
+
+  &__contact {
+    margin-top: $space-3;
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-2 $space-5;
+    font-size: $text-sm;
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      gap: $space-2;
+
+      &:hover {
+        color: var(--terracotta);
+      }
+    }
+
+    svg {
+      width: 0.9rem;
+      height: 0.9rem;
+      color: var(--terracotta);
+    }
+  }
+
+  &__message {
+    margin-top: $space-3;
+    padding: $space-3 $space-4;
+    border-left: 3px solid var(--terracotta-line);
+    background-color: var(--secondary-soft);
+    font-size: $text-sm;
+    line-height: $leading-relaxed;
+    white-space: pre-wrap;
+  }
+
+  &__delete {
+    position: absolute;
+    top: $space-4;
+    right: $space-4;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    border-radius: $radius-md;
+    background: none;
+    color: var(--muted-foreground);
+    cursor: pointer;
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    &:hover {
+      color: var(--destructive);
+      background-color: var(--secondary);
+    }
+  }
+}

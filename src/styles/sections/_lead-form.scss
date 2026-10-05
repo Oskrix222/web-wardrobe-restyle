@@ -2,28 +2,53 @@
 
 .lead-form {
   scroll-margin-top: $space-24;
+  padding: calc(#{$space-6} - 3px);
+
+  @include sm {
+    padding: calc(#{$space-10} - 3px);
+  }
 
   &__title {
     @include heading($text-3xl, $text-4xl);
-    margin-top: $space-3;
+    margin-top: $space-2;
   }
 
   &__intro {
-    margin-top: $space-2;
+    margin-top: $space-1;
     font-size: $text-sm;
     color: var(--muted-foreground);
   }
 
   &__form {
-    margin-top: $space-8;
+    margin-top: calc(#{$space-8} - 8px);
     display: flex;
     flex-direction: column;
     gap: $space-5;
   }
 
-  &__consent {
-    text-align: center;
+  &__divider {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
     font-size: $text-xs;
     color: var(--muted-foreground);
+
+    &::before,
+    &::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background-color: var(--border);
+    }
+  }
+
+  &__calls {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+
+    @include sm {
+      flex-direction: row;
+    }
   }
 }

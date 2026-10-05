@@ -1,0 +1,425 @@
+@use "../brandbook" as *;
+
+// -------------------- SHARED -----------------------------------
+.breadcrumbs {
+  margin-bottom: $space-8;
+
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-2;
+    font-size: $text-sm;
+    color: var(--muted-foreground);
+  }
+
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+    transition: color $transition-fast;
+
+    svg {
+      width: 0.9rem;
+      height: 0.9rem;
+    }
+
+    &:hover {
+      color: var(--terracotta);
+    }
+  }
+
+  &__sep svg {
+    width: 0.85rem;
+    height: 0.85rem;
+    opacity: 0.6;
+  }
+
+  &__current {
+    color: var(--foreground);
+    font-weight: $weight-medium;
+    // Long post titles shouldn't blow the crumb trail onto three lines.
+    max-width: 22rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2 $space-4;
+  font-family: $font-mono;
+  font-size: $text-xs;
+  text-transform: uppercase;
+  letter-spacing: $tracking-wide;
+  color: var(--muted-foreground);
+
+  &__item {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+
+    svg {
+      width: 0.85rem;
+      height: 0.85rem;
+      color: var(--terracotta);
+    }
+  }
+}
+
+// -------------------- INDEX ------------------------------------
+.blog-index {
+  &__head {
+    margin-bottom: $space-12;
+    text-align: center;
+  }
+
+  &__intro {
+    margin-inline: auto;
+    margin-top: $space-4;
+    max-width: 36rem;
+    color: var(--muted-foreground);
+  }
+
+  &__empty {
+    padding: $space-12 $space-6;
+    text-align: center;
+    color: var(--muted-foreground);
+    border: 1px dashed var(--border);
+    border-radius: $radius-2xl;
+    background-color: var(--card);
+  }
+
+  &__grid {
+    margin-top: $space-6;
+    display: grid;
+    gap: $space-6;
+
+    @include sm {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @include lg {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+}
+
+.blog-card {
+  display: block;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+  border-radius: $radius-2xl;
+
+  &__box {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: $radius-2xl;
+    box-shadow: $shadow-sm;
+    transition:
+      border-color $transition-base,
+      box-shadow $transition-base,
+      transform $transition-base;
+  }
+
+  &:hover &__box,
+  &:focus-visible &__box {
+    border-color: var(--terracotta-line);
+    box-shadow: $shadow-md;
+    transform: translateY(-3px);
+  }
+
+  &__media {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background-color: var(--secondary);
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 400ms ease;
+  }
+
+  &:hover &__image {
+    transform: scale(1.04);
+  }
+
+  &__placeholder {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    background: linear-gradient(135deg, var(--terracotta-tint), var(--secondary));
+
+    svg {
+      width: 2.5rem;
+      height: 2.5rem;
+      color: var(--terracotta);
+      opacity: 0.6;
+    }
+  }
+
+  &__badge {
+    position: absolute;
+    top: $space-4;
+    left: $space-4;
+    padding: $space-1 $space-3;
+    border-radius: $radius-full;
+    background-color: var(--terracotta);
+    color: var(--on-accent);
+    font-family: $font-mono;
+    font-size: $text-xs;
+    text-transform: uppercase;
+    letter-spacing: $tracking-wide;
+  }
+
+  &__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+    padding: $space-6;
+  }
+
+  &__title {
+    font-family: $font-display;
+    font-size: $text-2xl;
+    line-height: $leading-snug;
+    transition: color $transition-fast;
+  }
+
+  &:hover &__title {
+    color: var(--terracotta);
+  }
+
+  &__excerpt {
+    flex: 1;
+    font-size: $text-sm;
+    line-height: $leading-relaxed;
+    color: var(--muted-foreground);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__read-more {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+    margin-top: $space-2;
+    font-size: $text-sm;
+    font-weight: $weight-semibold;
+    color: var(--terracotta);
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+      transition: transform $transition-base;
+    }
+  }
+
+  &:hover &__read-more svg {
+    transform: translateX(4px);
+  }
+
+  // Newest post: wide tile, image on the left from tablet up.
+  &--featured {
+    .blog-card__box {
+      @include md {
+        display: grid;
+        grid-template-columns: 1.15fr 1fr;
+      }
+    }
+
+    .blog-card__media {
+      @include md {
+        aspect-ratio: auto;
+        min-height: 20rem;
+      }
+    }
+
+    .blog-card__body {
+      justify-content: center;
+
+      @include md {
+        padding: $space-10;
+      }
+    }
+
+    .blog-card__title {
+      font-size: $text-3xl;
+
+      @include lg {
+        font-size: $text-4xl;
+      }
+    }
+
+    .blog-card__excerpt {
+      flex: none;
+      font-size: $text-base;
+      -webkit-line-clamp: 4;
+    }
+  }
+}
+
+.blog-related .section-heading {
+  margin-bottom: $space-4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blog-card__box,
+  .blog-card__image,
+  .blog-card__read-more svg {
+    transition: none;
+  }
+
+  .blog-card:hover .blog-card__box,
+  .blog-card:hover .blog-card__image {
+    transform: none;
+  }
+}
+
+// -------------------- POST -------------------------------------
+.blog-post {
+  &__container {
+    max-width: 44rem;
+  }
+
+  &__title {
+    @include heading($text-3xl, $text-5xl);
+  }
+
+  &__meta {
+    margin-top: $space-4;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-2 $space-4;
+  }
+
+  &__author {
+    font-size: $text-sm;
+    font-weight: $weight-semibold;
+  }
+
+  &__back {
+    margin-top: $space-8;
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+    font-size: $text-sm;
+    font-weight: $weight-semibold;
+    color: var(--terracotta);
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+      transition: transform $transition-base;
+    }
+
+    &:hover svg {
+      transform: translateX(-4px);
+    }
+  }
+
+  &__cover {
+    margin-top: $space-8;
+    width: 100%;
+    max-height: 26rem;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    border-radius: $radius-2xl;
+  }
+
+  &__content {
+    margin-top: $space-8;
+    line-height: $leading-relaxed;
+    color: var(--foreground);
+
+    h2 {
+      margin-top: $space-8;
+      font-family: $font-display;
+      font-weight: $weight-normal;
+      font-size: $text-2xl;
+    }
+
+    h3 {
+      margin-top: $space-6;
+      font-family: $font-display;
+      font-weight: $weight-normal;
+      font-size: $text-xl;
+    }
+
+    p {
+      margin-top: $space-4;
+    }
+
+    ul,
+    ol {
+      margin-top: $space-4;
+      padding-left: $space-6;
+      display: flex;
+      flex-direction: column;
+      gap: $space-2;
+    }
+
+    ul {
+      list-style: disc;
+    }
+
+    ol {
+      list-style: decimal;
+    }
+
+    blockquote {
+      margin-top: $space-4;
+      padding-left: $space-4;
+      border-left: 3px solid var(--terracotta-line);
+      color: var(--muted-foreground);
+      font-style: italic;
+    }
+
+    img {
+      margin-top: $space-4;
+      width: 100%;
+      border-radius: $radius-lg;
+    }
+
+    a {
+      color: var(--terracotta);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+  }
+
+  &__cta {
+    margin-top: $space-10;
+    padding: $space-6;
+    border: 1px solid var(--border);
+    border-radius: $radius-xl;
+    background-color: var(--secondary-soft);
+    text-align: center;
+
+    p {
+      font-weight: $weight-semibold;
+    }
+  }
+
+  &__cta-actions {
+    margin-top: $space-4;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: $space-3;
+  }
+}

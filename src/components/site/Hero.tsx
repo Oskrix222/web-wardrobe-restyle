@@ -1,4 +1,4 @@
-import { ChevronDown, Shield } from "lucide-react";
+import { Shield } from "lucide-react";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Pill } from "@/components/ui/Box";
 import heroImage from "@/assets/hero-family.jpg";
@@ -57,7 +57,7 @@ export function Hero({ onContact }: { onContact: () => void }) {
           <div className="hero__image-frame">
             <img
               src={heroImage}
-              alt="Rodzina w jasnym salonie — ubezpieczenia KAMIEŃ"
+              alt="Rodzina w jasnym salonie — ubezpieczenia OSCare"
               className="hero__image"
               width={1280}
               height={1024}
@@ -67,11 +67,6 @@ export function Hero({ onContact }: { onContact: () => void }) {
           </div>
         </div>
       </div>
-
-      <a href="#o-nas" className="hero__scroll" aria-label="Przewiń do sekcji o nas">
-        <span>Scroll</span>
-        <ChevronDown className="animate-float" />
-      </a>
     </section>
   );
 }

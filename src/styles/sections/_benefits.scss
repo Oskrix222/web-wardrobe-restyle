@@ -1,8 +1,12 @@
 @use "../brandbook" as *;
 
 .benefits {
+  overflow: hidden;
+
   &__grid {
     @include container;
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: 1fr;
     gap: $space-12;

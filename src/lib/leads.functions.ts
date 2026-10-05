@@ -3,20 +3,13 @@ import { z } from "zod";
 
 import type { Database } from "@/integrations/supabase/types";
 
-
-
 const leadSchema = z.object({
   name: z
     .string()
     .trim()
     .min(2, "Imię i nazwisko jest wymagane")
     .max(100, "Imię i nazwisko jest za długie"),
-  email: z
-    .string()
-    .trim()
-    .max(255, "Adres e-mail jest za długi")
-    .optional()
-    .or(z.literal("")),
+  email: z.string().trim().max(255, "Adres e-mail jest za długi").optional().or(z.literal("")),
   phone: z
     .string()
     .trim()
@@ -24,6 +17,9 @@ const leadSchema = z.object({
     .max(20, "Numer telefonu jest za długi"),
   insuranceType: z.string().min(1, "Wybierz rodzaj ubezpieczenia"),
   message: z.string().trim().max(1000, "Wiadomość jest za długa").optional(),
+  consent: z.boolean().refine((value) => value, {
+    message: "Zgoda na przetwarzanie danych jest wymagana",
+  }),
 });
 
 export { leadSchema };
@@ -34,9 +30,10 @@ export const submitLead = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { createClient } = await import("@supabase/supabase-js");
 
+    // VITE_* values are inlined at build time, so the server needs no runtime vars.
     const supabase = createClient<Database>(
-      process.env["SUPABASE_URL"]!,
-      process.env["SUPABASE_PUBLISHABLE_KEY"]!,
+      import.meta.env["VITE_SUPABASE_URL"] || process.env["SUPABASE_URL"]!,
+      import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] || process.env["SUPABASE_PUBLISHABLE_KEY"]!,
       {
         auth: {
           persistSession: false,
@@ -44,8 +41,6 @@ export const submitLead = createServerFn({ method: "POST" })
         },
       },
     );
-
-
 
     const { error } = await supabase.from("leads").insert({
       name: data.name,
@@ -56,9 +51,7 @@ export const submitLead = createServerFn({ method: "POST" })
     });
 
     if (error) {
-      throw new Error(
-        "Nie udało się wysłać zgłoszenia. Spróbuj ponownie później.",
-      );
+      throw new Error("Nie udało się wysłać zgłoszenia. Spróbuj ponownie później.");
     }
 
     return { success: true };

@@ -33,7 +33,7 @@ $dark-destructive: oklch(0.65 0.18 25);
 
 // -------------------- TYPOGRAPHY -----------------------------
 $font-display: "Anton", "Arial Narrow", sans-serif; // headings
-$font-body: "Inter", system-ui, sans-serif; // body copy
+$font-body: "Manrope", system-ui, sans-serif; // body copy
 $font-mono: "JetBrains Mono", ui-monospace, monospace; // eyebrow labels
 
 $text-xs: 0.75rem;
@@ -60,6 +60,7 @@ $tracking-tight: -0.02em;
 $weight-normal: 400;
 $weight-medium: 500;
 $weight-semibold: 600;
+$weight-bold: 700;
 
 // -------------------- SPACING (paddings / margins) -----------
 $space-1: 0.25rem;

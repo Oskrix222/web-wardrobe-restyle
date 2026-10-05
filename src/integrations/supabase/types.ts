@@ -14,8 +14,89 @@ export type Database = {
   }
   public: {
     Tables: {
+      blog_posts: {
+        Row: {
+          author: string | null
+          contact_click_count: number
+          content_html: string
+          content_json: Json
+          cover_image_url: string | null
+          created_at: string
+          excerpt: string | null
+          id: string
+          published_at: string | null
+          slug: string
+          status: string
+          title: string
+          updated_at: string
+          view_count: number
+        }
+        Insert: {
+          author?: string | null
+          contact_click_count?: number
+          content_html?: string
+          content_json?: Json
+          cover_image_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          published_at?: string | null
+          slug: string
+          status?: string
+          title: string
+          updated_at?: string
+          view_count?: number
+        }
+        Update: {
+          author?: string | null
+          contact_click_count?: number
+          content_html?: string
+          content_json?: Json
+          cover_image_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          published_at?: string | null
+          slug?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          view_count?: number
+        }
+        Relationships: []
+      }
+      blog_post_daily_stats: {
+        Row: {
+          contact_clicks: number
+          day: string
+          post_id: string
+          views: number
+        }
+        Insert: {
+          contact_clicks?: number
+          day?: string
+          post_id: string
+          views?: number
+        }
+        Update: {
+          contact_clicks?: number
+          day?: string
+          post_id?: string
+          views?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_post_daily_stats_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "blog_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
+          consent_at: string
           created_at: string
           email: string | null
           id: string
@@ -25,6 +106,7 @@ export type Database = {
           phone: string
         }
         Insert: {
+          consent_at?: string
           created_at?: string
           email?: string | null
           id?: string
@@ -34,6 +116,7 @@ export type Database = {
           phone: string
         }
         Update: {
+          consent_at?: string
           created_at?: string
           email?: string | null
           id?: string
@@ -49,7 +132,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_blog_admin: {
+        Args: never
+        Returns: boolean
+      }
+      increment_blog_post_view: {
+        Args: { post_slug: string }
+        Returns: undefined
+      }
+      increment_blog_post_contact_click: {
+        Args: { post_slug: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

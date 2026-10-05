@@ -10,33 +10,167 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PolitykaPrywatnosciRouteImport } from './routes/polityka-prywatnosci'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminStatystykiRouteImport } from './routes/admin/statystyki'
+import { Route as AdminZgloszeniaRouteImport } from './routes/admin/zgloszenia'
+import { Route as BlogIndexRouteImport } from './routes/blog/index'
+import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
+import { Route as AdminBlogIndexRouteImport } from './routes/admin/blog/index'
+import { Route as AdminBlogIdRouteImport } from './routes/admin/blog/$id'
+import { Route as AdminBlogNewRouteImport } from './routes/admin/blog/new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PolitykaPrywatnosciRoute = PolitykaPrywatnosciRouteImport.update({
+  id: '/polityka-prywatnosci',
+  path: '/polityka-prywatnosci',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminStatystykiRoute = AdminStatystykiRouteImport.update({
+  id: '/admin/statystyki',
+  path: '/admin/statystyki',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminZgloszeniaRoute = AdminZgloszeniaRouteImport.update({
+  id: '/admin/zgloszenia',
+  path: '/admin/zgloszenia',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/blog/$slug',
+  path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminBlogIndexRoute = AdminBlogIndexRouteImport.update({
+  id: '/admin/blog/',
+  path: '/admin/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminBlogIdRoute = AdminBlogIdRouteImport.update({
+  id: '/admin/blog/$id',
+  path: '/admin/blog/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminBlogNewRoute = AdminBlogNewRouteImport.update({
+  id: '/admin/blog/new',
+  path: '/admin/blog/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/polityka-prywatnosci': typeof PolitykaPrywatnosciRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/statystyki': typeof AdminStatystykiRoute
+  '/admin/zgloszenia': typeof AdminZgloszeniaRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/admin/': typeof AdminIndexRoute
+  '/blog/': typeof BlogIndexRoute
+  '/admin/blog/$id': typeof AdminBlogIdRoute
+  '/admin/blog/new': typeof AdminBlogNewRoute
+  '/admin/blog/': typeof AdminBlogIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/polityka-prywatnosci': typeof PolitykaPrywatnosciRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/statystyki': typeof AdminStatystykiRoute
+  '/admin/zgloszenia': typeof AdminZgloszeniaRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/admin': typeof AdminIndexRoute
+  '/blog': typeof BlogIndexRoute
+  '/admin/blog/$id': typeof AdminBlogIdRoute
+  '/admin/blog/new': typeof AdminBlogNewRoute
+  '/admin/blog': typeof AdminBlogIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/polityka-prywatnosci': typeof PolitykaPrywatnosciRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/statystyki': typeof AdminStatystykiRoute
+  '/admin/zgloszenia': typeof AdminZgloszeniaRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/admin/': typeof AdminIndexRoute
+  '/blog/': typeof BlogIndexRoute
+  '/admin/blog/$id': typeof AdminBlogIdRoute
+  '/admin/blog/new': typeof AdminBlogNewRoute
+  '/admin/blog/': typeof AdminBlogIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/polityka-prywatnosci'
+    | '/admin/login'
+    | '/admin/statystyki'
+    | '/admin/zgloszenia'
+    | '/blog/$slug'
+    | '/admin/'
+    | '/blog/'
+    | '/admin/blog/$id'
+    | '/admin/blog/new'
+    | '/admin/blog/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/polityka-prywatnosci'
+    | '/admin/login'
+    | '/admin/statystyki'
+    | '/admin/zgloszenia'
+    | '/blog/$slug'
+    | '/admin'
+    | '/blog'
+    | '/admin/blog/$id'
+    | '/admin/blog/new'
+    | '/admin/blog'
+  id:
+    | '__root__'
+    | '/'
+    | '/polityka-prywatnosci'
+    | '/admin/login'
+    | '/admin/statystyki'
+    | '/admin/zgloszenia'
+    | '/blog/$slug'
+    | '/admin/'
+    | '/blog/'
+    | '/admin/blog/$id'
+    | '/admin/blog/new'
+    | '/admin/blog/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PolitykaPrywatnosciRoute: typeof PolitykaPrywatnosciRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminStatystykiRoute: typeof AdminStatystykiRoute
+  AdminZgloszeniaRoute: typeof AdminZgloszeniaRoute
+  BlogSlugRoute: typeof BlogSlugRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  BlogIndexRoute: typeof BlogIndexRoute
+  AdminBlogIdRoute: typeof AdminBlogIdRoute
+  AdminBlogNewRoute: typeof AdminBlogNewRoute
+  AdminBlogIndexRoute: typeof AdminBlogIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +182,91 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/polityka-prywatnosci': {
+      id: '/polityka-prywatnosci'
+      path: '/polityka-prywatnosci'
+      fullPath: '/polityka-prywatnosci'
+      preLoaderRoute: typeof PolitykaPrywatnosciRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/statystyki': {
+      id: '/admin/statystyki'
+      path: '/admin/statystyki'
+      fullPath: '/admin/statystyki'
+      preLoaderRoute: typeof AdminStatystykiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/zgloszenia': {
+      id: '/admin/zgloszenia'
+      path: '/admin/zgloszenia'
+      fullPath: '/admin/zgloszenia'
+      preLoaderRoute: typeof AdminZgloszeniaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/blog/': {
+      id: '/admin/blog/'
+      path: '/admin/blog'
+      fullPath: '/admin/blog/'
+      preLoaderRoute: typeof AdminBlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/blog/$id': {
+      id: '/admin/blog/$id'
+      path: '/admin/blog/$id'
+      fullPath: '/admin/blog/$id'
+      preLoaderRoute: typeof AdminBlogIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/blog/new': {
+      id: '/admin/blog/new'
+      path: '/admin/blog/new'
+      fullPath: '/admin/blog/new'
+      preLoaderRoute: typeof AdminBlogNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PolitykaPrywatnosciRoute: PolitykaPrywatnosciRoute,
+  AdminLoginRoute: AdminLoginRoute,
+  AdminStatystykiRoute: AdminStatystykiRoute,
+  AdminZgloszeniaRoute: AdminZgloszeniaRoute,
+  BlogSlugRoute: BlogSlugRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  BlogIndexRoute: BlogIndexRoute,
+  AdminBlogIdRoute: AdminBlogIdRoute,
+  AdminBlogNewRoute: AdminBlogNewRoute,
+  AdminBlogIndexRoute: AdminBlogIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

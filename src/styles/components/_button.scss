@@ -9,9 +9,12 @@
   border: 1px solid transparent;
   border-radius: $radius-md;
   font-family: $font-body;
-  font-weight: $weight-medium;
+  font-weight: $weight-bold;
+  letter-spacing: 0.01em;
   text-align: center;
   cursor: pointer;
+  text-wrap: nowrap;
+
   transition:
     background-color $transition-base,
     color $transition-base,
@@ -26,19 +29,19 @@
   &--sm {
     height: 2.25rem;
     padding-inline: $space-3;
-    font-size: $text-sm;
+    font-size: calc(#{$text-sm} + 1px);
   }
 
   &--md {
     height: 2.5rem;
     padding-inline: $space-4;
-    font-size: $text-sm;
+    font-size: calc(#{$text-sm} + 1px);
   }
 
   &--lg {
     height: 3rem;
     padding-inline: $space-8;
-    font-size: $text-base;
+    font-size: calc(#{$text-base} + 1px);
   }
 
   // ---- variants ----

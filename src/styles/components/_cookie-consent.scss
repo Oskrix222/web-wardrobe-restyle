@@ -1,0 +1,58 @@
+@use "../brandbook" as *;
+
+// Bottom-left consent card — small enough not to block the page.
+.cookie-consent {
+  position: fixed;
+  z-index: 60;
+  left: $space-4;
+  right: $space-4;
+  bottom: $space-4;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: $space-3 $space-4;
+  align-items: start;
+  padding: $space-5;
+  max-width: 34rem;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: $radius-xl;
+  box-shadow: $shadow-md;
+  animation: rise 0.4s ease-out;
+
+  @include sm {
+    left: $space-6;
+    bottom: $space-6;
+  }
+
+  &__icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--terracotta);
+  }
+
+  &__text {
+    font-size: $text-sm;
+    line-height: $leading-relaxed;
+    color: var(--muted-foreground);
+
+    a {
+      color: var(--terracotta);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+  }
+
+  &__actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: $space-2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cookie-consent {
+    animation: none;
+  }
+}

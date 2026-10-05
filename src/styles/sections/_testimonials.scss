@@ -14,6 +14,24 @@
     color: var(--muted-foreground);
   }
 
+  &__source {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+    font-size: $text-xs;
+    font-weight: $weight-medium;
+    color: var(--terracotta);
+
+    svg {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+
+    &:hover {
+      color: var(--terracotta-strong);
+    }
+  }
+
   &__list {
     margin-top: $space-10;
     display: grid;
@@ -41,12 +59,28 @@
     color: var(--terracotta);
   }
 
+  &__avatar-photo {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: $radius-full;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
   &__name {
     font-size: $text-sm;
     font-weight: $weight-semibold;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    &[href] {
+      color: inherit;
+
+      &:hover {
+        color: var(--terracotta);
+      }
+    }
   }
 
   &__when {
@@ -65,23 +99,4 @@
     color: var(--muted-foreground);
   }
 
-  &__brands {
-    margin-top: $space-12;
-    padding-top: $space-8;
-    border-top: 1px solid var(--border);
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    column-gap: $space-10;
-    row-gap: $space-4;
-  }
-
-  &__brand {
-    font-family: $font-display;
-    font-size: $text-xl;
-    text-transform: uppercase;
-    letter-spacing: $tracking-wide;
-    color: color-mix(in oklch, var(--muted-foreground) 60%, transparent);
-  }
 }

@@ -2,19 +2,21 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useServerFn } from "@tanstack/react-start";
+import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { Phone, Heart, Home, Plane, Users } from "lucide-react";
 
-import { Button } from "@/components/ui/Button";
+import { Button, ButtonLink } from "@/components/ui/Button";
 import { Box } from "@/components/ui/Box";
-import { Field, Input, Select, Textarea } from "@/components/ui/Field";
+import { Checkbox, Field, Input, Label, Textarea } from "@/components/ui/Field";
 import { submitLead, leadSchema, type LeadFormData } from "@/lib/leads.functions";
+import { trackLead } from "@/lib/analytics";
 
 export const insuranceOptions = [
-  { value: "life", label: "Życie i zdrowie" },
-  { value: "home", label: "Majątek — dom / mieszkanie" },
-  { value: "travel", label: "Wakacje / turystyczne" },
-  { value: "oc", label: "OC / AC — komunikacja" },
-  { value: "business", label: "Grupowe dla firm" },
+  { value: "life", label: "Życie i zdrowie", icon: Heart },
+  { value: "home", label: "Majątek — dom / mieszkanie", icon: Home },
+  { value: "travel", label: "Wakacje / turystyczne", icon: Plane },
+  { value: "business", label: "Grupowe dla firm", icon: Users },
 ];
 
 export function LeadForm({ preselected }: { preselected?: string | undefined }) {
@@ -29,7 +31,7 @@ export function LeadForm({ preselected }: { preselected?: string | undefined }) 
     formState: { errors, isSubmitting },
   } = useForm<LeadFormData>({
     resolver: zodResolver(leadSchema),
-    defaultValues: { name: "", email: "", phone: "", insuranceType: "", message: "" },
+    defaultValues: { name: "", phone: "", insuranceType: "", message: "", consent: false },
   });
 
   const selectedType = watch("insuranceType");
@@ -41,6 +43,7 @@ export function LeadForm({ preselected }: { preselected?: string | undefined }) 
   const onSubmit = async (data: LeadFormData) => {
     try {
       await sendLead({ data });
+      trackLead({ insurance_type: data.insuranceType });
       toast.success("Zgłoszenie wysłane! Doradca odezwie się w ciągu 24h.");
       reset();
     } catch {
@@ -57,7 +60,7 @@ export function LeadForm({ preselected }: { preselected?: string | undefined }) 
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="lead-form__form" noValidate>
-        <Field label="Imię i nazwisko *" htmlFor="name" error={errors.name?.message}>
+        <Field label="Imię *" htmlFor="name" error={errors.name?.message}>
           <Input
             id="name"
             autoComplete="name"
@@ -78,16 +81,6 @@ export function LeadForm({ preselected }: { preselected?: string | undefined }) 
               aria-invalid={errors.phone ? "true" : "false"}
             />
           </Field>
-          <Field label="E-mail" htmlFor="email" error={errors.email?.message}>
-            <Input
-              id="email"
-              type="email"
-              autoComplete="email"
-              placeholder="jan@example.com"
-              {...register("email")}
-              aria-invalid={errors.email ? "true" : "false"}
-            />
-          </Field>
         </div>
 
         <Field
@@ -95,35 +88,79 @@ export function LeadForm({ preselected }: { preselected?: string | undefined }) 
           htmlFor="insuranceType"
           error={errors.insuranceType?.message}
         >
-          <Select
+          <div
             id="insuranceType"
-            options={insuranceOptions}
-            placeholder="Wybierz rodzaj ubezpieczenia"
-            value={selectedType ?? ""}
-            onChange={(event) =>
-              setValue("insuranceType", event.target.value, { shouldValidate: true })
-            }
+            className="insurance-picker"
+            role="radiogroup"
+            aria-label="Rodzaj ubezpieczenia"
             aria-invalid={errors.insuranceType ? "true" : "false"}
-          />
+          >
+            {insuranceOptions.map(({ value, label, icon: Icon }) => (
+              <label
+                key={value}
+                className={
+                  selectedType === value
+                    ? "insurance-picker__option is-selected"
+                    : "insurance-picker__option"
+                }
+              >
+                <input
+                  type="radio"
+                  name="insuranceType"
+                  value={value}
+                  checked={selectedType === value}
+                  onChange={() => setValue("insuranceType", value, { shouldValidate: true })}
+                  className="sr-only"
+                />
+                <Icon className="insurance-picker__icon" aria-hidden="true" />
+                <span>{label}</span>
+              </label>
+            ))}
+          </div>
         </Field>
 
-        <Field label="Wiadomość" htmlFor="message" error={errors.message?.message}>
+        <Field label="Wiadomość (opcjonalna)" htmlFor="message" error={errors.message?.message}>
           <Textarea
             id="message"
-            rows={4}
+            rows={3}
             placeholder="Napisz, czego potrzebujesz — np. wiek, liczba pracowników, wartość mieszkania..."
             {...register("message")}
             aria-invalid={errors.message ? "true" : "false"}
           />
         </Field>
 
+        <div className="checkbox-field">
+          <Checkbox
+            id="consent"
+            {...register("consent")}
+            aria-invalid={errors.consent ? "true" : "false"}
+          />
+          <Label htmlFor="consent" className="checkbox-field__label">
+            Wyrażam zgodę na przetwarzanie moich danych osobowych przez OSCare w celu kontaktu i
+            przygotowania oferty ubezpieczenia, zgodnie z{" "}
+            <Link to="/polityka-prywatnosci">Polityką Prywatności</Link>. *
+          </Label>
+        </div>
+        {errors.consent ? <p className="field__error">{errors.consent.message}</p> : null}
+
         <Button type="submit" size="lg" block disabled={isSubmitting}>
           {isSubmitting ? "Wysyłanie..." : "Wyślij zgłoszenie"}
         </Button>
 
-        <p className="lead-form__consent">
-          Wysyłając formularz, zgadzasz się na kontakt w sprawie oferty ubezpieczenia.
-        </p>
+        <div className="lead-form__divider">
+          <span>lub zadzwoń bezpośrednio</span>
+        </div>
+
+        <div className="lead-form__calls">
+          <ButtonLink href="tel:+48539075385" variant="outline" size="lg" block>
+            <Phone className="btn__icon" aria-hidden="true" />
+            +48 539 075 385
+          </ButtonLink>
+          <ButtonLink href="tel:+48123846894" variant="outline" size="lg" block>
+            <Phone className="btn__icon" aria-hidden="true" />
+            +48 123 846 894
+          </ButtonLink>
+        </div>
       </form>
     </Box>
   );

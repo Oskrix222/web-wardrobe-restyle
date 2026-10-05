@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useState } from "react";
-import { Clock, Phone, CheckCircle2, Shield } from "lucide-react";
+import { Timer, Headset, BookOpenCheck, Umbrella, ShieldCheck, MessageCircle } from "lucide-react";
 
 import { Header } from "@/components/site/Header";
 import { Hero } from "@/components/site/Hero";
@@ -11,12 +11,24 @@ import { Testimonials } from "@/components/site/Testimonials";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Footer } from "@/components/site/Footer";
 import { Box } from "@/components/ui/Box";
+import { PageScrollNav } from "@/components/site/PageScrollNav";
+import { getGoogleReviews, type GoogleReviewsResult } from "@/lib/reviews.functions";
+import { useReveal } from "@/hooks/useReveal";
+import { cn } from "@/lib/utils";
 
-const title = "KAMIEŃ — Ubezpieczenia na życie, majątek i dla firm";
+const title = "OSCare Ubezpieczenia — na życie, majątek i dla firm";
 const description =
-  "Doradztwo ubezpieczeniowe KAMIEŃ: polisy na życie i zdrowie, majątek, podróże, OC/AC oraz ubezpieczenia grupowe dla firm. Zostaw kontakt — oferta w 24h.";
+  "Doradztwo ubezpieczeniowe OSCare: polisy na życie i zdrowie, majątek, podróże, OC/AC oraz ubezpieczenia grupowe dla firm. Zostaw kontakt — oferta w 24h.";
 
 export const Route = createFileRoute("/")({
+  loader: async (): Promise<{ googleReviews: GoogleReviewsResult | null }> => {
+    try {
+      return { googleReviews: await getGoogleReviews() };
+    } catch (error) {
+      console.error("Google reviews niedostępne:", error);
+      return { googleReviews: null };
+    }
+  },
   head: () => ({
     meta: [
       { title },
@@ -36,7 +48,7 @@ export const Route = createFileRoute("/")({
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "InsuranceAgency",
-          name: "KAMIEŃ",
+          name: "OSCare Ubezpieczenia",
           description,
           areaServed: "PL",
           telephone: "+48123456789",
@@ -58,29 +70,41 @@ export const Route = createFileRoute("/")({
 
 const benefits = [
   {
-    icon: Clock,
+    icon: Timer,
     title: "Oszczędzasz czas",
     text: "Porównujemy oferty wielu towarzystw w jednym miejscu.",
   },
   {
-    icon: Phone,
+    icon: Headset,
     title: "Masz opiekuna",
     text: "Jeden doradca prowadzi Twoje sprawy od pierwszego kontaktu po wypłatę.",
   },
   {
-    icon: CheckCircle2,
+    icon: BookOpenCheck,
     title: "Wiesz, co kupujesz",
     text: "Tłumaczymy polisę prostym językiem — bez marketingowego bełkotu.",
   },
   {
-    icon: Shield,
+    icon: Umbrella,
     title: "Jesteś chroniony",
     text: "Pomagamy też przy likwidacji szkód i kontakcie z ubezpieczycielem.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Pełna ochrona",
+    text: "Dobieramy zakres tak, by nie zostawić luk w ochronie.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Szybki kontakt",
+    text: "Odpowiadamy tego samego dnia, bez wielodniowego oczekiwania.",
   },
 ];
 
 function Index() {
+  const { googleReviews } = Route.useLoaderData();
   const [preselected, setPreselected] = useState<string>();
+  const benefitsReveal = useReveal<HTMLDivElement>();
 
   const goToForm = useCallback(() => {
     document.getElementById("kontakt")?.scrollIntoView({ behavior: "smooth" });
@@ -97,18 +121,20 @@ function Index() {
   return (
     <div className="page">
       <Header onContact={goToForm} />
+      <PageScrollNav />
 
       <main>
         <Hero onContact={goToForm} />
         <About onContact={goToForm} />
         <Categories onPick={pick} />
         <GroupInsurance onPick={pick} />
-        <Testimonials />
+        <Testimonials googleReviews={googleReviews} />
 
         <section className="benefits section section--soft">
-          <div className="benefits__grid">
+          <div className="pattern-layer pattern-layer--dark" aria-hidden="true" />
+          <div ref={benefitsReveal.ref} className={cn("benefits__grid", benefitsReveal.className)}>
             <div>
-              <span className="eyebrow">Dlaczego KAMIEŃ</span>
+              <span className="eyebrow">Dlaczego OSCare</span>
               <h2 className="benefits__title">
                 UBEZPIECZENIA,
                 <br />

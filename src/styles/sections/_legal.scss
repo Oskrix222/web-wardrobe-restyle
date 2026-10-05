@@ -1,0 +1,112 @@
+@use "../brandbook" as *;
+
+.legal-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  &__header {
+    @include container;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: $space-5;
+    border-bottom: 1px solid var(--border);
+  }
+
+  &__logo {
+    height: 2rem;
+    width: auto;
+  }
+
+  &__back {
+    font-size: $text-sm;
+    font-weight: $weight-medium;
+    color: var(--terracotta);
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__footer {
+    margin-top: auto;
+    border-top: 1px solid var(--border);
+    padding-block: $space-6;
+    text-align: center;
+    font-size: $text-xs;
+    color: var(--muted-foreground);
+  }
+}
+
+.legal {
+  max-width: 48rem;
+  margin-inline: auto;
+
+  &__updated {
+    margin-top: $space-3;
+    font-size: $text-sm;
+    color: var(--muted-foreground);
+  }
+
+  &__note {
+    margin-top: $space-6;
+    padding: $space-4;
+    border: 1px solid var(--terracotta-line);
+    border-radius: $radius-md;
+    background-color: var(--terracotta-tint);
+    font-size: $text-sm;
+    line-height: $leading-relaxed;
+    color: var(--foreground);
+  }
+
+  article {
+    margin-top: $space-10;
+    line-height: $leading-relaxed;
+    color: var(--muted-foreground);
+
+    h2 {
+      margin-top: $space-10;
+      font-family: $font-display;
+      font-weight: $weight-normal;
+      letter-spacing: $tracking-tight;
+      font-size: $text-xl;
+      color: var(--foreground);
+
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+
+    p {
+      margin-top: $space-3;
+    }
+
+    ul {
+      margin-top: $space-3;
+      display: flex;
+      flex-direction: column;
+      gap: $space-2;
+      padding-left: $space-5;
+      list-style: disc;
+    }
+
+    strong {
+      color: var(--foreground);
+      font-weight: $weight-semibold;
+    }
+
+    a {
+      color: var(--terracotta);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    mark {
+      background-color: var(--terracotta-tint);
+      color: var(--foreground);
+      padding: 0 0.2em;
+      border-radius: 0.2em;
+    }
+  }
+}

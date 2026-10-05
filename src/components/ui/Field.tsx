@@ -24,6 +24,12 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<H
   },
 );
 
+export const Checkbox = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
+  function Checkbox({ className, ...rest }, ref) {
+    return <input ref={ref} type="checkbox" className={cn("checkbox", className)} {...rest} />;
+  },
+);
+
 export type SelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
   placeholder?: string;
   options: { value: string; label: string }[];

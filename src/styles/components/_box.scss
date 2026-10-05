@@ -98,4 +98,9 @@
     fill: var(--terracotta);
     color: var(--terracotta);
   }
+
+  .stars__star--empty {
+    fill: transparent;
+    color: var(--border);
+  }
 }

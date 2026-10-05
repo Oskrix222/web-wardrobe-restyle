@@ -1,0 +1,43 @@
+@use "../brandbook" as *;
+
+// One fixed pair for the whole page (not per-section) — guarantees exactly
+// one up and one down button on screen at any time, each with a steady gap
+// from its edge of the viewport.
+.page-scroll-nav {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: $radius-full;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  color: var(--terracotta);
+  box-shadow: $shadow-sm;
+  transition:
+    background-color $transition-base,
+    color $transition-base,
+    border-color $transition-base;
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &:hover {
+    background-color: var(--terracotta);
+    border-color: var(--terracotta);
+    color: var(--on-accent);
+  }
+
+  &--top {
+    top: calc(#{$header-height} + #{$space-4});
+  }
+
+  &--bottom {
+    bottom: $space-6;
+  }
+}

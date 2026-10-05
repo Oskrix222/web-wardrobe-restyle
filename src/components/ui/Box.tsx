@@ -1,4 +1,4 @@
-import type { ElementType, HTMLAttributes, ReactNode } from "react";
+import { forwardRef, type ElementType, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export type BoxProps = HTMLAttributes<HTMLElement> & {
@@ -12,17 +12,13 @@ export type BoxProps = HTMLAttributes<HTMLElement> & {
 };
 
 /** Reusable bordered box used for cards, panels and list items. */
-export function Box({
-  as: Tag = "div",
-  panel = false,
-  interactive = false,
-  shadow = false,
-  className,
-  children,
-  ...rest
-}: BoxProps) {
+export const Box = forwardRef<HTMLElement, BoxProps>(function Box(
+  { as: Tag = "div", panel = false, interactive = false, shadow = false, className, children, ...rest },
+  ref,
+) {
   return (
     <Tag
+      ref={ref}
       className={cn(
         "box",
         panel && "box--panel",
@@ -35,7 +31,7 @@ export function Box({
       {children}
     </Tag>
   );
-}
+});
 
 /** Small rounded label with an icon, used above the hero headline. */
 export function Pill({ icon: Icon, children }: { icon: ElementType; children: ReactNode }) {

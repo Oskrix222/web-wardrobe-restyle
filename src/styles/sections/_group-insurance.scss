@@ -1,8 +1,12 @@
 @use "../brandbook" as *;
 
 .group-insurance {
+  overflow: hidden;
+
   &__grid {
     @include container;
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: 1fr;
     gap: $space-10;
@@ -43,8 +47,47 @@
     font-size: $text-sm;
   }
 
-  &__cta {
+  &__actions {
     margin-top: $space-8;
+    display: flex;
+    align-items: stretch;
+    gap: $space-2;
+  }
+
+  &__cta {
+    flex: 1.1 1 0;
+    min-width: 0;
+    height: auto;
+    padding-block: 0.625rem;
+    padding-inline: $space-3;
+    font-size: calc(#{$text-sm} + 1px);
+    white-space: normal;
+    line-height: $leading-tight;
+  }
+
+  &__call {
+    flex: 1 1 0;
+    min-width: 0;
+    height: auto;
+    padding-block: 0.625rem;
+    padding-inline: 0.5rem;
+    gap: 0.3rem;
+    font-size: calc(0.7rem + 1px);
+
+    .btn__icon {
+      width: 0.875rem;
+      height: 0.875rem;
+      flex-shrink: 0;
+    }
+  }
+
+  &__call-text {
+    position: relative;
+    top: 1px;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &__image {

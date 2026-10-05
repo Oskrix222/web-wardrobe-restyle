@@ -1,12 +1,21 @@
 @use "../brandbook" as *;
 
 .site-footer {
+  position: relative;
+  overflow: hidden;
   border-top: 1px solid var(--border);
   background-color: var(--foreground);
   color: var(--background);
   padding-block: $space-16;
 
+  > .container {
+    position: relative;
+    z-index: 1;
+  }
+
   &__grid {
+    position: relative;
+    z-index: 1;
     display: grid;
     gap: $space-10;
 
@@ -67,5 +76,16 @@
     @include sm {
       flex-direction: row;
     }
+  }
+
+  &__cookie-btn {
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 }

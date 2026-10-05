@@ -1,11 +1,17 @@
 @use "../brandbook" as *;
 
 .about {
+  overflow: hidden;
+
   &__grid {
     @include container;
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: 1fr;
     gap: $space-10;
+
+    align-items: center;
 
     @include lg {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -33,13 +39,27 @@
     width: 100%;
     object-fit: cover;
     border-radius: $radius-xl;
+
+    &--top {
+      object-position: top;
+    }
   }
 
   &__caption {
-    margin-top: $space-3;
+    margin-top: calc(#{$space-3} - 4px);
     font-size: $text-sm;
     line-height: $leading-relaxed;
     color: var(--muted-foreground);
+    text-align: center;
+  }
+
+  &__caption-name {
+    display: block;
+    margin-bottom: calc(#{$space-1} - 2px);
+    font-family: $font-display;
+    font-size: calc(1.25rem + 2px);
+    letter-spacing: $tracking-tight;
+    color: var(--foreground);
   }
 
   &__actions {
@@ -51,6 +71,11 @@
     @include sm {
       flex-direction: row;
       align-items: center;
+      justify-content: center;
+    }
+
+    .btn--outline {
+      font-size: calc(#{$text-sm} + 0.5px);
     }
   }
 

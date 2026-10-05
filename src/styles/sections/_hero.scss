@@ -20,6 +20,7 @@
     flex-direction: column;
     justify-content: space-between;
     padding-block: $space-12;
+    
 
     @include lg {
       grid-column: span 5;
@@ -96,7 +97,7 @@
   }
 
   &__image-frame {
-    height: 55vh;
+    height: 40vh;
     overflow: hidden;
     border-radius: $radius-2xl;
 
@@ -116,34 +117,4 @@
     object-fit: cover;
   }
 
-  &__scroll {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: $space-2;
-    width: fit-content;
-    margin: 0 auto $space-8;
-    color: var(--muted-foreground);
-    transition: color $transition-base;
-
-    &:hover {
-      color: var(--foreground);
-    }
-
-    span {
-      font-family: $font-mono;
-      font-size: $text-xs;
-      text-transform: uppercase;
-      letter-spacing: $tracking-widest;
-    }
-
-    svg {
-      width: 1.25rem;
-      height: 1.25rem;
-    }
-
-    @include lg {
-      display: flex;
-    }
-  }
 }

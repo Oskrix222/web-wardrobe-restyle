@@ -10,6 +10,9 @@
 @use "components/form";
 @use "components/box";
 @use "components/message";
+@use "components/pattern";
+@use "components/page-scroll-nav";
+@use "components/cookie-consent";
 
 @use "sections/header";
 @use "sections/hero";
@@ -20,3 +23,6 @@
 @use "sections/benefits";
 @use "sections/lead-form";
 @use "sections/footer";
+@use "sections/legal";
+@use "sections/blog";
+@use "sections/admin";

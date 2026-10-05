@@ -1,0 +1,55 @@
+@use "../brandbook" as *;
+
+// Large, faint drifting icon pattern used on sections with a tinted or dark
+// background (About, Benefits, GroupInsurance, Footer) — adds a touch of
+// depth on top of the whole-page pattern in _base.scss.
+.pattern-layer {
+  position: absolute;
+  inset: -20% -60%;
+  z-index: 0;
+  pointer-events: none;
+  background-repeat: repeat;
+  background-size: 420px 420px;
+  animation: pattern-drift-x 104.76s linear infinite;
+  will-change: transform;
+
+  // Fades the pattern in/out vertically so it never shows as a hard-edged
+  // strip right at a section's top/bottom boundary.
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 30%,
+    black 70%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 30%,
+    black 70%,
+    transparent 100%
+  );
+
+  &--dark {
+    background-image: url("/pattern-icons-lg.svg");
+  }
+
+  &--light {
+    background-image: url("/pattern-icons-lg-light.svg");
+  }
+}
+
+@keyframes pattern-drift-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-420px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pattern-layer {
+    animation: none;
+  }
+}
