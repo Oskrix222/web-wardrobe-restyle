@@ -1,0 +1,84 @@
+@use "../brandbook" as *;
+
+// Our own chat launcher (bottom-right). Crisp's bubble takes over once loaded.
+.live-chat {
+  position: fixed;
+  z-index: 50;
+  right: $space-4;
+  bottom: $space-4;
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  height: 3.25rem;
+  padding: 0 $space-5 0 $space-4;
+  border: none;
+  border-radius: $radius-full;
+  background-color: var(--terracotta);
+  color: var(--on-accent);
+  font-family: $font-body;
+  font-size: $text-sm;
+  font-weight: $weight-semibold;
+  box-shadow: $shadow-md;
+  cursor: pointer;
+  transition:
+    background-color $transition-base,
+    transform $transition-base;
+
+  @include sm {
+    right: $space-6;
+    bottom: $space-6;
+  }
+
+  &:hover {
+    background-color: var(--terracotta-strong);
+    transform: translateY(-2px);
+  }
+
+  &:disabled {
+    cursor: progress;
+  }
+
+  &__icon {
+    width: 1.35rem;
+    height: 1.35rem;
+
+    &--spin {
+      animation: live-chat-spin 0.9s linear infinite;
+    }
+  }
+
+  // Phones: icon-only round button so it doesn't cover content.
+  @media (max-width: #{$screen-sm - 1px}) {
+    width: 3.25rem;
+    padding: 0;
+    justify-content: center;
+
+    &__label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+    }
+  }
+}
+
+@keyframes live-chat-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-chat {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+
+  .live-chat__icon--spin {
+    animation: none;
+  }
+}

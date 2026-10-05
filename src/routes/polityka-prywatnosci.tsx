@@ -104,6 +104,7 @@ function PrivacyPolicy() {
               </li>
               <li>Cloudflare, Inc. — hosting i zabezpieczenie strony,</li>
               <li>Resend — wysyłka powiadomienia e-mail o nowym zgłoszeniu na skrzynkę doradcy,</li>
+              <li>Crisp IM SAS (Francja) — czat na żywo na stronie, tylko jeśli go otworzysz,</li>
               <li>
                 Google Ireland Ltd. — Google Analytics i Google Ads, wyłącznie jeśli wyrazisz zgodę
                 na cookies (zob. pkt 8).
@@ -169,6 +170,13 @@ function PrivacyPolicy() {
               zapamiętujemy w pamięci przeglądarki (localStorage), a zmienisz ją w każdej chwili
               linkiem „Ustawienia cookies” w stopce strony. Licznik wyświetleń wpisów na blogu nie
               używa cookies ani nie zbiera danych osobowych.
+            </p>
+            <p>
+              Czat na żywo (Crisp) ładuje się dopiero po kliknięciu przycisku „Napisz do nas”. Wtedy
+              zapisuje w przeglądarce plik cookie potrzebny do utrzymania rozmowy, żeby nasza
+              odpowiedź dotarła do Ciebie także po odświeżeniu strony. Treść rozmowy i dane podane
+              na czacie (np. e-mail) przetwarzamy wyłącznie po to, żeby odpowiedzieć na Twoje
+              pytanie.
             </p>
 
             <h2>9. Zautomatyzowane podejmowanie decyzji</h2>

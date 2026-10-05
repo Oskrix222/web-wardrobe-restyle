@@ -13,6 +13,7 @@ import { Toaster } from "sonner";
 import appCss from "../styles/main.scss?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CookieConsent } from "../components/site/CookieConsent";
+import { LiveChat } from "../components/site/LiveChat";
 
 function NotFoundComponent() {
   return (
@@ -115,6 +116,8 @@ function RootComponent() {
       <Toaster position="top-center" />
       {/* Google Analytics / Ads load from here, and only after cookie consent. */}
       <CookieConsent />
+      {/* Live chat with Oskar and Izumi — loads Crisp only when clicked. */}
+      <LiveChat />
     </QueryClientProvider>
   );
 }
