@@ -141,6 +141,11 @@
     aspect-ratio: 16 / 10;
     overflow: hidden;
     background-color: var(--secondary);
+
+    // Phones: 25% shorter so the tile's heading shows without scrolling.
+    @media (max-width: #{$screen-sm - 1px}) {
+      aspect-ratio: 32 / 15;
+    }
   }
 
   &__image {
