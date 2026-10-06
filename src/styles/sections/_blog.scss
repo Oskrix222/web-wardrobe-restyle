@@ -62,8 +62,10 @@
     gap: $space-1;
 
     svg {
-      width: 0.85rem;
-      height: 0.85rem;
+      position: relative;
+      top: -1px;
+      width: 0.935rem;
+      height: 0.935rem;
       color: var(--terracotta);
     }
   }
@@ -291,6 +293,44 @@
   .blog-card:hover .blog-card__box,
   .blog-card:hover .blog-card__image {
     transform: none;
+  }
+}
+
+// Phones: trim 1–2px off each vertical gap so more of the list fits on screen.
+@media (max-width: #{$screen-sm - 1px}) {
+  .breadcrumbs {
+    margin-bottom: calc(#{$space-8} - 2px);
+  }
+
+  .blog-index {
+    &__head {
+      margin-bottom: calc(#{$space-12} - 2px);
+
+      .section-heading {
+        margin-top: calc(#{$space-3} - 1px);
+        margin-bottom: 9px;
+      }
+    }
+
+    &__intro {
+      margin-top: calc(#{$space-4} - 2px);
+    }
+
+    &__grid {
+      margin-top: calc(#{$space-6} - 2px);
+      gap: calc(#{$space-6} - 2px);
+    }
+  }
+
+  .blog-card {
+    &__body {
+      gap: calc(#{$space-3} - 2px);
+      padding: calc(#{$space-6} - 2px);
+    }
+
+    &__read-more {
+      margin-top: calc(#{$space-2} - 2px);
+    }
   }
 }
 
