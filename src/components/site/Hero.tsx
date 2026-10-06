@@ -1,6 +1,7 @@
 import { Shield } from "lucide-react";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Pill } from "@/components/ui/Box";
+import { CountUp } from "@/components/ui/CountUp";
 import heroImage from "@/assets/hero-family.jpg";
 
 const stats: [string, string][] = [
@@ -45,7 +46,7 @@ export function Hero({ onContact }: { onContact: () => void }) {
               <div key={label}>
                 <dt className="sr-only">{label}</dt>
                 <dd>
-                  <span className="hero__stat-value">{value}</span>
+                  <CountUp value={value} className="hero__stat-value" />
                   <span className="hero__stat-label">{label}</span>
                 </dd>
               </div>
