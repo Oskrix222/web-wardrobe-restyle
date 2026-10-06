@@ -71,7 +71,7 @@ function openCrisp() {
 }
 
 const TEASER_KEY = "oscare-chat-teaser-dismissed";
-const TEASER_DELAY_MS = 5_000;
+const TEASER_DELAY_MS = 3_000;
 const TEASER_SNOOZE_MS = 7 * 24 * 60 * 60 * 1000;
 
 function teaserSnoozed(): boolean {
