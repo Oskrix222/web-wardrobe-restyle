@@ -14,6 +14,7 @@ import appCss from "../styles/main.scss?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CookieConsent } from "../components/site/CookieConsent";
 import { LiveChat } from "../components/site/LiveChat";
+import { useMotion } from "../hooks/useMotion";
 
 function NotFoundComponent() {
   return (
@@ -108,10 +109,12 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  useMotion();
 
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+      <div className="scroll-progress" aria-hidden="true" />
       <Outlet />
       <Toaster position="top-center" />
       {/* Google Analytics / Ads load from here, and only after cookie consent. */}

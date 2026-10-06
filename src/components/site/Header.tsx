@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Button } from "@/components/ui/Button";
@@ -18,9 +18,29 @@ export function Header({ onContact }: { onContact: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isHome = pathname === "/";
   const isBlog = pathname.startsWith("/blog");
+  const [scrolled, setScrolled] = useState(false);
+
+  // Hairline + soft shadow under the header once the page moves; state only
+  // changes when crossing the threshold, so scrolling doesn't re-render.
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      setScrolled(window.scrollY > 8);
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
 
   return (
-    <header className="site-header">
+    <header className={scrolled ? "site-header is-scrolled" : "site-header"}>
       <div className="site-header__bar">
         {isHome ? (
           <button

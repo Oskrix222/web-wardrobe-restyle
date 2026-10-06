@@ -42,7 +42,7 @@ function BlogIndex() {
           <div className="container">
             <Breadcrumbs items={[{ label: "Strona główna", to: "/" }, { label: "Blog" }]} />
 
-            <div className="blog-index__head">
+            <div className="blog-index__head" data-animate>
               <span className="eyebrow">Blog OSCare</span>
               <h1 className="section-heading">PORADY I NOWOŚCI</h1>
               <p className="blog-index__intro">
@@ -60,7 +60,7 @@ function BlogIndex() {
               <>
                 <BlogCard post={featured} featured />
                 {rest.length > 0 ? (
-                  <div className="blog-index__grid">
+                  <div className="blog-index__grid stagger">
                     {rest.map((post) => (
                       <BlogCard key={post.slug} post={post} />
                     ))}

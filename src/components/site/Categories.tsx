@@ -165,7 +165,7 @@ export function Categories({ onPick }: { onPick: (value: string) => void }) {
   return (
     <section id="oferta" className="categories section">
       <div className="container">
-        <div className="categories__head">
+        <div className="categories__head" data-animate>
           <span className="eyebrow">Oferta</span>
           <h2 className="section-heading">WYBIERZ SWOJĄ OCHRONĘ</h2>
           <p className="categories__intro">
@@ -237,7 +237,7 @@ export function Categories({ onPick }: { onPick: (value: string) => void }) {
             </div>
           </div>
         ) : (
-          <div className="categories__grid animate-rise" key="grid">
+          <div className="categories__grid stagger" key="grid">
             {categories.map(({ value, title, icon, intro, points }) => (
               <Box as="article" key={value} interactive className="categories__card">
                 <button

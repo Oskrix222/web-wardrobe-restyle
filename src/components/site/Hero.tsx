@@ -19,13 +19,18 @@ export function Hero({ onContact }: { onContact: () => void }) {
 
           <div className="hero__center">
             <h1 className="hero__title">
-              SPOKÓJ,
-              <br />
-              <span className="hero__accent">KTÓREGO</span>
-              <br />
-              NIE DA SIĘ
-              <br />
-              WYCENIĆ
+              <span className="hero__line">
+                <span>SPOKÓJ,</span>
+              </span>
+              <span className="hero__line">
+                <span className="hero__accent">KTÓREGO</span>
+              </span>
+              <span className="hero__line">
+                <span>NIE DA SIĘ</span>
+              </span>
+              <span className="hero__line">
+                <span>WYCENIĆ</span>
+              </span>
             </h1>
             <p className="hero__text">
               Doradztwo ubezpieczeniowe, które stawia ludzi ponad polisami. Porównujemy oferty,

@@ -27,10 +27,13 @@ export function About({ onContact }: { onContact: () => void }) {
           <span className="eyebrow">Poznaj nas</span>
           <h2 className="section-heading">O NAS</h2>
           <p className="about__text">
-            2 agentów ubezpieczeniowych postanowiło rozszerzyć swoją działalność, by zapewnić ochronę ubezpieczeniową w całym kraju w pełni zdalnie. Działamy z osobami fizycznymi, aż po małe i średnie firmy. Zapraszamy do kontaktu — wspólnie wybierzemy najlepsze rozwiązanie.
+            2 agentów ubezpieczeniowych postanowiło rozszerzyć swoją działalność, by zapewnić
+            ochronę ubezpieczeniową w całym kraju w pełni zdalnie. Działamy z osobami fizycznymi, aż
+            po małe i średnie firmy. Zapraszamy do kontaktu — wspólnie wybierzemy najlepsze
+            rozwiązanie.
           </p>
 
-          <div className="about__figures">
+          <div className="about__figures stagger">
             <figure>
               <img
                 src={advisorImage}
@@ -85,12 +88,13 @@ export function About({ onContact }: { onContact: () => void }) {
             src={familyImage}
             alt="Rodzina trzymająca się za ręce o zachodzie słońca"
             className="about__aside-image"
+            data-animate="zoom"
             width={1280}
             height={853}
             loading="lazy"
             decoding="async"
           />
-          <div className="about__stats">
+          <div className="about__stats stagger">
             {stats.map(({ value, label, icon }) => (
               <Box key={label} className="about__stat">
                 <div>

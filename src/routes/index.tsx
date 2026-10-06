@@ -145,7 +145,7 @@ function Index() {
                 Twoich realnych potrzeb — bez nadmiarowych klauzul i ukrytych wykluczeń.
               </p>
 
-              <div className="benefits__cards">
+              <div className="benefits__cards stagger">
                 {benefits.map(({ icon: Icon, title: heading, text }) => (
                   <Box key={heading}>
                     <Icon className="benefits__icon" aria-hidden="true" />

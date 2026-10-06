@@ -150,7 +150,7 @@ export function Testimonials({ googleReviews }: { googleReviews: GoogleReviewsRe
           </div>
         </div>
 
-        <ul className="testimonials__list">
+        <ul className="testimonials__list stagger">
           {reviews.map((review) => (
             <Box as="li" key={review.id}>
               <div className="testimonials__head-row">

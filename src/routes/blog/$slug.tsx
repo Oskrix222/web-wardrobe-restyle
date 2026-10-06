@@ -126,7 +126,7 @@ function BlogPost() {
             <div className="container">
               <span className="eyebrow">Czytaj także</span>
               <h2 className="section-heading">INNE WPISY</h2>
-              <div className="blog-index__grid">
+              <div className="blog-index__grid stagger">
                 {related.map((p) => (
                   <BlogCard key={p.slug} post={p} />
                 ))}

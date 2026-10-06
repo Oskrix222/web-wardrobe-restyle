@@ -29,7 +29,7 @@ export function GroupInsurance({ onPick }: { onPick: (value: string) => void }) 
             kilkuosobowej firmie.
           </p>
 
-          <ul className="group-insurance__perks">
+          <ul className="group-insurance__perks stagger">
             {perks.map(({ icon, text }) => (
               <Box as="li" key={text} className="group-insurance__perk">
                 <span>{text}</span>
