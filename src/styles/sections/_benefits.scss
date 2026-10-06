@@ -15,6 +15,12 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
+}
+
+// -------------------- GOOGLE PROFILE (map + reviews) -----------------------
+.google-profile {
+  display: flex;
+  flex-direction: column;
 
   &__title {
     @include heading;
@@ -28,31 +34,134 @@
     color: var(--muted-foreground);
   }
 
-  &__cards {
-    margin-top: $space-10;
-    display: grid;
-    gap: $space-6;
+  &__map {
+    position: relative;
+    margin-top: $space-8;
+    height: 26rem;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: $radius-2xl;
+    background-color: var(--card);
+    box-shadow: $shadow-sm;
 
-    @include sm {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    @include lg {
+      flex: 1;
+      min-height: 26rem;
     }
   }
 
-  &__icon {
-    width: 1.5rem;
-    height: 1.5rem;
-    color: var(--terracotta);
+  &__map-frame {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
   }
 
-  &__card-title {
-    margin-top: $space-4;
+  // Before the click: a quiet "map paper" with the address and a pin.
+  &__map-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: $space-2;
+    padding: $space-6;
+    border: none;
+    font: inherit;
+    color: var(--foreground);
+    text-align: center;
+    cursor: pointer;
+    background:
+      radial-gradient(circle at 50% 42%, var(--terracotta-tint), transparent 55%),
+      repeating-linear-gradient(0deg, transparent 0 38px, var(--border-soft) 38px 39px),
+      repeating-linear-gradient(90deg, transparent 0 38px, var(--border-soft) 38px 39px),
+      var(--secondary-soft);
+    transition: background-color $transition-base;
+
+    &:hover .google-profile__map-pin {
+      transform: translateY(-4px);
+    }
+
+    &:hover .google-profile__map-cta {
+      background-color: var(--terracotta-strong);
+    }
+  }
+
+  &__map-pin {
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    margin-bottom: $space-2;
+    border-radius: $radius-full;
+    background-color: var(--terracotta);
+    color: var(--on-accent);
+    box-shadow: $shadow-md;
+    transition: transform 0.35s cubic-bezier(0.22, 0.8, 0.24, 1);
+
+    svg {
+      width: 1.6rem;
+      height: 1.6rem;
+    }
+  }
+
+  &__map-name {
     font-family: $font-display;
     font-size: $text-xl;
   }
 
-  &__card-text {
-    margin-top: $space-2;
+  &__map-address {
     font-size: $text-sm;
     color: var(--muted-foreground);
+  }
+
+  &__map-cta {
+    margin-top: $space-4;
+    padding: $space-2 $space-5;
+    border-radius: $radius-full;
+    background-color: var(--terracotta);
+    color: var(--on-accent);
+    font-size: $text-sm;
+    font-weight: $weight-semibold;
+    transition: background-color $transition-base;
+  }
+
+  &__map-note {
+    margin-top: $space-1;
+    font-size: $text-xs;
+    color: var(--muted-foreground);
+  }
+
+  &__reviews {
+    margin-top: $space-6;
+  }
+
+  &__actions {
+    margin-top: $space-6;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-3;
+  }
+
+  &__maps-link {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+    margin-left: $space-2;
+    font-size: $text-sm;
+    font-weight: $weight-semibold;
+    color: var(--terracotta);
+
+    svg {
+      width: 0.9rem;
+      height: 0.9rem;
+    }
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
   }
 }
