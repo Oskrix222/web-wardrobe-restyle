@@ -46,6 +46,15 @@ function loadCrisp(): Promise<void> {
   return crispPromise;
 }
 
+/**
+ * Crisp's relay refuses connections from Cloudflare's free hostnames
+ * (*.workers.dev, *.pages.dev) — the widget would spin forever there. Chat only
+ * runs on a real domain.
+ */
+function chatSupportedHere(): boolean {
+  return !/\.(workers|pages)\.dev$/.test(window.location.hostname);
+}
+
 /** A visitor who already chatted gets Crisp straight away, so they see our replies. */
 function hasCrispSession(): boolean {
   return /crisp-client/.test(document.cookie);
@@ -68,9 +77,13 @@ export function LiveChat() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isAdmin = pathname.startsWith("/admin");
   const [state, setState] = useState<ChatState>("idle");
+  // Decided after mount: the server render can't see the hostname.
+  const [supported, setSupported] = useState(false);
 
   useEffect(() => {
-    if (!CRISP_WEBSITE_ID || !hasCrispSession()) return;
+    if (!CRISP_WEBSITE_ID || !chatSupportedHere()) return;
+    setSupported(true);
+    if (!hasCrispSession()) return;
     loadCrisp().then(
       () => setState("loaded"),
       () => setState("idle"),
@@ -83,7 +96,7 @@ export function LiveChat() {
     window.$crisp?.push(["do", isAdmin ? "chat:hide" : "chat:show"]);
   }, [state, isAdmin]);
 
-  if (!CRISP_WEBSITE_ID || isAdmin || state === "loaded") return null;
+  if (!CRISP_WEBSITE_ID || !supported || isAdmin || state === "loaded") return null;
 
   const open = () => {
     setState("loading");
