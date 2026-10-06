@@ -73,14 +73,10 @@ konfigurację i wyśle kod na GitHuba.
 5. Na końcu dostaniesz adres typu **oscare.twoja-nazwa.workers.dev** — otwórz go.
    Strona powinna działać.
 
-### 2.3 Wklej prywatny klucz do opinii Google
-1. W Cloudflare otwórz Workera **oscare** → **Settings** → **Variables and Secrets** → **Add**.
-2. Dodaj dwa wpisy, oba z typem **Secret**:
-   - `GOOGLE_PLACES_API_KEY` — wartość z pliku `.env.local` na Twoim komputerze
-   - `GOOGLE_REVIEWS_SOURCE` — wartość z pliku `.env.local`
-3. **Deploy** / **Save and deploy**.
-
-(Jeśli opinie dalej się nie pokazują — patrz „Znane sprawy” na dole.)
+### 2.3 Opinie Google
+Nie wymagają żadnego klucza: mapa Google ładuje się bez klucza, a karty opinii
+dostarcza darmowy widżet Trustindex (ustawiony w `.env` jako `VITE_TRUSTINDEX_WIDGET_ID`).
+Wizytówkę zmienia się w jednym pliku: `src/config/business.ts`.
 
 ---
 
@@ -157,7 +153,3 @@ przysłał maila, że wyłączył to zadanie z braku aktywności — kliknij w m
 
 - **E-mail kontaktowy:** na stronie i w polityce prywatności nadal jest stary adres
   `kontakt@kamien.pl`. Podaj Claude'owi prawdziwy adres — podmieni go wszędzie.
-- **Opinie Google:** Google odpowiada „brak dostępu” (błąd 403) na obecny klucz.
-  W **console.cloud.google.com** → **APIs & Services** → włącz **Places API (New)**
-  i sprawdź, czy projekt ma podpięte rozliczenia (Google daje darmowy limit
-  miesięczny). Alternatywa bez Google Cloud: darmowy widget Elfsight (opis w `.env`).

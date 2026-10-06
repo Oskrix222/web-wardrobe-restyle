@@ -88,19 +88,3 @@
   }
 }
 
-.stars {
-  display: flex;
-  gap: 0.125rem;
-
-  svg {
-    width: 1rem;
-    height: 1rem;
-    fill: var(--terracotta);
-    color: var(--terracotta);
-  }
-
-  .stars__star--empty {
-    fill: transparent;
-    color: var(--border);
-  }
-}

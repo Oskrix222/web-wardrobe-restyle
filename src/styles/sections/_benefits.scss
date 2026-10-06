@@ -3,16 +3,19 @@
 .benefits {
   overflow: hidden;
 
+  // Google block on top (full width), contact form centred below it.
   &__grid {
     @include container;
     position: relative;
     z-index: 1;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: $space-12;
+    display: flex;
+    flex-direction: column;
+    gap: $space-16;
 
-    @include lg {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    > .lead-form {
+      width: 100%;
+      max-width: 48rem;
+      margin-inline: auto;
     }
   }
 }
@@ -21,6 +24,18 @@
 .google-profile {
   display: flex;
   flex-direction: column;
+
+  // Intro + buttons on the left, map on the right (stacked on phones).
+  &__top {
+    display: grid;
+    gap: $space-8;
+    align-items: center;
+
+    @include lg {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: $space-12;
+    }
+  }
 
   &__title {
     @include heading;
@@ -36,8 +51,7 @@
 
   &__map {
     position: relative;
-    margin-top: $space-8;
-    height: 26rem;
+    height: 22rem;
     overflow: hidden;
     border: 1px solid var(--border);
     border-radius: $radius-2xl;
@@ -45,8 +59,7 @@
     box-shadow: $shadow-sm;
 
     @include lg {
-      flex: 1;
-      min-height: 26rem;
+      height: 24rem;
     }
   }
 
@@ -134,11 +147,11 @@
   }
 
   &__reviews {
-    margin-top: $space-6;
+    margin-top: $space-10;
   }
 
   &__actions {
-    margin-top: $space-6;
+    margin-top: $space-8;
     display: flex;
     flex-wrap: wrap;
     align-items: center;

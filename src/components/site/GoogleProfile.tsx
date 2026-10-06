@@ -85,44 +85,48 @@ function TrustindexReviews({ widgetId }: { widgetId: string }) {
 export function GoogleProfile() {
   return (
     <div className="google-profile">
-      <span className="eyebrow">Opinie i lokalizacja</span>
-      <h2 className="google-profile__title">
-        SPRAWDŹ NAS
-        <br />W GOOGLE
-      </h2>
-      <p className="google-profile__text">
-        Prawdziwe opinie naszych klientów prosto z Google — aktualne ocena i liczba recenzji
-        widoczne na mapie poniżej.
-      </p>
+      <div className="google-profile__top">
+        <div className="google-profile__intro">
+          <span className="eyebrow">Opinie i lokalizacja</span>
+          <h2 className="google-profile__title">
+            SPRAWDŹ NAS
+            <br />W GOOGLE
+          </h2>
+          <p className="google-profile__text">
+            Prawdziwe opinie naszych klientów prosto z Google — aktualna ocena i liczba recenzji
+            widoczne na mapie.
+          </p>
 
-      <MapCard />
+          <div className="google-profile__actions">
+            <ButtonLink href={googleLinks.reviews} target="_blank" rel="noopener noreferrer">
+              <Star className="btn__icon" aria-hidden="true" />
+              Zobacz opinie w Google
+            </ButtonLink>
+            <ButtonLink
+              href={googleLinks.writeReview}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="outline"
+            >
+              <PenLine className="btn__icon" aria-hidden="true" />
+              Wystaw opinię
+            </ButtonLink>
+            <a
+              href={googleLinks.maps}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="google-profile__maps-link"
+            >
+              Wyznacz trasę
+              <ExternalLink aria-hidden="true" />
+            </a>
+          </div>
+        </div>
+
+        <MapCard />
+      </div>
 
       {TRUSTINDEX_WIDGET_ID ? <TrustindexReviews widgetId={TRUSTINDEX_WIDGET_ID} /> : null}
-
-      <div className="google-profile__actions">
-        <ButtonLink href={googleLinks.reviews} target="_blank" rel="noopener noreferrer">
-          <Star className="btn__icon" aria-hidden="true" />
-          Zobacz opinie w Google
-        </ButtonLink>
-        <ButtonLink
-          href={googleLinks.writeReview}
-          target="_blank"
-          rel="noopener noreferrer"
-          variant="outline"
-        >
-          <PenLine className="btn__icon" aria-hidden="true" />
-          Wystaw opinię
-        </ButtonLink>
-        <a
-          href={googleLinks.maps}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="google-profile__maps-link"
-        >
-          Wyznacz trasę
-          <ExternalLink aria-hidden="true" />
-        </a>
-      </div>
     </div>
   );
 }

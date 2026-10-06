@@ -6,12 +6,10 @@ import { Hero } from "@/components/site/Hero";
 import { About } from "@/components/site/About";
 import { Categories } from "@/components/site/Categories";
 import { GroupInsurance } from "@/components/site/GroupInsurance";
-import { Testimonials } from "@/components/site/Testimonials";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Footer } from "@/components/site/Footer";
 import { GoogleProfile } from "@/components/site/GoogleProfile";
 import { PageScrollNav } from "@/components/site/PageScrollNav";
-import { getGoogleReviews, type GoogleReviewsResult } from "@/lib/reviews.functions";
 import { useReveal } from "@/hooks/useReveal";
 import { cn } from "@/lib/utils";
 
@@ -20,14 +18,6 @@ const description =
   "Doradztwo ubezpieczeniowe OSCare: polisy na życie i zdrowie, majątek, podróże, OC/AC oraz ubezpieczenia grupowe dla firm. Zostaw kontakt — oferta w 24h.";
 
 export const Route = createFileRoute("/")({
-  loader: async (): Promise<{ googleReviews: GoogleReviewsResult | null }> => {
-    try {
-      return { googleReviews: await getGoogleReviews() };
-    } catch (error) {
-      console.error("Google reviews niedostępne:", error);
-      return { googleReviews: null };
-    }
-  },
   head: () => ({
     meta: [
       { title },
@@ -68,7 +58,6 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { googleReviews } = Route.useLoaderData();
   const [preselected, setPreselected] = useState<string>();
   const benefitsReveal = useReveal<HTMLDivElement>();
 
@@ -94,9 +83,8 @@ function Index() {
         <About onContact={goToForm} />
         <Categories onPick={pick} />
         <GroupInsurance onPick={pick} />
-        <Testimonials googleReviews={googleReviews} />
 
-        <section className="benefits section section--soft">
+        <section id="opinie" className="benefits section section--soft">
           <div className="pattern-layer pattern-layer--dark" aria-hidden="true" />
           <div ref={benefitsReveal.ref} className={cn("benefits__grid", benefitsReveal.className)}>
             <GoogleProfile />
