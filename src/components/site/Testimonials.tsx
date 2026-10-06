@@ -3,6 +3,7 @@ import { Star, ExternalLink } from "lucide-react";
 import { Box } from "@/components/ui/Box";
 import { useReveal } from "@/hooks/useReveal";
 import { cn } from "@/lib/utils";
+import { useInView } from "@/hooks/useInView";
 import type { GoogleReviewsResult } from "@/lib/reviews.functions";
 
 const ELFSIGHT_WIDGET_ID = import.meta.env["VITE_ELFSIGHT_WIDGET_ID"] as string | undefined;
@@ -95,6 +96,7 @@ function Stars({ rating, className }: { rating: number; className?: string }) {
 
 export function Testimonials({ googleReviews }: { googleReviews: GoogleReviewsResult | null }) {
   const reveal = useReveal<HTMLDivElement>();
+  const listIn = useInView<HTMLUListElement>();
 
   if (ELFSIGHT_WIDGET_ID) {
     return <ElfsightReviews widgetId={ELFSIGHT_WIDGET_ID} />;
@@ -150,7 +152,7 @@ export function Testimonials({ googleReviews }: { googleReviews: GoogleReviewsRe
           </div>
         </div>
 
-        <ul className="testimonials__list stagger">
+        <ul ref={listIn.ref} className={cn("testimonials__list stagger", listIn.inView && "is-in")}>
           {reviews.map((review) => (
             <Box as="li" key={review.id}>
               <div className="testimonials__head-row">

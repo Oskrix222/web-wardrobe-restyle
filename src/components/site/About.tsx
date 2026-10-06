@@ -3,6 +3,7 @@ import { Button, ButtonLink } from "@/components/ui/Button";
 import { Box, IconCircle } from "@/components/ui/Box";
 import { useReveal } from "@/hooks/useReveal";
 import { cn } from "@/lib/utils";
+import { useInView } from "@/hooks/useInView";
 import advisorImage from "@/assets/advisor.jpg";
 import teamImage from "@/assets/team-business.jpg";
 import familyImage from "@/assets/about-family.jpg";
@@ -18,6 +19,9 @@ const stats = [
 
 export function About({ onContact }: { onContact: () => void }) {
   const reveal = useReveal<HTMLDivElement>();
+  const figuresIn = useInView();
+  const asideIn = useInView<HTMLImageElement>();
+  const statsIn = useInView();
 
   return (
     <section id="o-nas" className="about section section--soft">
@@ -33,7 +37,10 @@ export function About({ onContact }: { onContact: () => void }) {
             rozwiązanie.
           </p>
 
-          <div className="about__figures stagger">
+          <div
+            ref={figuresIn.ref}
+            className={cn("about__figures stagger", figuresIn.inView && "is-in")}
+          >
             <figure>
               <img
                 src={advisorImage}
@@ -87,14 +94,15 @@ export function About({ onContact }: { onContact: () => void }) {
           <img
             src={familyImage}
             alt="Rodzina trzymająca się za ręce o zachodzie słońca"
-            className="about__aside-image"
+            ref={asideIn.ref}
+            className={cn("about__aside-image", asideIn.inView && "is-in")}
             data-animate="zoom"
             width={1280}
             height={853}
             loading="lazy"
             decoding="async"
           />
-          <div className="about__stats stagger">
+          <div ref={statsIn.ref} className={cn("about__stats stagger", statsIn.inView && "is-in")}>
             {stats.map(({ value, label, icon }) => (
               <Box key={label} className="about__stat">
                 <div>

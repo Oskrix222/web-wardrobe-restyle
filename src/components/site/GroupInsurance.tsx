@@ -1,8 +1,17 @@
-import { Users, Wallet, SlidersHorizontal, FileText, Stethoscope, LifeBuoy, Phone } from "lucide-react";
+import {
+  Users,
+  Wallet,
+  SlidersHorizontal,
+  FileText,
+  Stethoscope,
+  LifeBuoy,
+  Phone,
+} from "lucide-react";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Box, IconCircle } from "@/components/ui/Box";
 import { useReveal } from "@/hooks/useReveal";
 import { cn } from "@/lib/utils";
+import { useInView } from "@/hooks/useInView";
 import teamImage from "@/assets/team-business.jpg";
 
 const perks = [
@@ -16,6 +25,7 @@ const perks = [
 
 export function GroupInsurance({ onPick }: { onPick: (value: string) => void }) {
   const reveal = useReveal<HTMLDivElement>();
+  const perksIn = useInView<HTMLUListElement>();
 
   return (
     <section id="dla-firm" className="group-insurance section section--bordered">
@@ -29,7 +39,10 @@ export function GroupInsurance({ onPick }: { onPick: (value: string) => void }) 
             kilkuosobowej firmie.
           </p>
 
-          <ul className="group-insurance__perks stagger">
+          <ul
+            ref={perksIn.ref}
+            className={cn("group-insurance__perks stagger", perksIn.inView && "is-in")}
+          >
             {perks.map(({ icon, text }) => (
               <Box as="li" key={text} className="group-insurance__perk">
                 <span>{text}</span>
@@ -42,19 +55,11 @@ export function GroupInsurance({ onPick }: { onPick: (value: string) => void }) 
             <Button className="group-insurance__cta" onClick={() => onPick("business")}>
               Zostaw kontakt
             </Button>
-            <ButtonLink
-              href="tel:+48539075385"
-              variant="outline"
-              className="group-insurance__call"
-            >
+            <ButtonLink href="tel:+48539075385" variant="outline" className="group-insurance__call">
               <Phone className="btn__icon" aria-hidden="true" />
               <span className="group-insurance__call-text">+48 539 075 385</span>
             </ButtonLink>
-            <ButtonLink
-              href="tel:+48123846894"
-              variant="outline"
-              className="group-insurance__call"
-            >
+            <ButtonLink href="tel:+48123846894" variant="outline" className="group-insurance__call">
               <Phone className="btn__icon" aria-hidden="true" />
               <span className="group-insurance__call-text">+48 123 846 894</span>
             </ButtonLink>

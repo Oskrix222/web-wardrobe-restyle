@@ -2,9 +2,8 @@
 
 // =============================================================
 // MOTION — quiet, one-shot entrance animations and hover details.
-// Only transform/opacity (GPU-composited), no scroll listeners: a single
-// IntersectionObserver (useMotion.ts) adds `.is-in`. Everything switches off
-// for prefers-reduced-motion.
+// Only transform/opacity (GPU-composited). Components add `.is-in` via the
+// one-shot useInView hook. Everything switches off for prefers-reduced-motion.
 // =============================================================
 
 $ease-out-soft: cubic-bezier(0.22, 0.8, 0.24, 1);

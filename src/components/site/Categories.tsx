@@ -30,6 +30,8 @@ import {
 } from "lucide-react";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Box, IconCircle } from "@/components/ui/Box";
+import { useInView } from "@/hooks/useInView";
+import { cn } from "@/lib/utils";
 import lifeImage from "@/assets/category-life.jpg";
 import homeImage from "@/assets/category-home.jpg";
 import travelImage from "@/assets/category-travel.jpg";
@@ -143,6 +145,8 @@ export function Categories({ onPick }: { onPick: (value: string) => void }) {
   const [activeValue, setActiveValue] = useState<string | null>(null);
   const activeCategory = categories.find((c) => c.value === activeValue);
   const detailRef = useRef<HTMLDivElement>(null);
+  const headIn = useInView();
+  const gridIn = useInView();
 
   const handlePick = (value: string) => {
     setActiveValue(null);
@@ -165,7 +169,11 @@ export function Categories({ onPick }: { onPick: (value: string) => void }) {
   return (
     <section id="oferta" className="categories section">
       <div className="container">
-        <div className="categories__head" data-animate>
+        <div
+          ref={headIn.ref}
+          className={cn("categories__head", headIn.inView && "is-in")}
+          data-animate
+        >
           <span className="eyebrow">Oferta</span>
           <h2 className="section-heading">WYBIERZ SWOJĄ OCHRONĘ</h2>
           <p className="categories__intro">
@@ -237,7 +245,11 @@ export function Categories({ onPick }: { onPick: (value: string) => void }) {
             </div>
           </div>
         ) : (
-          <div className="categories__grid stagger" key="grid">
+          <div
+            ref={gridIn.ref}
+            className={cn("categories__grid stagger", gridIn.inView && "is-in")}
+            key="grid"
+          >
             {categories.map(({ value, title, icon, intro, points }) => (
               <Box as="article" key={value} interactive className="categories__card">
                 <button

@@ -5,6 +5,8 @@ import { Footer } from "@/components/site/Footer";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { Breadcrumbs } from "@/components/blog/Breadcrumbs";
 import { listPublishedPosts } from "@/lib/blog.functions";
+import { useInView } from "@/hooks/useInView";
+import { cn } from "@/lib/utils";
 
 const title = "Blog — OSCare Ubezpieczenia";
 const description =
@@ -28,6 +30,8 @@ export const Route = createFileRoute("/blog/")({
 
 function BlogIndex() {
   const posts = Route.useLoaderData();
+  const headIn = useInView();
+  const gridIn = useInView();
   const navigate = useNavigate();
   const goToForm = () => navigate({ to: "/", hash: "kontakt" });
   // Posts arrive newest first, so the first one is the featured tile.
@@ -42,7 +46,11 @@ function BlogIndex() {
           <div className="container">
             <Breadcrumbs items={[{ label: "Strona główna", to: "/" }, { label: "Blog" }]} />
 
-            <div className="blog-index__head" data-animate>
+            <div
+              ref={headIn.ref}
+              className={cn("blog-index__head", headIn.inView && "is-in")}
+              data-animate
+            >
               <span className="eyebrow">Blog OSCare</span>
               <h1 className="section-heading">PORADY I NOWOŚCI</h1>
               <p className="blog-index__intro">
@@ -60,7 +68,10 @@ function BlogIndex() {
               <>
                 <BlogCard post={featured} featured />
                 {rest.length > 0 ? (
-                  <div className="blog-index__grid stagger">
+                  <div
+                    ref={gridIn.ref}
+                    className={cn("blog-index__grid stagger", gridIn.inView && "is-in")}
+                  >
                     {rest.map((post) => (
                       <BlogCard key={post.slug} post={post} />
                     ))}

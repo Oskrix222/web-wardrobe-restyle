@@ -14,6 +14,8 @@ import {
   incrementPostContactClick,
 } from "@/lib/blog.functions";
 import { trackEvent } from "@/lib/analytics";
+import { useInView } from "@/hooks/useInView";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/blog/$slug")({
   loader: async ({ params }) => {
@@ -49,6 +51,7 @@ export const Route = createFileRoute("/blog/$slug")({
 
 function BlogPost() {
   const { post, related } = Route.useLoaderData();
+  const relatedIn = useInView();
   const navigate = useNavigate();
   const goToForm = () => navigate({ to: "/", hash: "kontakt" });
   const trackedSlug = useRef<string | null>(null);
@@ -126,7 +129,10 @@ function BlogPost() {
             <div className="container">
               <span className="eyebrow">Czytaj także</span>
               <h2 className="section-heading">INNE WPISY</h2>
-              <div className="blog-index__grid stagger">
+              <div
+                ref={relatedIn.ref}
+                className={cn("blog-index__grid stagger", relatedIn.inView && "is-in")}
+              >
                 {related.map((p) => (
                   <BlogCard key={p.slug} post={p} />
                 ))}
