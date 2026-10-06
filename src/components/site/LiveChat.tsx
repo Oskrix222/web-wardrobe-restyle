@@ -108,7 +108,7 @@ function withinOfficeHours(now = new Date()): boolean {
   return hour >= 9 && hour < 20;
 }
 
-/** "Real people, usually within 5 minutes" bubble above the launcher. */
+/** "Real people, we usually reply instantly" bubble above the launcher. */
 function ChatTeaser({
   online,
   onOpen,
@@ -135,11 +135,7 @@ function ChatTeaser({
           {online ? <i className="chat-teaser__online" /> : null}
         </span>
         <span className="chat-teaser__title">Piszesz z człowiekiem, nie z AI</span>
-        <span className="chat-teaser__text">
-          {online
-            ? "Oskar lub Izumi zwykle odpowiadają w ciągu 5 minut."
-            : "Jesteśmy teraz poza biurem — zostaw wiadomość i e-mail, odpiszemy, gdy tylko wrócimy."}
-        </span>
+        <span className="chat-teaser__text">Najczęściej odpisujemy natychmiastowo.</span>
       </button>
     </div>
   );
