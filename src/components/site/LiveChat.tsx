@@ -16,6 +16,7 @@ const CRISP_WEBSITE_ID = import.meta.env["VITE_CRISP_WEBSITE_ID"] as string | un
 const LOAD_TIMEOUT_MS = 10_000;
 
 type ChatState = "idle" | "loading" | "loaded" | "failed";
+type ChatMode = "widget" | "embed";
 
 let crispPromise: Promise<void> | null = null;
 
@@ -48,12 +49,15 @@ function loadCrisp(): Promise<void> {
 
 /**
  * Crisp's relay refuses connections from Cloudflare's free hostnames
- * (*.workers.dev, *.pages.dev) — the widget would spin forever there. Chat only
- * runs on a real domain.
+ * (*.workers.dev, *.pages.dev), so the normal widget would spin forever there.
+ * On those hosts we show Crisp's own hosted chat page in an iframe instead —
+ * same inbox, same apps — and the real widget takes over on a proper domain.
  */
-function chatSupportedHere(): boolean {
-  return !/\.(workers|pages)\.dev$/.test(window.location.hostname);
+function widgetBlockedHere(): boolean {
+  return /\.(workers|pages)\.dev$/.test(window.location.hostname);
 }
+
+const EMBED_URL = `https://go.crisp.chat/chat/embed/?website_id=${CRISP_WEBSITE_ID ?? ""}`;
 
 /** A visitor who already chatted gets Crisp straight away, so they see our replies. */
 function hasCrispSession(): boolean {
@@ -78,11 +82,16 @@ export function LiveChat() {
   const isAdmin = pathname.startsWith("/admin");
   const [state, setState] = useState<ChatState>("idle");
   // Decided after mount: the server render can't see the hostname.
-  const [supported, setSupported] = useState(false);
+  const [mode, setMode] = useState<ChatMode | null>(null);
+  const [embedOpen, setEmbedOpen] = useState(false);
 
   useEffect(() => {
-    if (!CRISP_WEBSITE_ID || !chatSupportedHere()) return;
-    setSupported(true);
+    if (!CRISP_WEBSITE_ID) return;
+    if (widgetBlockedHere()) {
+      setMode("embed");
+      return;
+    }
+    setMode("widget");
     if (!hasCrispSession()) return;
     loadCrisp().then(
       () => setState("loaded"),
@@ -96,7 +105,45 @@ export function LiveChat() {
     window.$crisp?.push(["do", isAdmin ? "chat:hide" : "chat:show"]);
   }, [state, isAdmin]);
 
-  if (!CRISP_WEBSITE_ID || !supported || isAdmin || state === "loaded") return null;
+  if (!CRISP_WEBSITE_ID || !mode || isAdmin || state === "loaded") return null;
+
+  if (mode === "embed") {
+    return (
+      <>
+        {embedOpen ? (
+          <div className="live-chat-embed" role="dialog" aria-label="Czat z doradcą">
+            <button
+              type="button"
+              className="live-chat-embed__close"
+              onClick={() => setEmbedOpen(false)}
+              aria-label="Zamknij czat"
+            >
+              <X aria-hidden="true" />
+            </button>
+            <iframe
+              src={EMBED_URL}
+              title="Czat z doradcą OSCare"
+              className="live-chat-embed__frame"
+            />
+          </div>
+        ) : null}
+        <button
+          type="button"
+          className="live-chat"
+          onClick={() => setEmbedOpen((o) => !o)}
+          aria-expanded={embedOpen}
+          aria-label={embedOpen ? "Zamknij czat" : "Otwórz czat z doradcą"}
+        >
+          {embedOpen ? (
+            <X className="live-chat__icon" aria-hidden="true" />
+          ) : (
+            <MessageCircle className="live-chat__icon" aria-hidden="true" />
+          )}
+          <span className="live-chat__label">{embedOpen ? "Zamknij" : "Napisz do nas"}</span>
+        </button>
+      </>
+    );
+  }
 
   const open = () => {
     setState("loading");
