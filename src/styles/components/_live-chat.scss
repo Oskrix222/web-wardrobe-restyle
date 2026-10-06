@@ -184,6 +184,137 @@
   }
 }
 
+// "Real people, not AI" bubble above the launcher, with a tail pointing at it.
+.chat-teaser {
+  position: fixed;
+  z-index: 50;
+  right: $space-4;
+  bottom: calc(#{$space-4} + 3.25rem + #{$space-3});
+  width: min(21rem, calc(100vw - 2 * #{$space-4}));
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: $radius-xl;
+  box-shadow: $shadow-md;
+  animation: chat-teaser-in 0.35s ease-out;
+
+  @include sm {
+    right: $space-6;
+    bottom: calc(#{$space-6} + 3.25rem + #{$space-3});
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    right: 1.4rem;
+    bottom: -7px;
+    width: 12px;
+    height: 12px;
+    background-color: var(--card);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    transform: rotate(45deg);
+  }
+
+  &__close {
+    position: absolute;
+    top: $space-2;
+    right: $space-2;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: none;
+    border-radius: $radius-full;
+    background: none;
+    color: var(--muted-foreground);
+    cursor: pointer;
+
+    svg {
+      width: 0.9rem;
+      height: 0.9rem;
+    }
+
+    &:hover {
+      background-color: var(--secondary);
+    }
+  }
+
+  &__body {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.15rem $space-3;
+    width: 100%;
+    padding: $space-4 $space-8 $space-4 $space-4;
+    border: none;
+    background: none;
+    border-radius: inherit;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  &__avatars {
+    position: relative;
+    grid-row: span 2;
+    display: flex;
+    align-self: center;
+
+    span {
+      display: grid;
+      place-items: center;
+      width: 2rem;
+      height: 2rem;
+      border: 2px solid var(--card);
+      border-radius: $radius-full;
+      background-color: var(--terracotta);
+      color: var(--on-accent);
+      font-family: $font-display;
+      font-size: $text-sm;
+    }
+
+    span + span {
+      margin-left: -0.6rem;
+      background-color: var(--clay);
+    }
+  }
+
+  &__online {
+    position: absolute;
+    right: -1px;
+    bottom: 0;
+    width: 0.7rem;
+    height: 0.7rem;
+    border: 2px solid var(--card);
+    border-radius: $radius-full;
+    background-color: oklch(0.68 0.17 150);
+  }
+
+  &__title {
+    font-weight: $weight-semibold;
+    font-size: $text-sm;
+    line-height: $leading-snug;
+  }
+
+  &__text {
+    font-size: $text-xs;
+    line-height: $leading-relaxed;
+    color: var(--muted-foreground);
+  }
+}
+
+@keyframes chat-teaser-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @keyframes live-chat-spin {
   to {
     transform: rotate(360deg);
@@ -199,7 +330,8 @@
     }
   }
 
-  .live-chat__icon--spin {
+  .live-chat__icon--spin,
+  .chat-teaser {
     animation: none;
   }
 }

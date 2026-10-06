@@ -70,6 +70,81 @@ function openCrisp() {
   window.$crisp.push(["do", "chat:open"]);
 }
 
+const TEASER_KEY = "oscare-chat-teaser-dismissed";
+const TEASER_DELAY_MS = 5_000;
+const TEASER_SNOOZE_MS = 7 * 24 * 60 * 60 * 1000;
+
+function teaserSnoozed(): boolean {
+  try {
+    const at = Number(localStorage.getItem(TEASER_KEY));
+    return Boolean(at) && Date.now() - at < TEASER_SNOOZE_MS;
+  } catch {
+    return false;
+  }
+}
+
+function snoozeTeaser() {
+  try {
+    localStorage.setItem(TEASER_KEY, String(Date.now()));
+  } catch {
+    // Private mode etc. — the teaser may just show again next visit.
+  }
+}
+
+const warsawClock = new Intl.DateTimeFormat("en-GB", {
+  timeZone: "Europe/Warsaw",
+  weekday: "short",
+  hour: "numeric",
+  hourCycle: "h23",
+});
+
+/** Mon–Fri 9–20, Sat 10–14 (Warsaw) — the hours listed in the footer. */
+function withinOfficeHours(now = new Date()): boolean {
+  const parts = warsawClock.formatToParts(now);
+  const day = parts.find((p) => p.type === "weekday")?.value;
+  const hour = Number(parts.find((p) => p.type === "hour")?.value);
+  if (day === "Sun") return false;
+  if (day === "Sat") return hour >= 10 && hour < 14;
+  return hour >= 9 && hour < 20;
+}
+
+/** "Real people, usually within 5 minutes" bubble above the launcher. */
+function ChatTeaser({
+  online,
+  onOpen,
+  onClose,
+}: {
+  online: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="chat-teaser" role="status">
+      <button
+        type="button"
+        className="chat-teaser__close"
+        onClick={onClose}
+        aria-label="Zamknij powiadomienie"
+      >
+        <X aria-hidden="true" />
+      </button>
+      <button type="button" className="chat-teaser__body" onClick={onOpen}>
+        <span className="chat-teaser__avatars" aria-hidden="true">
+          <span>O</span>
+          <span>I</span>
+          {online ? <i className="chat-teaser__online" /> : null}
+        </span>
+        <span className="chat-teaser__title">Piszesz z człowiekiem, nie z AI</span>
+        <span className="chat-teaser__text">
+          {online
+            ? "Oskar lub Izumi zwykle odpowiadają w ciągu 5 minut."
+            : "Jesteśmy teraz poza biurem — zostaw wiadomość i e-mail, odpiszemy, gdy tylko wrócimy."}
+        </span>
+      </button>
+    </div>
+  );
+}
+
 /**
  * Live chat with Oskar and Izumi (Crisp — real people, no bot). Crisp only
  * loads when the visitor clicks our button, so it sets no cookies and costs no
@@ -84,6 +159,7 @@ export function LiveChat() {
   // Decided after mount: the server render can't see the hostname.
   const [mode, setMode] = useState<ChatMode | null>(null);
   const [embedOpen, setEmbedOpen] = useState(false);
+  const [teaser, setTeaser] = useState<"online" | "offline" | null>(null);
 
   useEffect(() => {
     if (!CRISP_WEBSITE_ID) return;
@@ -99,6 +175,22 @@ export function LiveChat() {
     );
   }, []);
 
+  // A few seconds in, tell visitors the chat is staffed by people (not while
+  // the cookie banner is up, and not again for a week once dismissed).
+  useEffect(() => {
+    if (!mode || teaserSnoozed()) return;
+    const timer = window.setTimeout(() => {
+      if (document.querySelector(".cookie-consent")) return;
+      setTeaser(withinOfficeHours() ? "online" : "offline");
+    }, TEASER_DELAY_MS);
+    return () => window.clearTimeout(timer);
+  }, [mode]);
+
+  const dismissTeaser = () => {
+    setTeaser(null);
+    snoozeTeaser();
+  };
+
   // Crisp's own launcher replaces ours once loaded; keep it out of the panel.
   useEffect(() => {
     if (state !== "loaded") return;
@@ -107,9 +199,22 @@ export function LiveChat() {
 
   if (!CRISP_WEBSITE_ID || !mode || isAdmin || state === "loaded") return null;
 
+  const teaserBubble = (onOpen: () => void) =>
+    teaser ? (
+      <ChatTeaser
+        online={teaser === "online"}
+        onClose={dismissTeaser}
+        onOpen={() => {
+          dismissTeaser();
+          onOpen();
+        }}
+      />
+    ) : null;
+
   if (mode === "embed") {
     return (
       <>
+        {embedOpen ? null : teaserBubble(() => setEmbedOpen(true))}
         {embedOpen ? (
           <div className="live-chat-embed" role="dialog" aria-label="Czat z doradcą">
             <button
@@ -130,7 +235,10 @@ export function LiveChat() {
         <button
           type="button"
           className="live-chat"
-          onClick={() => setEmbedOpen((o) => !o)}
+          onClick={() => {
+            if (teaser) dismissTeaser();
+            setEmbedOpen((o) => !o);
+          }}
           aria-expanded={embedOpen}
           aria-label={embedOpen ? "Zamknij czat" : "Otwórz czat z doradcą"}
         >
@@ -146,6 +254,7 @@ export function LiveChat() {
   }
 
   const open = () => {
+    if (teaser) dismissTeaser();
     setState("loading");
     loadCrisp().then(
       () => {
@@ -158,6 +267,7 @@ export function LiveChat() {
 
   return (
     <>
+      {state === "idle" ? teaserBubble(open) : null}
       {state === "failed" ? (
         <div className="live-chat-fallback" role="alert">
           <button
