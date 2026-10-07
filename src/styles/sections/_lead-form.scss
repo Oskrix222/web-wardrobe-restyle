@@ -61,3 +61,80 @@
   height: 1px;
   overflow: hidden;
 }
+
+// Small reassurance row under the submit button.
+.lead-form__trust {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: $space-2 $space-5;
+  font-size: $text-xs;
+  color: var(--muted-foreground);
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+  }
+
+  svg {
+    width: 0.95rem;
+    height: 0.95rem;
+    color: var(--terracotta);
+  }
+}
+
+// Shown instead of the form once a lead is sent.
+.lead-form__thanks {
+  margin-top: $space-6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-4;
+  text-align: center;
+  animation: rise 0.5s ease-out;
+
+  &:focus {
+    outline: none;
+  }
+
+  .lead-form__calls {
+    width: 100%;
+  }
+}
+
+.lead-form__thanks-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  color: oklch(0.6 0.15 150);
+}
+
+.lead-form__thanks-title {
+  font-family: $font-display;
+  font-size: $text-3xl;
+  line-height: $leading-tight;
+}
+
+.lead-form__thanks-text {
+  max-width: 30rem;
+  color: var(--muted-foreground);
+  line-height: $leading-relaxed;
+}
+
+.lead-form__again {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: $text-sm;
+  color: var(--terracotta-strong);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lead-form__thanks {
+    animation: none;
+  }
+}

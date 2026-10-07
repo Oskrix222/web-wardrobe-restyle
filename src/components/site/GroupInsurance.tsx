@@ -12,7 +12,8 @@ import { Box, IconCircle } from "@/components/ui/Box";
 import { useReveal } from "@/hooks/useReveal";
 import { cn } from "@/lib/utils";
 import { useInView } from "@/hooks/useInView";
-import teamImage from "@/assets/team-business.jpg";
+import team640 from "@/assets/team-business-640.webp";
+import team1280 from "@/assets/team-business-1280.webp";
 
 const perks = [
   { icon: Users, text: "Min. właściciel + 1 pracownik" },
@@ -67,7 +68,9 @@ export function GroupInsurance({ onPick }: { onPick: (value: string) => void }) 
         </div>
 
         <img
-          src={teamImage}
+          src={team1280}
+          srcSet={`${team640} 640w, ${team1280} 1280w`}
+          sizes="(min-width: 1024px) 45vw, 100vw"
           alt="Zespół małej firmy objęty ubezpieczeniem grupowym"
           className="group-insurance__image"
           width={1280}

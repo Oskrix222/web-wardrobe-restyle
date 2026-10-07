@@ -3,7 +3,8 @@ import { HeartHandshake, Banknote, Clock, Phone, Sparkles, Shield } from "lucide
 import { Box, IconCircle } from "@/components/ui/Box";
 import { useInView } from "@/hooks/useInView";
 import { cn } from "@/lib/utils";
-import familyImage from "@/assets/about-family.jpg";
+import family640 from "@/assets/about-family-640.webp";
+import family1280 from "@/assets/about-family-1280.webp";
 
 const stats = [
   { value: "+150", label: "zadowolonych klientów", icon: HeartHandshake },
@@ -25,7 +26,9 @@ export function AboutHighlights({ className }: { className?: string }) {
   return (
     <div className={cn("about__aside", className)}>
       <img
-        src={familyImage}
+        src={family1280}
+        srcSet={`${family640} 640w, ${family1280} 1280w`}
+        sizes="(min-width: 1024px) 45vw, 100vw"
         alt="Rodzina trzymająca się za ręce o zachodzie słońca"
         ref={imageIn.ref}
         className={cn("about__aside-image", imageIn.inView && "is-in")}

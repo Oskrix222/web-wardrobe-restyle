@@ -1,8 +1,9 @@
-import { Shield } from "lucide-react";
+import { Shield, Star } from "lucide-react";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Pill } from "@/components/ui/Box";
 import { CountUp } from "@/components/ui/CountUp";
-import heroImage from "@/assets/hero-family.jpg";
+import hero640 from "@/assets/hero-family-640.webp";
+import hero1280 from "@/assets/hero-family-1280.webp";
 
 const stats: [string, string][] = [
   ["+25", "zadowolonych klientów"],
@@ -10,7 +11,14 @@ const stats: [string, string][] = [
   ["2005", "od tego roku w branży"],
 ];
 
-export function Hero({ onContact }: { onContact: () => void }) {
+export function Hero({
+  onContact,
+  rating,
+}: {
+  onContact: () => void;
+  /** Average Google rating; the badge is hidden when it isn't available. */
+  rating?: number | null | undefined;
+}) {
   return (
     <section id="top" className="hero">
       <div className="hero__grid">
@@ -44,6 +52,17 @@ export function Hero({ onContact }: { onContact: () => void }) {
                 Zobacz ofertę
               </ButtonLink>
             </div>
+            {rating ? (
+              <a href="#opinie" className="hero__rating">
+                <span className="hero__rating-stars" aria-hidden="true">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <Star key={i} className={i < Math.round(rating) ? "is-on" : undefined} />
+                  ))}
+                </span>
+                <strong>{rating.toFixed(1).replace(".", ",")}</strong> w opiniach Google
+                <span className="hero__rating-link">Zobacz opinie</span>
+              </a>
+            ) : null}
           </div>
 
           <dl className="hero__stats">
@@ -62,7 +81,9 @@ export function Hero({ onContact }: { onContact: () => void }) {
         <div className="hero__media">
           <div className="hero__image-frame">
             <img
-              src={heroImage}
+              src={hero1280}
+              srcSet={`${hero640} 640w, ${hero1280} 1280w`}
+              sizes="(min-width: 1024px) 58vw, 100vw"
               alt="Rodzina w jasnym salonie — ubezpieczenia OSCare"
               className="hero__image"
               width={1280}

@@ -5,8 +5,10 @@ import { AboutHighlights } from "@/components/site/AboutHighlights";
 import { useReveal } from "@/hooks/useReveal";
 import { cn } from "@/lib/utils";
 import { useInView } from "@/hooks/useInView";
-import advisorImage from "@/assets/advisor.jpg";
-import teamImage from "@/assets/team-business.jpg";
+import advisor400 from "@/assets/advisor-400.webp";
+import advisor640 from "@/assets/advisor-640.webp";
+import team640 from "@/assets/team-business-640.webp";
+import team1280 from "@/assets/team-business-1280.webp";
 
 export function About({ onContact }: { onContact: () => void }) {
   const reveal = useReveal<HTMLDivElement>();
@@ -32,7 +34,9 @@ export function About({ onContact }: { onContact: () => void }) {
           >
             <figure>
               <img
-                src={advisorImage}
+                src={advisor640}
+                srcSet={`${advisor400} 400w, ${advisor640} 640w`}
+                sizes="(min-width: 1024px) 18rem, 45vw"
                 alt="Oskar Kubowicz, agent ubezpieczeniowy OSCare"
                 className="about__figure-image about__figure-image--top"
                 width={640}
@@ -49,7 +53,9 @@ export function About({ onContact }: { onContact: () => void }) {
             </figure>
             <figure>
               <img
-                src={teamImage}
+                src={team640}
+                srcSet={`${team640} 640w, ${team1280} 1280w`}
+                sizes="(min-width: 1024px) 18rem, 45vw"
                 alt="Zespół firmy objęty ubezpieczeniem grupowym"
                 className="about__figure-image"
                 width={1280}

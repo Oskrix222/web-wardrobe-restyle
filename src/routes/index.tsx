@@ -81,10 +81,10 @@ function Index() {
   return (
     <div className="page">
       <Header onContact={goToForm} />
-      <PageScrollNav />
-
       <main>
-        <Hero onContact={goToForm} />
+        {/* Inside <main> so the fixed arrows belong to a landmark (accessibility). */}
+        <PageScrollNav />
+        <Hero onContact={goToForm} rating={reviews?.rating} />
         <About onContact={goToForm} />
         <Categories onPick={pick} />
         <GroupInsurance onPick={pick} />

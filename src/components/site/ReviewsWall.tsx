@@ -62,7 +62,7 @@ function ReviewTile({ review, leaving }: { review: GoogleReview; leaving: boolea
         </span>
         <GoogleG />
       </header>
-      <span className="review-tile__stars" aria-label={`Ocena ${review.rating} na 5`}>
+      <span className="review-tile__stars" role="img" aria-label={`Ocena ${review.rating} na 5`}>
         {Array.from({ length: 5 }, (_, i) => (
           <Star key={i} className={i < Math.round(review.rating) ? "is-on" : undefined} />
         ))}

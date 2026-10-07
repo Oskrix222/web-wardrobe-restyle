@@ -67,6 +67,50 @@
     gap: $space-3;
   }
 
+  // Google rating right under the CTAs — social proof where the decision happens.
+  &__rating {
+    margin-top: $space-5;
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-1 $space-2;
+    font-size: $text-sm;
+    color: var(--muted-foreground);
+
+    strong {
+      color: var(--foreground);
+    }
+
+    &:hover .hero__rating-link {
+      text-decoration-color: currentColor;
+    }
+  }
+
+  &__rating-stars {
+    display: inline-flex;
+    gap: 1px;
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+      color: var(--border);
+      fill: currentColor;
+
+      &.is-on {
+        color: #f5b400;
+      }
+    }
+  }
+
+  &__rating-link {
+    color: var(--terracotta-strong);
+    font-weight: $weight-semibold;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 3px;
+    transition: text-decoration-color $transition-fast;
+  }
+
   &__stats {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));

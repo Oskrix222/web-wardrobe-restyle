@@ -20,7 +20,13 @@ function PrivacyPolicy() {
     <div className="legal-page">
       <header className="legal-page__header">
         <Link to="/" aria-label="OSCare — strona główna">
-          <img src="/imgs/logo.png" alt="OSCare" className="legal-page__logo" />
+          <img
+            src="/imgs/logo.webp"
+            alt="OSCare"
+            className="legal-page__logo"
+            width={156}
+            height={140}
+          />
         </Link>
         <Link to="/" className="legal-page__back">
           ← Wróć na stronę główną

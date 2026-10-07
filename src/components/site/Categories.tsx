@@ -32,10 +32,20 @@ import { Button, ButtonLink } from "@/components/ui/Button";
 import { Box, IconCircle } from "@/components/ui/Box";
 import { useInView } from "@/hooks/useInView";
 import { cn } from "@/lib/utils";
-import lifeImage from "@/assets/category-life.jpg";
-import homeImage from "@/assets/category-home.jpg";
-import travelImage from "@/assets/category-travel.jpg";
-import businessImage from "@/assets/category-business.jpg";
+import life600 from "@/assets/category-life-600.webp";
+import life1200 from "@/assets/category-life-1200.webp";
+import home600 from "@/assets/category-home-600.webp";
+import home1200 from "@/assets/category-home-1200.webp";
+import travel600 from "@/assets/category-travel-600.webp";
+import travel1200 from "@/assets/category-travel-1200.webp";
+import business600 from "@/assets/category-business-600.webp";
+import business1200 from "@/assets/category-business-1200.webp";
+
+/** Detail-panel photo in two widths; the browser picks the smaller one on phones. */
+const photo = (small: string, large: string) => ({
+  src: large,
+  srcSet: `${small} 600w, ${large} 1200w`,
+});
 
 export const categories = [
   {
@@ -49,7 +59,7 @@ export const categories = [
       { label: "Wsparcie dla rodziny", icon: HeartHandshake },
     ],
     details: {
-      image: lifeImage,
+      image: photo(life600, life1200),
       imageAlt: "Zabandażowana dłoń po urazie — ochrona na życie i zdrowie",
       intro:
         "Poważna choroba, wypadek czy dłuższy pobyt w szpitalu nie muszą oznaczać kłopotów finansowych. Realne wsparcie dla Ciebie i najbliższych dokładnie wtedy, gdy jest najbardziej potrzebne.",
@@ -74,7 +84,7 @@ export const categories = [
       { label: "OC w życiu prywatnym", icon: ShieldCheck },
     ],
     details: {
-      image: homeImage,
+      image: photo(home600, home1200),
       imageAlt: "Strażak gasi pożar na balkonie — ochrona majątku od ognia",
       intro:
         "Dom czy mieszkanie to zwykle największa inwestycja w życiu — warto zabezpieczyć je przed zdarzeniami, na które nie masz wpływu. Ochrona murów, instalacji i wyposażenia wnętrza.",
@@ -99,7 +109,7 @@ export const categories = [
       { label: "Sporty zimowe", icon: MountainSnow },
     ],
     details: {
-      image: travelImage,
+      image: photo(travel600, travel1200),
       imageAlt: "Parasol plażowy nad morzem — ubezpieczenie turystyczne",
       intro:
         "Niezależnie czy wyjeżdżasz na tydzień nad morze, czy na cały sezon narciarski — dobra polisa turystyczna to spokój, gdy coś pójdzie nie tak z dala od domu.",
@@ -125,7 +135,7 @@ export const categories = [
       { label: "Najmniejsza składka", icon: PiggyBank },
     ],
     details: {
-      image: businessImage,
+      image: photo(business600, business1200),
       imageAlt: "Spotkanie biznesowe zespołu objętego ubezpieczeniem grupowym",
       intro:
         "Ubezpieczenie grupowe to jeden z najbardziej docenianych benefitów pracowniczych — niska, stała składka już w kilkuosobowej firmie i realna ochrona całego zespołu.",
@@ -234,7 +244,9 @@ export function Categories({ onPick }: { onPick: (value: string) => void }) {
               </div>
 
               <img
-                src={activeCategory.details.image}
+                src={activeCategory.details.image.src}
+                srcSet={activeCategory.details.image.srcSet}
+                sizes="(min-width: 1024px) 40vw, 100vw"
                 alt={activeCategory.details.imageAlt}
                 className="category-detail__image"
                 width={1200}

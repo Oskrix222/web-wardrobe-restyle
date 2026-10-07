@@ -63,28 +63,16 @@ $ease-out-soft: cubic-bezier(0.22, 0.8, 0.24, 1);
 }
 
 // ---- Hero: plays once on load (pure CSS, no waiting for JS) ----------------
+// The intro text and buttons are NOT animated: they're the first thing people
+// (and Google's speed metrics) look at, so they paint immediately.
 .hero {
   .pill,
-  &__text,
-  &__actions,
   &__stats {
-    animation: motion-rise 0.8s $ease-out-soft backwards;
-  }
-
-  .pill {
-    animation-delay: 0.05s;
-  }
-
-  &__text {
-    animation-delay: 0.55s;
-  }
-
-  &__actions {
-    animation-delay: 0.68s;
+    animation: motion-rise 0.7s $ease-out-soft backwards;
   }
 
   &__stats {
-    animation-delay: 0.82s;
+    animation-delay: 0.35s;
   }
 
   // Each title line slides up out of its own mask, editorial style.
@@ -97,18 +85,18 @@ $ease-out-soft: cubic-bezier(0.22, 0.8, 0.24, 1);
 
     > span {
       display: inline-block;
-      animation: motion-line 0.9s $ease-out-soft backwards;
+      animation: motion-line 0.65s $ease-out-soft backwards;
     }
 
     @for $i from 1 through 4 {
       &:nth-child(#{$i}) > span {
-        animation-delay: #{0.12 + ($i - 1) * 0.09}s;
+        animation-delay: #{0.02 + ($i - 1) * 0.06}s;
       }
     }
   }
 
   &__image {
-    animation: motion-zoom 1.6s $ease-out-soft backwards;
+    animation: motion-zoom 1.2s $ease-out-soft backwards;
   }
 }
 
@@ -232,8 +220,6 @@ $ease-out-soft: cubic-bezier(0.22, 0.8, 0.24, 1);
   }
 
   .hero .pill,
-  .hero__text,
-  .hero__actions,
   .hero__stats,
   .hero__line > span,
   .hero__image {

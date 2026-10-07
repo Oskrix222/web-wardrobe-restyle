@@ -58,11 +58,23 @@ export function Header({ onContact }: { onContact: () => void }) {
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             aria-label="Przewiń na górę strony"
           >
-            <img src="/imgs/logo.png" alt="OSCare" className="site-header__logo" height={100} />
+            <img
+              src="/imgs/logo.webp"
+              alt="OSCare"
+              className="site-header__logo"
+              width={156}
+              height={140}
+            />
           </button>
         ) : (
           <Link to="/" className="site-header__logo-btn" aria-label="Strona główna OSCare">
-            <img src="/imgs/logo.png" alt="OSCare" className="site-header__logo" height={100} />
+            <img
+              src="/imgs/logo.webp"
+              alt="OSCare"
+              className="site-header__logo"
+              width={156}
+              height={140}
+            />
           </Link>
         )}
 
@@ -88,7 +100,7 @@ export function Header({ onContact }: { onContact: () => void }) {
             Blog
           </Link>
           <Button size="sm" className="site-header__cta" onClick={onContact}>
-            CHCĘ OFERTĘ!
+            Bezpłatna wycena
           </Button>
         </nav>
 
@@ -140,7 +152,7 @@ export function Header({ onContact }: { onContact: () => void }) {
               onContact();
             }}
           >
-            CHCĘ OFERTĘ!
+            Bezpłatna wycena
           </Button>
         </nav>
       </div>

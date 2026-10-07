@@ -42,7 +42,8 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    height:70px;
+    height: 70px;
+    width: auto; // keep the logo's ratio despite the width/height attributes
     padding: 7.5px;
   }
 
@@ -73,7 +74,8 @@
 
     &.is-active {
       background-color: var(--terracotta-tint);
-      color: var(--terracotta);
+      // Darker shade keeps the active link above 4.5:1 contrast on the tint.
+      color: var(--terracotta-strong);
     }
   }
 

@@ -3,6 +3,7 @@
 // 2. base: resets, typography, layout helpers, animations
 // 3. components: reusable pieces (buttons, form fields, boxes)
 // 4. sections: one file per part of the page
+@use "fonts";
 @use "brandbook";
 @use "base";
 
