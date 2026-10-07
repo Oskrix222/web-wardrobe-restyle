@@ -172,11 +172,6 @@ function PrivacyPolicy() {
               używa cookies ani nie zbiera danych osobowych.
             </p>
             <p>
-              Mapa Google z naszą lokalizacją i oceną ładuje się dopiero po kliknięciu „Pokaż mapę”.
-              Wtedy Google (Google Ireland Ltd.) może zapisać w przeglądarce własne pliki cookies
-              zgodnie ze swoją polityką prywatności. Bez kliknięcia z mapą nic się nie łączy.
-            </p>
-            <p>
               Czat na żywo (Crisp) ładuje się dopiero po kliknięciu przycisku „Napisz do nas”. Wtedy
               zapisuje w przeglądarce plik cookie potrzebny do utrzymania rozmowy, żeby nasza
               odpowiedź dotarła do Ciebie także po odświeżeniu strony. Treść rozmowy i dane podane

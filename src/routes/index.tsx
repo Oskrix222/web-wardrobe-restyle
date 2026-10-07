@@ -9,6 +9,7 @@ import { GroupInsurance } from "@/components/site/GroupInsurance";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Footer } from "@/components/site/Footer";
 import { GoogleProfile } from "@/components/site/GoogleProfile";
+import { getGoogleReviews } from "@/lib/google-reviews.functions";
 import { PageScrollNav } from "@/components/site/PageScrollNav";
 import { useReveal } from "@/hooks/useReveal";
 import { cn } from "@/lib/utils";
@@ -18,6 +19,8 @@ const description =
   "Doradztwo ubezpieczeniowe OSCare: polisy na życie i zdrowie, majątek, podróże, OC/AC oraz ubezpieczenia grupowe dla firm. Zostaw kontakt — oferta w 24h.";
 
 export const Route = createFileRoute("/")({
+  // Reviews are a nice-to-have: if the feed is down the block just shows a note.
+  loader: async () => ({ reviews: await getGoogleReviews().catch(() => null) }),
   head: () => ({
     meta: [
       { title },
@@ -58,6 +61,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const { reviews } = Route.useLoaderData();
   const [preselected, setPreselected] = useState<string>();
   const benefitsReveal = useReveal<HTMLDivElement>();
 
@@ -87,7 +91,7 @@ function Index() {
         <section id="opinie" className="benefits section section--soft">
           <div className="pattern-layer pattern-layer--dark" aria-hidden="true" />
           <div ref={benefitsReveal.ref} className={cn("benefits__grid", benefitsReveal.className)}>
-            <GoogleProfile />
+            <GoogleProfile feed={reviews} />
 
             <LeadForm preselected={preselected} />
           </div>

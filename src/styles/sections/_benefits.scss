@@ -20,19 +20,16 @@
   }
 }
 
-// -------------------- GOOGLE PROFILE (map + reviews) -----------------------
+// -------------------- GOOGLE REVIEWS ------------------------------------
 .google-profile {
-  display: flex;
-  flex-direction: column;
-
-  // Intro + buttons on the left, map on the right (stacked on phones).
+  // Intro + rating on the left, the rotating review wall on the right.
   &__top {
     display: grid;
-    gap: $space-8;
+    gap: $space-10;
     align-items: center;
 
     @include lg {
-      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
       gap: $space-12;
     }
   }
@@ -44,137 +41,182 @@
 
   &__text {
     margin-top: $space-5;
-    max-width: 32rem;
+    max-width: 30rem;
     line-height: $leading-relaxed;
     color: var(--muted-foreground);
   }
 
-  &__map {
-    position: relative;
-    height: 22rem;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    border-radius: $radius-2xl;
-    background-color: var(--card);
-    box-shadow: $shadow-sm;
-
-    @include lg {
-      height: 24rem;
-    }
-  }
-
-  &__map-frame {
-    display: block;
-    width: 100%;
-    height: 100%;
-    border: 0;
-  }
-
-  // Before the click: a quiet "map paper" with the address and a pin.
-  &__map-placeholder {
-    position: absolute;
-    inset: 0;
+  &__rating {
+    margin-top: $space-6;
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
-    gap: $space-2;
-    padding: $space-6;
-    border: none;
-    font: inherit;
-    color: var(--foreground);
-    text-align: center;
-    cursor: pointer;
-    background:
-      radial-gradient(circle at 50% 42%, var(--terracotta-tint), transparent 55%),
-      repeating-linear-gradient(0deg, transparent 0 38px, var(--border-soft) 38px 39px),
-      repeating-linear-gradient(90deg, transparent 0 38px, var(--border-soft) 38px 39px),
-      var(--secondary-soft);
-    transition: background-color $transition-base;
-
-    &:hover .google-profile__map-pin {
-      transform: translateY(-4px);
-    }
-
-    &:hover .google-profile__map-cta {
-      background-color: var(--terracotta-strong);
-    }
+    gap: $space-2 $space-3;
   }
 
-  &__map-pin {
-    display: grid;
-    place-items: center;
-    width: 3.5rem;
-    height: 3.5rem;
-    margin-bottom: $space-2;
-    border-radius: $radius-full;
-    background-color: var(--terracotta);
-    color: var(--on-accent);
-    box-shadow: $shadow-md;
-    transition: transform 0.35s cubic-bezier(0.22, 0.8, 0.24, 1);
+  &__rating-value {
+    font-family: $font-display;
+    font-size: $text-4xl;
+    line-height: 1;
+  }
+
+  &__rating-stars {
+    display: inline-flex;
+    gap: 2px;
 
     svg {
-      width: 1.6rem;
-      height: 1.6rem;
+      width: 1.15rem;
+      height: 1.15rem;
+      color: var(--border);
+      fill: currentColor;
+
+      &.is-on {
+        color: #f5b400;
+      }
     }
   }
 
-  &__map-name {
-    font-family: $font-display;
-    font-size: $text-xl;
-  }
-
-  &__map-address {
-    font-size: $text-sm;
-    color: var(--muted-foreground);
-  }
-
-  &__map-cta {
-    margin-top: $space-4;
-    padding: $space-2 $space-5;
-    border-radius: $radius-full;
-    background-color: var(--terracotta);
-    color: var(--on-accent);
-    font-size: $text-sm;
-    font-weight: $weight-semibold;
-    transition: background-color $transition-base;
-  }
-
-  &__map-note {
-    margin-top: $space-1;
+  &__rating-label {
+    flex-basis: 100%;
     font-size: $text-xs;
     color: var(--muted-foreground);
-  }
-
-  &__reviews {
-    margin-top: $space-10;
   }
 
   &__actions {
     margin-top: $space-8;
     display: flex;
     flex-wrap: wrap;
+    gap: $space-3;
+  }
+
+  &__empty {
+    padding: $space-10;
+    border: 1px dashed var(--border);
+    border-radius: $radius-2xl;
+    text-align: center;
+    color: var(--muted-foreground);
+  }
+}
+
+.reviews-wall {
+  display: grid;
+  gap: $space-4;
+  grid-template-columns: minmax(0, 1fr);
+
+  @include sm {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
+  }
+
+  // Phones: three tiles are plenty; the rest still rotate in.
+  @media (max-width: #{$screen-sm - 1px}) {
+    > :nth-child(n + 4) {
+      display: none;
+    }
+  }
+}
+
+.review-tile {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  min-height: 11.5rem;
+  padding: $space-5;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: $radius-xl;
+  box-shadow: $shadow-sm;
+  animation: review-in 0.5s cubic-bezier(0.22, 0.8, 0.24, 1);
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease;
+
+  &.is-leaving {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+
+  &__head {
+    display: flex;
     align-items: center;
     gap: $space-3;
   }
 
-  &__maps-link {
-    display: inline-flex;
-    align-items: center;
-    gap: $space-1;
-    margin-left: $space-2;
-    font-size: $text-sm;
-    font-weight: $weight-semibold;
+  &__avatar {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: $radius-full;
+    background-color: var(--terracotta-tint);
     color: var(--terracotta);
+    font-family: $font-display;
+    font-size: $text-base;
+  }
+
+  &__who {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__name {
+    font-weight: $weight-semibold;
+    font-size: $text-sm;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__date {
+    font-size: $text-xs;
+    color: var(--muted-foreground);
+  }
+
+  &__google {
+    flex-shrink: 0;
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+
+  &__stars {
+    display: inline-flex;
+    gap: 2px;
 
     svg {
-      width: 0.9rem;
-      height: 0.9rem;
-    }
+      width: 1rem;
+      height: 1rem;
+      color: var(--border);
+      fill: currentColor;
 
-    &:hover {
-      text-decoration: underline;
-      text-underline-offset: 3px;
+      &.is-on {
+        color: #f5b400;
+      }
     }
+  }
+
+  &__text {
+    font-size: $text-sm;
+    line-height: $leading-relaxed;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+@keyframes review-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .review-tile {
+    animation: none;
+    transition: none;
   }
 }
