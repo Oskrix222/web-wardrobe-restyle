@@ -1,8 +1,13 @@
 @use "../brandbook" as *;
 
+// Full-width and solid (no pattern): the page opens calm, the drifting
+// pattern starts below it. Micro shadow separates it from "O nas".
 .hero {
   position: relative;
+  z-index: 1;
   padding-top: $header-height;
+  background-color: #f8f5ec;
+  box-shadow: 0 6px 18px -8px oklch(0.15 0.04 35 / 22%);
 
   &__grid {
     @include container;

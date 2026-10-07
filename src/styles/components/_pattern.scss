@@ -42,36 +42,24 @@
   }
 }
 
-// Solid sections (Hero, Oferta, blog, legal): a slightly narrower sheet in the
-// page colour, floating on the same tinted, drifting pattern as the sections
-// around it, with a micro shadow so the sheet stands out from the movement.
-// The section's own padding narrows the content together with the sheet.
+// Solid sections (Oferta, Opinie, blog, legal): a sheet in the page colour,
+// a bit narrower than the screen, floating on the page's drifting pattern
+// (body::before in _base.scss) with a micro shadow. The section's padding
+// narrows the content together with the sheet.
 .section--panel {
-  --panel-gutter: clamp(0.5rem, 2.5vw, 3rem);
+  --panel-gutter: clamp(0.75rem, 4vw, 4.5rem);
+  --panel-inset-y: clamp(0.5rem, 1.5vw, 1.25rem);
   position: relative;
   isolation: isolate;
   padding-inline: var(--panel-gutter);
-  background-color: color-mix(in oklch, var(--secondary-soft) 85%, transparent);
-  // clip, not hidden — see .about.
-  overflow: hidden;
-  overflow: clip;
 
-  // The drifting pattern, visible in the gutters beside the sheet.
   &::before {
-    @include drifting-pattern(12%);
-    content: "";
-    z-index: -2;
-    background-image: url("/pattern-icons-lg.svg");
-  }
-
-  // The sheet itself — same colour as the page (body/header use #f8f5ec).
-  &::after {
     content: "";
     position: absolute;
     z-index: -1;
-    inset: 0 var(--panel-gutter);
+    inset: var(--panel-inset-y) var(--panel-gutter);
     border-radius: $radius-2xl;
-    background-color: #f8f5ec;
+    background-color: #f8f5ec; // same as body/header
     box-shadow:
       0 0 0 1px oklch(0.15 0.04 35 / 5%),
       0 6px 18px -8px oklch(0.15 0.04 35 / 22%);
@@ -89,7 +77,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .pattern-layer,
-  .section--panel::before {
+  body::before {
     animation: none;
   }
 }

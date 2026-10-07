@@ -89,8 +89,7 @@ function Index() {
         <Categories onPick={pick} />
         <GroupInsurance onPick={pick} />
 
-        <section id="opinie" className="benefits section section--soft">
-          <div className="pattern-layer pattern-layer--dark" aria-hidden="true" />
+        <section id="opinie" className="benefits section section--panel">
           <div ref={benefitsReveal.ref} className={cn("benefits__grid", benefitsReveal.className)}>
             <GoogleProfile feed={reviews} />
 

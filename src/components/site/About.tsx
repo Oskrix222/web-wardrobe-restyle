@@ -16,7 +16,6 @@ export function About({ onContact }: { onContact: () => void }) {
 
   return (
     <section id="o-nas" className="about section section--soft">
-      <div className="pattern-layer pattern-layer--dark" aria-hidden="true" />
       <div ref={reveal.ref} className={cn("about__grid", reveal.className)}>
         <Box panel>
           <span className="eyebrow">Poznaj nas</span>

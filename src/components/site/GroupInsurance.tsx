@@ -30,7 +30,6 @@ export function GroupInsurance({ onPick }: { onPick: (value: string) => void }) 
 
   return (
     <section id="dla-firm" className="group-insurance section section--bordered">
-      <div className="pattern-layer pattern-layer--dark" aria-hidden="true" />
       <div ref={reveal.ref} className={cn("group-insurance__grid", reveal.className)}>
         <div>
           <span className="eyebrow">Dla firm</span>
