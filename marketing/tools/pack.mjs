@@ -15,6 +15,51 @@ export function slugify(title) {
     .slice(0, 80);
 }
 
+/** Blog address + one tracked link per channel, shared by paczka.html and the panel upload. */
+export function campaignLinks(brand, spec) {
+  const slug = spec.blog.slug ?? slugify(spec.blog.title);
+  const campaign = spec.campaign ?? slug;
+  const base = `${brand.site.replace(/\/$/, "")}/blog/${slug}`;
+  const utm = (source, medium, content) =>
+    `${base}?utm_source=${source}&utm_medium=${medium}&utm_campaign=${encodeURIComponent(campaign)}&utm_content=${content}`;
+  return {
+    slug,
+    campaign,
+    base,
+    link: {
+      bio: utm("instagram", "social", "bio"),
+      story: utm("instagram", "social", "story"),
+      dm: utm("instagram", "social", "dm"),
+      facebook: utm("facebook", "social", "post"),
+      google: utm("google_business", "profile", "post"),
+      linkedin: utm("linkedin", "social", "post"),
+    },
+  };
+}
+
+export const fillLink = (text, href) => (text ?? "").replaceAll("{link}", href).trim();
+
+/** Ready-to-publish captions with {link} filled in per channel. */
+export function captionsFor(brand, spec) {
+  const { link } = campaignLinks(brand, spec);
+  const c = spec.captions ?? {};
+  const hashtags = (spec.hashtags ?? []).join(" ");
+  return {
+    instagram: [fillLink(c.instagram, link.bio), hashtags].filter(Boolean).join("\n\n"),
+    facebook: fillLink(c.facebook, link.facebook) || `${fillLink(c.instagram, link.facebook)}\n\n👉 ${link.facebook}`,
+    google: c.google ? fillLink(c.google, link.google) : "",
+    linkedin: c.linkedin ? fillLink(c.linkedin, link.linkedin) : "",
+    dm: spec.dm ? fillLink(spec.dm, link.dm) : "",
+    alt: c.alt ?? "",
+  };
+}
+
+/** Article HTML with the legal footnote appended once. */
+export function articleHtml(brand, spec) {
+  const html = spec.blog.html;
+  return html.includes(brand.disclosure) ? html : `${html}\n<p><em>${esc(brand.disclosure)}</em></p>`;
+}
+
 const CSS = `
 :root{--ink:#2b1a12;--muted:#7a6a5f;--accent:#b4562a;--bg:#f8f5ec;--card:#fff;--border:#e5dccf;--soft:#f3eee4}
 *{box-sizing:border-box}
@@ -124,24 +169,10 @@ const hiddenCopy = (text, button) => {
 
 export function buildPack({ brand, spec, files, dir }) {
   const blog = spec.blog;
-  const slug = blog.slug ?? slugify(blog.title);
-  const campaign = spec.campaign ?? slug;
-  const base = `${brand.site.replace(/\/$/, "")}/blog/${slug}`;
-  const utm = (source, medium, content) =>
-    `${base}?utm_source=${source}&utm_medium=${medium}&utm_campaign=${encodeURIComponent(campaign)}&utm_content=${content}`;
-  const link = {
-    bio: utm("instagram", "social", "bio"),
-    story: utm("instagram", "social", "story"),
-    dm: utm("instagram", "social", "dm"),
-    facebook: utm("facebook", "social", "post"),
-    google: utm("google_business", "profile", "post"),
-    linkedin: utm("linkedin", "social", "post"),
-  };
-  const fill = (text, href) => (text ?? "").replaceAll("{link}", href).trim();
-  const hashtags = (spec.hashtags ?? []).join(" ");
+  const { slug, campaign, base, link } = campaignLinks(brand, spec);
+  const fill = fillLink;
   const c = spec.captions ?? {};
-  const instagram = [fill(c.instagram, link.bio), hashtags].filter(Boolean).join("\n\n");
-  const facebook = fill(c.facebook, link.facebook) || `${fill(c.instagram, link.facebook)}\n\n👉 ${link.facebook}`;
+  const { instagram, facebook } = captionsFor(brand, spec);
 
   const gallery = files
     .map(
@@ -193,9 +224,7 @@ export function buildPack({ brand, spec, files, dir }) {
     )
     .join("");
 
-  const article = blog.html.includes(brand.disclosure)
-    ? blog.html
-    : `${blog.html}\n<p><em>${esc(brand.disclosure)}</em></p>`;
+  const article = articleHtml(brand, spec);
 
   return `<!doctype html>
 <html lang="pl">

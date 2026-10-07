@@ -127,6 +127,156 @@ export type Database = {
         }
         Relationships: []
       }
+      content_campaigns: {
+        Row: {
+          created_at: string
+          folder: string
+          id: string
+          keyword: string | null
+          notes: string[]
+          title: string
+          week_start: string
+        }
+        Insert: {
+          created_at?: string
+          folder: string
+          id?: string
+          keyword?: string | null
+          notes?: string[]
+          title: string
+          week_start: string
+        }
+        Update: {
+          created_at?: string
+          folder?: string
+          id?: string
+          keyword?: string | null
+          notes?: string[]
+          title?: string
+          week_start?: string
+        }
+        Relationships: []
+      }
+      content_items: {
+        Row: {
+          attempts: number
+          blog_post_id: string | null
+          campaign_id: string
+          caption: string
+          caption_approved: boolean
+          caption_facebook: string
+          channels: string[]
+          created_at: string
+          details: Json
+          id: string
+          kind: string
+          last_error: string | null
+          locked_until: string | null
+          media: Json
+          media_approved: boolean
+          position: number
+          publish_state: Json
+          published_at: string | null
+          scheduled_at: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          blog_post_id?: string | null
+          campaign_id: string
+          caption?: string
+          caption_approved?: boolean
+          caption_facebook?: string
+          channels?: string[]
+          created_at?: string
+          details?: Json
+          id?: string
+          kind: string
+          last_error?: string | null
+          locked_until?: string | null
+          media?: Json
+          media_approved?: boolean
+          position?: number
+          publish_state?: Json
+          published_at?: string | null
+          scheduled_at: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          blog_post_id?: string | null
+          campaign_id?: string
+          caption?: string
+          caption_approved?: boolean
+          caption_facebook?: string
+          channels?: string[]
+          created_at?: string
+          details?: Json
+          id?: string
+          kind?: string
+          last_error?: string | null
+          locked_until?: string | null
+          media?: Json
+          media_approved?: boolean
+          position?: number
+          publish_state?: Json
+          published_at?: string | null
+          scheduled_at?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      content_truths: {
+        Row: {
+          active: boolean
+          body: string
+          category: string
+          created_at: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          body: string
+          category?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          body?: string
+          category?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      content_integrations: {
+        Row: {
+          data: Json
+          provider: string
+          updated_at: string
+        }
+        Insert: {
+          data?: Json
+          provider: string
+          updated_at?: string
+        }
+        Update: {
+          data?: Json
+          provider?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -143,6 +293,10 @@ export type Database = {
       increment_blog_post_contact_click: {
         Args: { post_slug: string }
         Returns: undefined
+      }
+      content_connection_status: {
+        Args: never
+        Returns: Json
       }
     }
     Enums: {

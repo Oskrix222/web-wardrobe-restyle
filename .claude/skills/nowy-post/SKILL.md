@@ -1,17 +1,24 @@
 ---
 name: nowy-post
-description: Turns marketing graphics or animations (typically Nationale-Nederlanden posts) into a complete OSCare content package — rebranded post + carousel + story + blog cover, Instagram/Facebook/Google captions, a ready-to-paste SEO blog article, 3 reel scripts, UTM links and a publishing plan. Use whenever the user attaches/pastes graphics, drops them into marketing/wrzuc-tutaj, or asks for "nowy post", "paczka", "przerób grafikę", "zrób opis / wpis / rolki do tej grafiki".
+description: Turns marketing graphics or animations (typically Nationale-Nederlanden posts) into a complete OSCare content package — rebranded post + carousel + story + blog cover, Instagram/Facebook/Google captions, an SEO blog article, 3 reel scripts, UTM links — and sends it to the admin panel's content calendar (/admin/kalendarz) on the next free week. Use whenever the user attaches/pastes graphics, drops them into marketing/wrzuc-tutaj, or asks for "nowy post", "paczka", "przerób grafikę", "zrób opis / wpis / rolki do tej grafiki".
 ---
 
 # /nowy-post — z grafiki pełna paczka OSCare
 
 The user (Oskar, non-technical, Polish) gets marketing graphics from Nationale-Nederlanden every few weeks.
-Your job: one topic → one package with everything needed to publish and sell. You write all the
-copy; `marketing/tools/generate.mjs` renders the graphics and the copy-paste page (`paczka.html`).
+Your job: one topic → one package with everything needed to publish and sell, placed in the
+panel's calendar for one week (blog + post + story + 3 reels). You write all the copy;
+`marketing/tools/generate.mjs` renders the graphics and `paczka.html`;
+`marketing/tools/panel.mjs` talks to the panel. The user approves everything in the panel and
+uploads the filmed reels; the site's cron publishes approved items on their dates.
 Talk to the user in plain Polish. Never ask them to run commands.
 
 ## Workflow
 
+0. **Read the truths first:** `node marketing/tools/panel.mjs prawdy` — facts the user entered in
+   Panel → Prawdy (what they don't sell, who can't be insured, house rules). If the key is missing,
+   read the cached `marketing/prawdy.md` and tell the user the panel isn't connected yet.
+   See „Prawdy” below for how to apply them — they override everything else in this file.
 1. **Collect inputs.** Paths the user attached (pasted images carry a source path), files in
    `marketing/wrzuc-tutaj/`, or a folder they name. Ignore `Thumbs.db`, `.DS_Store`.
 2. **Look at every file.** Read each image. For `.mp4`, grab 6 frames into the scratchpad
@@ -20,9 +27,11 @@ Talk to the user in plain Polish. Never ask them to run commands.
    occasion/date (often in the filename, e.g. „31 października”), where the people/faces are.
 3. **Group by topic.** Same message or same filename with „(1)”, „(2)” → one package; the extra
    photos become `variants`. Different products → separate packages.
-4. **Decide per topic** using the rules below: skip or reframe? `layout` photo or text?
-   `formType` (life | home | travel | business — the website form's options), comment `keyword`,
-   main publish date.
+4. **Decide per topic** using the rules below: skip or reframe (truths, NN-only claims)?
+   `layout` photo or text? `formType` (life | home | travel | business — the website form's
+   options), comment `keyword`. Week: `node marketing/tools/panel.mjs plan` shows what's taken;
+   by default the package goes to the next free week. An occasion (10.10, 31.10…) → set
+   `publish` with exact dates in that week.
 5. **Create the folder** `marketing/posty/<YYYY-MM-DD>-<temat>/` (date = planned main post day) and
    move the sources into its `zrodlo/` (out of `wrzuc-tutaj`; copy if they live elsewhere).
 6. **Write `spec.mjs`.** Follow `marketing/tools/example-spec.mjs`: same structure and the same
@@ -32,9 +41,13 @@ Talk to the user in plain Polish. Never ask them to run commands.
    (or hstack them with ffmpeg into one image). Check: no trace of NN (logo, orange frame, their
    hashtag); faces/subject not cut (fix `focus`); headline didn't shrink into small type (shorten
    it); text reads naturally in Polish. Fix the spec and re-render until it's right.
-9. **Hand over.** Open `paczka.html` in the browser pane (`file://` URL) and tell the user in a
-   few lines: what's in the package, the plan dates, and the „Zanim opublikujesz” notes.
-   `marketing/posty/` is git-ignored — nothing to commit.
+9. **Send to the panel:** `node marketing/tools/panel.mjs wyslij marketing/posty/<folder>`.
+   It uploads the graphics, creates the blog draft and the calendar items (blog, post, story,
+   3 reels) with dates, and prints them. Re-sending updates items that aren't approved yet
+   (`--nadpisz` also replaces approved ones — only when the user asks).
+10. **Hand over.** Tell the user in a few lines: which week, what waits for approval, which reels
+   to film (by when), and the „Zanim opublikujesz” notes. Link: `<site>/admin/kalendarz`.
+   `paczka.html` stays as an offline copy. `marketing/posty/` is git-ignored — nothing to commit.
 
 ## Spec reference
 
@@ -52,13 +65,24 @@ Talk to the user in plain Polish. Never ask them to run commands.
 | `hashtags`, `dm` | 3–5 hashtags; DM reply with `{link}`. |
 | `blog` | `title`, `excerpt`, `keyword`, `keywords`, `html` (`slug` only to override). |
 | `reels` | Exactly 3 × `{ title, format, length, hook, cover, audio, scenes: [{ time, shot, say, text }], tips, caption }`. |
-| `plan`, `notes` | Dated steps; things the user must check before publishing. |
+| `plan`, `notes` | Dated steps (shown in paczka.html); things to check before publishing (shown in the panel). |
+| `publish` | Optional: `{ week, blog, post, story, reels: [3] }` as `"YYYY-MM-DD HH:MM"` (Polish time). Without it: next free week, slots from `brand.schedule` (Mon 7:00 blog, Tue/Thu 19:00 + Sat 10:00 reels, Wed 18:00 post, Wed 20:00 story). |
 
 Text markup in graphic fields: `*słowa*` = terracotta accent, `**słowa**` = bold.
 Icons: lucide names (https://lucide.dev/icons) — e.g. hand-coins, stethoscope, activity,
 shield-check, heart-pulse, plane, house, baby, users, piggy-bank, briefcase, dog, car.
 
 ## Rules
+
+### Prawdy (from Panel → Prawdy) — highest priority
+- Never contradict a truth, and never imply the opposite (no „każdy dostanie polisę”, no promises
+  about acceptance, no hints at products the user doesn't sell).
+- Don't write about the restricted subject at all — no disclaimers like „osoby po X nie dostaną
+  polisy”. Steer the content around it: pick other angles, other FAQ questions, other reels.
+- A source graphic about something the user doesn't offer (e.g. car insurance) → don't make a
+  package; tell the user why.
+- If a truth makes a whole angle impossible (e.g. underwriting after mental-health treatment),
+  drop that angle everywhere: graphics, captions, blog, FAQ, reels, DM.
 
 ### Branding and legal (non-negotiable)
 - Nothing of NN survives: logo, name in the graphic, the orange speech-bubble frame, their

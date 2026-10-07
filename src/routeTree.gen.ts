@@ -12,7 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PolitykaPrywatnosciRouteImport } from './routes/polityka-prywatnosci'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminKalendarzRouteImport } from './routes/admin/kalendarz'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminPolaczeniaRouteImport } from './routes/admin/polaczenia'
+import { Route as AdminPrawdyRouteImport } from './routes/admin/prawdy'
 import { Route as AdminStatystykiRouteImport } from './routes/admin/statystyki'
 import { Route as AdminZgloszeniaRouteImport } from './routes/admin/zgloszenia'
 import { Route as BlogIndexRouteImport } from './routes/blog/index'
@@ -20,6 +23,8 @@ import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 import { Route as AdminBlogIndexRouteImport } from './routes/admin/blog/index'
 import { Route as AdminBlogIdRouteImport } from './routes/admin/blog/$id'
 import { Route as AdminBlogNewRouteImport } from './routes/admin/blog/new'
+import { Route as ApiContentCronRouteImport } from './routes/api/content/cron'
+import { Route as ApiMetaCallbackRouteImport } from './routes/api/meta/callback'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -36,9 +41,24 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminKalendarzRoute = AdminKalendarzRouteImport.update({
+  id: '/admin/kalendarz',
+  path: '/admin/kalendarz',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPolaczeniaRoute = AdminPolaczeniaRouteImport.update({
+  id: '/admin/polaczenia',
+  path: '/admin/polaczenia',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPrawdyRoute = AdminPrawdyRouteImport.update({
+  id: '/admin/prawdy',
+  path: '/admin/prawdy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminStatystykiRoute = AdminStatystykiRouteImport.update({
@@ -76,11 +96,24 @@ const AdminBlogNewRoute = AdminBlogNewRouteImport.update({
   path: '/admin/blog/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiContentCronRoute = ApiContentCronRouteImport.update({
+  id: '/api/content/cron',
+  path: '/api/content/cron',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMetaCallbackRoute = ApiMetaCallbackRouteImport.update({
+  id: '/api/meta/callback',
+  path: '/api/meta/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/polityka-prywatnosci': typeof PolitykaPrywatnosciRoute
+  '/admin/kalendarz': typeof AdminKalendarzRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/polaczenia': typeof AdminPolaczeniaRoute
+  '/admin/prawdy': typeof AdminPrawdyRoute
   '/admin/statystyki': typeof AdminStatystykiRoute
   '/admin/zgloszenia': typeof AdminZgloszeniaRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -88,12 +121,17 @@ export interface FileRoutesByFullPath {
   '/blog/': typeof BlogIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
+  '/api/content/cron': typeof ApiContentCronRoute
+  '/api/meta/callback': typeof ApiMetaCallbackRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/polityka-prywatnosci': typeof PolitykaPrywatnosciRoute
+  '/admin/kalendarz': typeof AdminKalendarzRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/polaczenia': typeof AdminPolaczeniaRoute
+  '/admin/prawdy': typeof AdminPrawdyRoute
   '/admin/statystyki': typeof AdminStatystykiRoute
   '/admin/zgloszenia': typeof AdminZgloszeniaRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -101,13 +139,18 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
+  '/api/content/cron': typeof ApiContentCronRoute
+  '/api/meta/callback': typeof ApiMetaCallbackRoute
   '/admin/blog': typeof AdminBlogIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/polityka-prywatnosci': typeof PolitykaPrywatnosciRoute
+  '/admin/kalendarz': typeof AdminKalendarzRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/polaczenia': typeof AdminPolaczeniaRoute
+  '/admin/prawdy': typeof AdminPrawdyRoute
   '/admin/statystyki': typeof AdminStatystykiRoute
   '/admin/zgloszenia': typeof AdminZgloszeniaRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -115,6 +158,8 @@ export interface FileRoutesById {
   '/blog/': typeof BlogIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
+  '/api/content/cron': typeof ApiContentCronRoute
+  '/api/meta/callback': typeof ApiMetaCallbackRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
 }
 export interface FileRouteTypes {
@@ -122,7 +167,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/polityka-prywatnosci'
+    | '/admin/kalendarz'
     | '/admin/login'
+    | '/admin/polaczenia'
+    | '/admin/prawdy'
     | '/admin/statystyki'
     | '/admin/zgloszenia'
     | '/blog/$slug'
@@ -130,12 +178,17 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/admin/blog/$id'
     | '/admin/blog/new'
+    | '/api/content/cron'
+    | '/api/meta/callback'
     | '/admin/blog/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/polityka-prywatnosci'
+    | '/admin/kalendarz'
     | '/admin/login'
+    | '/admin/polaczenia'
+    | '/admin/prawdy'
     | '/admin/statystyki'
     | '/admin/zgloszenia'
     | '/blog/$slug'
@@ -143,12 +196,17 @@ export interface FileRouteTypes {
     | '/blog'
     | '/admin/blog/$id'
     | '/admin/blog/new'
+    | '/api/content/cron'
+    | '/api/meta/callback'
     | '/admin/blog'
   id:
     | '__root__'
     | '/'
     | '/polityka-prywatnosci'
+    | '/admin/kalendarz'
     | '/admin/login'
+    | '/admin/polaczenia'
+    | '/admin/prawdy'
     | '/admin/statystyki'
     | '/admin/zgloszenia'
     | '/blog/$slug'
@@ -156,13 +214,18 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/admin/blog/$id'
     | '/admin/blog/new'
+    | '/api/content/cron'
+    | '/api/meta/callback'
     | '/admin/blog/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PolitykaPrywatnosciRoute: typeof PolitykaPrywatnosciRoute
+  AdminKalendarzRoute: typeof AdminKalendarzRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminPolaczeniaRoute: typeof AdminPolaczeniaRoute
+  AdminPrawdyRoute: typeof AdminPrawdyRoute
   AdminStatystykiRoute: typeof AdminStatystykiRoute
   AdminZgloszeniaRoute: typeof AdminZgloszeniaRoute
   BlogSlugRoute: typeof BlogSlugRoute
@@ -170,6 +233,8 @@ export interface RootRouteChildren {
   BlogIndexRoute: typeof BlogIndexRoute
   AdminBlogIdRoute: typeof AdminBlogIdRoute
   AdminBlogNewRoute: typeof AdminBlogNewRoute
+  ApiContentCronRoute: typeof ApiContentCronRoute
+  ApiMetaCallbackRoute: typeof ApiMetaCallbackRoute
   AdminBlogIndexRoute: typeof AdminBlogIndexRoute
 }
 
@@ -196,11 +261,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/kalendarz': {
+      id: '/admin/kalendarz'
+      path: '/admin/kalendarz'
+      fullPath: '/admin/kalendarz'
+      preLoaderRoute: typeof AdminKalendarzRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/admin/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/polaczenia': {
+      id: '/admin/polaczenia'
+      path: '/admin/polaczenia'
+      fullPath: '/admin/polaczenia'
+      preLoaderRoute: typeof AdminPolaczeniaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/prawdy': {
+      id: '/admin/prawdy'
+      path: '/admin/prawdy'
+      fullPath: '/admin/prawdy'
+      preLoaderRoute: typeof AdminPrawdyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/statystyki': {
@@ -252,13 +338,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBlogNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/content/cron': {
+      id: '/api/content/cron'
+      path: '/api/content/cron'
+      fullPath: '/api/content/cron'
+      preLoaderRoute: typeof ApiContentCronRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/meta/callback': {
+      id: '/api/meta/callback'
+      path: '/api/meta/callback'
+      fullPath: '/api/meta/callback'
+      preLoaderRoute: typeof ApiMetaCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PolitykaPrywatnosciRoute: PolitykaPrywatnosciRoute,
+  AdminKalendarzRoute: AdminKalendarzRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminPolaczeniaRoute: AdminPolaczeniaRoute,
+  AdminPrawdyRoute: AdminPrawdyRoute,
   AdminStatystykiRoute: AdminStatystykiRoute,
   AdminZgloszeniaRoute: AdminZgloszeniaRoute,
   BlogSlugRoute: BlogSlugRoute,
@@ -266,6 +369,8 @@ const rootRouteChildren: RootRouteChildren = {
   BlogIndexRoute: BlogIndexRoute,
   AdminBlogIdRoute: AdminBlogIdRoute,
   AdminBlogNewRoute: AdminBlogNewRoute,
+  ApiContentCronRoute: ApiContentCronRoute,
+  ApiMetaCallbackRoute: ApiMetaCallbackRoute,
   AdminBlogIndexRoute: AdminBlogIndexRoute,
 }
 export const routeTree = rootRouteImport

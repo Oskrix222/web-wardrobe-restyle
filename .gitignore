@@ -33,5 +33,6 @@ dist-ssr
 
 # Social-media packages: generated graphics, rebuilt any time (see marketing/JAK-UZYWAC.md)
 marketing/posty/
+marketing/prawdy.md
 marketing/wrzuc-tutaj/*
 !marketing/wrzuc-tutaj/.gitkeep

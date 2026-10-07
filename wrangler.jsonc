@@ -7,6 +7,8 @@
   // Keep variables set in the Cloudflare dashboard across deploys.
   "keep_vars": true,
   "observability": { "enabled": true },
+  // Every 10 minutes: publish approved calendar items that are due (src/server/cron-plugin.ts).
+  "triggers": { "crons": ["*/10 * * * *"] },
   // Non-secret runtime settings. RESEND_API_KEY is a Secret set in the dashboard.
   "vars": {
     // Comma-separated list of addresses that get an e-mail for every new lead.

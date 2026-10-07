@@ -26,8 +26,8 @@ export default {
       text: "Pakiety różnią się **liczbą konsultacji w roku**, karencją i tym, czy obejmują psychiatrę. Wszystko jest w OWU, a my czytamy je za Ciebie.",
     },
     {
-      title: "Ankieta medyczna: *mów prawdę*",
-      text: "Wcześniejsze leczenie nie zawsze zamyka drogę do polisy. Za to **zatajenie go może zablokować wypłatę**, kiedy będzie najbardziej potrzebna.",
+      title: "Może masz to *już w pracy*",
+      text: "Wiele polis grupowych ma pakiet wsparcia psychologicznego. **Zapytaj kadry o OWU** albo prześlij nam nazwę polisy, a sprawdzimy zakres za Ciebie.",
     },
   ],
   carouselCta: {
@@ -61,7 +61,7 @@ Jesteś w kryzysie? Nie czekaj na polisę: 800 70 2222 (całą dobę) lub 116 12
 
 Kiedy stres albo bezsenność ciągną się tygodniami, potrzebny jest specjalista, a na wolny termin często czeka się długo. Wiele polis na życie i ubezpieczeń zdrowotnych ma dziś pakiety z konsultacjami psychologa i psychiatry (także online). Różnią się jednak limitem sesji, karencją i wyłączeniami.
 
-W artykule wyjaśniamy, co realnie obejmują takie pakiety, na co uważać w OWU i jak odpowiadać na ankietę medyczną:
+W artykule wyjaśniamy, co realnie obejmują takie pakiety, ile sesji dostajesz i na co uważać w OWU:
 👉 {link}
 
 Chcesz porównać oferty? Napisz do nas albo zadzwoń: +48 539 075 385.
@@ -70,7 +70,7 @@ Jesteś w kryzysie? 800 70 2222 (całą dobę) lub 116 123, w zagrożeniu życia
 
 #zdrowiepsychiczne #ubezpieczenia #OSCare`,
 
-    google: `10 października – Światowy Dzień Zdrowia Psychicznego. Sprawdź, które ubezpieczenia dają szybki dostęp do psychologa i psychiatry, na co uważać w OWU (limit sesji, karencja, wyłączenia) i jak odpowiadać na ankietę medyczną po wcześniejszym leczeniu. Porównujemy oferty i tłumaczymy drobny druk – bezpłatnie i bez zobowiązań. Zadzwoń: +48 539 075 385.`,
+    google: `10 października – Światowy Dzień Zdrowia Psychicznego. Sprawdź, które ubezpieczenia dają szybki dostęp do psychologa i psychiatry, ile konsultacji obejmują i na co uważać w OWU (limit sesji, karencja, wyłączenia). Podpowiadamy też, jak sprawdzić, czy masz już taki pakiet w polisie grupowej w pracy. Porównujemy oferty i tłumaczymy drobny druk – bezpłatnie i bez zobowiązań. Zadzwoń: +48 539 075 385.`,
   },
 
   dm: `Hej! 👋 Dzięki za komentarz. Obiecany poradnik: {link}
@@ -83,13 +83,13 @@ Oskar, OSCare`,
   blog: {
     title: "Ubezpieczenie zdrowia psychicznego: co obejmuje polisa?",
     excerpt:
-      "Psycholog i psychiatra bez długiego czekania? Sprawdź, co obejmują pakiety wsparcia psychologicznego w polisach i na co uważać w OWU oraz ankiecie medycznej.",
+      "Psycholog i psychiatra bez długiego czekania? Sprawdź, co obejmują pakiety wsparcia psychologicznego w polisach, ile sesji dostajesz i na co uważać w OWU.",
     keyword: "ubezpieczenie zdrowia psychicznego",
     keywords: [
       "psycholog w ramach ubezpieczenia",
       "ubezpieczenie zdrowotne psychiatra",
-      "polisa na życie a depresja",
-      "ankieta medyczna ubezpieczenie leczenie psychiatryczne",
+      "pakiet psychologiczny w polisie",
+      "konsultacje psychologiczne online ubezpieczenie",
     ],
     html: `<p>10 października obchodzimy Światowy Dzień Zdrowia Psychicznego. To dobry moment, żeby zadać sobie niewygodne pytanie: co zrobię, jeśli rozmowa z bliskimi przestanie wystarczać? Stres w pracy, bezsenność, żałoba, przeciążenie po narodzinach dziecka. Każdemu może przydarzyć się okres, w którym potrzebna jest pomoc specjalisty. A na wolny termin u psychologa czy psychiatry często czeka się długo.</p>
 <p>Coraz więcej ubezpieczeń ma pakiety, które skracają tę drogę. W tym artykule wyjaśniamy, co realnie obejmuje <strong>ubezpieczenie zdrowia psychicznego</strong>, czym różnią się oferty i na co uważać, zanim podpiszesz umowę.</p>
@@ -125,10 +125,6 @@ Oskar, OSCare`,
 
 <blockquote>Nie wiesz, czy Twoja obecna polisa, np. grupowa w pracy, ma wsparcie psychologiczne? Podaj nam jej nazwę, a sprawdzimy to za darmo. <a href="/#kontakt">Zostaw kontakt</a>.</blockquote>
 
-<h2>Ankieta medyczna: czy wcześniejsze leczenie zamyka drogę do polisy?</h2>
-<p>Nie zawsze. Przy zawieraniu polisy na życie ubezpieczyciel zwykle pyta o stan zdrowia, także o leczenie psychiatryczne lub psychologiczne. Po analizie odpowiedzi może przyjąć wniosek na standardowych warunkach, zaproponować wyższą składkę, wyłączyć część ochrony albo odmówić. Każde towarzystwo ocenia to inaczej, dlatego warto porównać kilka ofert.</p>
-<p>Najważniejsza zasada: <strong>odpowiadaj zgodnie z prawdą</strong>. Zatajenie informacji o leczeniu może skończyć się odmową wypłaty właśnie wtedy, gdy będzie najbardziej potrzebna. Jeśli nie wiesz, jak opisać swoją sytuację, pomożemy przejść przez ankietę.</p>
-
 <h2>Polisa w pracy czy indywidualna?</h2>
 <p>Ubezpieczenie grupowe bywa tańsze i często ma pakiet psychologiczny w standardzie. Ma jednak jedną wadę: kończy się razem z pracą. Polisa indywidualna należy do Ciebie, niezależnie od zmian zawodowych. Dobrym rozwiązaniem jest często połączenie obu. Grupowa daje podstawę, a indywidualna stabilność.</p>
 
@@ -147,8 +143,8 @@ Oskar, OSCare`,
 <h2>Najczęstsze pytania</h2>
 <h3>Czy ubezpieczenie na życie pokrywa terapię?</h3>
 <p>Sama polisa na życie – nie. Konsultacje psychologiczne pokrywają dodatkowe pakiety medyczne lub assistance, które można do niej dokupić. Liczbę sesji określają OWU.</p>
-<h3>Czy mogę kupić polisę, jeśli leczę się na depresję?</h3>
-<p>Często tak, choć warunki mogą być inne: wyższa składka albo wyłączenie części ochrony. Każdy ubezpieczyciel ocenia ryzyko indywidualnie, więc warto porównać oferty.</p>
+<h3>Czy pakiet obejmuje też moją rodzinę?</h3>
+<p>To zależy od wariantu. Niektóre pakiety obejmują partnera i dzieci, inne tylko osobę ubezpieczoną. Sprawdzisz to w OWU, a my pomożemy porównać warianty.</p>
 <h3>Czy konsultacje online mają sens?</h3>
 <p>Dla wielu osób tak. Są szybciej dostępne i nie wymagają dojazdu. Jeśli wolisz rozmowę na żywo, wybierz pakiet ze stacjonarnymi wizytami w Twoim mieście.</p>
 <h3>Skąd mam wiedzieć, czy mam taki pakiet w pracy?</h3>
@@ -203,33 +199,42 @@ Napisz „WSPARCIE”, a sprawdzimy, co już masz.
 #zdrowiepsychiczne #ubezpieczeniezdrowotne #psychiatra`,
     },
     {
-      title: "Czy po leczeniu depresji dostanę ubezpieczenie?",
-      format: "Odpowiadam na pytanie, mówisz do kamery (pytanie jako naklejka lub odpowiedź na komentarz)",
-      length: "35–45 s",
-      hook: "Na ekranie pytanie: „Leczyłam się na depresję. Czy dostanę polisę na życie?”",
-      cover: "Depresja a polisa na życie",
-      audio: "Twój głos, bez muzyki albo z bardzo cichym podkładem",
+      title: "3 pytania, zanim kupisz polisę z psychologiem",
+      format: "Lista do kamery: 3 pytania (możesz odliczać na palcach)",
+      length: "30–35 s",
+      hook: "„Kupujesz polisę z psychologiem? Zadaj te 3 pytania.” Napis: 3 PYTANIA PRZED ZAKUPEM",
+      cover: "3 pytania przed zakupem",
+      audio: "Twój głos + cichy podkład z biblioteki Instagrama",
       scenes: [
-        { time: "0–3 s", shot: "Naklejka z pytaniem na ekranie, potem Ty", say: "Leczyłaś się na depresję i boisz się, że nikt Cię nie ubezpieczy? Odpowiedź brzmi: to zależy, ale to nie musi oznaczać odmowy.", text: "Depresja a polisa na życie?" },
-        { time: "3–15 s", shot: "Mówisz do kamery", say: "Ubezpieczyciel zapyta o zdrowie w ankiecie medycznej. Może przyjąć Cię na zwykłych warunkach, zaproponować wyższą składkę albo wyłączyć część ochrony.", text: "Standard · wyższa składka · wyłączenie" },
-        { time: "15–25 s", shot: "Poważniej, wolniej", say: "Najważniejsze: odpowiadaj zgodnie z prawdą. Zatajenie leczenia może zablokować wypłatę wtedy, kiedy będzie najbardziej potrzebna.", text: "⚠ Nie zatajaj leczenia" },
-        { time: "25–35 s", shot: "Ciepło, uśmiech", say: "Każde towarzystwo ocenia to inaczej, dlatego warto porównać kilka ofert. Właśnie od tego jesteśmy.", text: "Różne towarzystwa = różne decyzje" },
-        { time: "35–40 s", shot: "Wskazujesz na komentarze", say: "Napisz WSPARCIE w komentarzu, pomogę Ci przejść przez ankietę.", text: "Napisz „WSPARCIE” 👇" },
+        { time: "0–3 s", shot: "Zbliżenie, unosisz trzy palce", say: "Kupujesz polisę z dostępem do psychologa? Zadaj te trzy pytania.", text: "3 PYTANIA PRZED ZAKUPEM" },
+        { time: "3–12 s", shot: "Jeden palec", say: "Pierwsze: ile konsultacji dostaję w roku? I czy osobno u psychologa i u psychiatry?", text: "1. Ile sesji w roku?" },
+        { time: "12–20 s", shot: "Dwa palce", say: "Drugie: czy wizyty są tylko online, czy też stacjonarnie w moim mieście?", text: "2. Online czy na miejscu?" },
+        { time: "20–28 s", shot: "Trzy palce", say: "Trzecie: od kiedy działa ochrona? Zapytaj o karencję, czyli czas, w którym pakiet jeszcze nie działa.", text: "3. Od kiedy działa?" },
+        { time: "28–34 s", shot: "Wskazujesz na komentarze", say: "Napisz WSPARCIE w komentarzu, a sprawdzę te trzy rzeczy za Ciebie w kilku ofertach.", text: "Napisz „WSPARCIE” 👇" },
       ],
-      tips: "Najlepiej jako „Odpowiedz rolką” na prawdziwe pytanie z komentarzy. Pytania zbierzesz naklejką „Pytania” w story.",
-      caption: `Czy po leczeniu depresji dostaniesz polisę na życie? To zależy, ale to nie musi oznaczać odmowy. Odpowiadaj w ankiecie zgodnie z prawdą i porównaj kilka ofert.
+      tips: "Jedno ujęcie z ręki albo ze statywu. Każde pytanie jako duży napis na ekranie, żeby dało się obejrzeć bez dźwięku.",
+      caption: `Kupujesz ubezpieczenie z dostępem do psychologa? Zapytaj o 3 rzeczy: ile sesji w roku, online czy stacjonarnie i od kiedy działa ochrona.
 
-Napisz „WSPARCIE”, a pomogę Ci przejść przez ankietę medyczną.
+Napisz „WSPARCIE”, a sprawdzę to za Ciebie w kilku ofertach.
 
-#zdrowiepsychiczne #ubezpieczenienazycie #depresja`,
+#zdrowiepsychiczne #ubezpieczenienazycie #psycholog`,
     },
   ],
 
+  // Week of the occasion (10.10). Without `publish` the panel picks the next free week.
+  publish: {
+    week: "2026-10-05",
+    blog: "2026-10-08 07:00",
+    post: "2026-10-10 10:00",
+    story: "2026-10-10 12:00",
+    reels: ["2026-10-08 19:00", "2026-10-09 19:00", "2026-10-12 19:00"],
+  },
+
   plan: [
-    { date: "czw 08.10", what: "Opublikuj wpis na blogu i ustaw link w bio (sekcja Linki). Rolka 1: mit kontra fakt." },
-    { date: "pt 09.10", what: "Rolka 2: scenka POV. Odpisuj na komentarze „WSPARCIE” tekstem z sekcji Opisy → DM." },
-    { date: "sob 10.10", what: "Dzień Zdrowia Psychicznego: karuzela (post-1 … post-5), story z linkiem, post na Facebooku i w wizytówce Google." },
-    { date: "pon 12.10", what: "Rolka 3: depresja a polisa na życie. Story z naklejką „Pytania” o zdrowie i ubezpieczenia." },
+    { date: "czw 08.10", what: "7:00 wpis na blogu, 19:00 rolka 1: mit kontra fakt. Ustaw link w bio (sekcja Linki)." },
+    { date: "pt 09.10", what: "19:00 rolka 2: scenka POV. Odpisuj na komentarze „WSPARCIE” tekstem z sekcji Opisy → DM." },
+    { date: "sob 10.10", what: "Dzień Zdrowia Psychicznego: 10:00 karuzela (post-1 … post-5) na Instagramie i Facebooku, 12:00 story z linkiem, post w wizytówce Google." },
+    { date: "pon 12.10", what: "19:00 rolka 3: 3 pytania przed zakupem. Story z naklejką „Pytania”." },
     { date: "do 17.10", what: "Odpowiedz na wszystkie DM. Policz, ile kontaktów dała kampania (formularz, DM, telefony)." },
   ],
 

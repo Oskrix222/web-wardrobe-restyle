@@ -6,10 +6,15 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
+// Forwarded to nitro(): the plugin turns the Worker's cron trigger into a publisher run.
+// The wrapper's types only list a few nitro options, but it passes the whole object on.
+const nitro = { plugins: ["./src/server/cron-plugin.ts"] } as { preset?: string };
+
 export default defineConfig({
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  nitro,
 });

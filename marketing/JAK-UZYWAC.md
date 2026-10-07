@@ -1,47 +1,64 @@
-# Paczka posta z grafiki — jak używać
+# Treści: od grafiki do publikacji
 
-Dajesz Claude'owi grafikę (np. od Nationale-Nederlanden), a dostajesz komplet do publikacji:
+Dajesz Claude'owi grafikę (np. od Nationale-Nederlanden), a on robi z niej komplet na jeden
+tydzień i wstawia go do **Panelu → Kalendarz** na najbliższy wolny tydzień:
 
-- **post w brandingu OSCare** + karuzela (5 slajdów) + story + okładka wpisu na blog,
-- **opisy**: Instagram (z hasztagami i tekstem alternatywnym), Facebook, wizytówka Google,
-  gotowa odpowiedź w DM,
-- **wpis na blog** pod Google, do wklejenia jednym przyciskiem,
-- **3 scenariusze rolek**: co mówisz, co widać, napisy na ekranie, opis pod rolką,
-- **linki ze śledzeniem** (UTM), żeby było widać, skąd przychodzą klienci,
-- **plan publikacji** z datami.
+- **wpis na blogu** (pon 7:00), gotowy pod Google,
+- **post-karuzela** na Instagram i Facebook (śr 18:00) z opisami i hasztagami,
+- **story** z linkiem do wpisu (śr 20:00),
+- **3 rolki** (wt i czw 19:00, sob 10:00): scenariusz, napisy, opis. Nagrywasz je Ty.
 
-## Krok po kroku
+Ty tylko zatwierdzasz i wgrywasz rolki. Resztę robi automat.
 
-1. Wrzuć grafiki (albo animacje .mp4) do folderu **`marketing/wrzuc-tutaj`**.
-   Możesz też po prostu wkleić je do czatu.
-2. Napisz do Claude'a: **`/nowy-post`** (albo zwyczajnie: „zrób paczkę z tych grafik”).
-3. Po kilku minutach dostaniesz folder `marketing/posty/<data>-<temat>/`.
-   Otwórz w nim **`paczka.html`** (dwuklik — otworzy się w przeglądarce).
-4. W paczce wszystko ma przycisk **Kopiuj**. Grafiki pobierzesz z sekcji „Grafiki”
-   albo weźmiesz prosto z folderu.
+## Na co dzień
 
-## Jak to publikować, żeby sprzedawało
+1. Wrzuć grafiki do folderu **`marketing/wrzuc-tutaj`** albo wklej je do czatu i napisz
+   **`/nowy-post`**.
+2. Claude sprawdza Twoje **Prawdy**, robi paczkę i wysyła ją do panelu.
+3. Wejdź w **Panel → Kalendarz**. Przy każdej pozycji masz przyciski:
+   - **Zatwierdź grafikę / Zatwierdź opis** (post), **Zatwierdź wpis** (blog), **Zatwierdź story**,
+   - przy rolkach: **Wgraj rolkę** (MP4/MOV, pionowo, do 50 MB), potem **Zatwierdź wideo**
+     i **Zatwierdź opis**.
+   Opis i termin możesz zmienić w każdej chwili. Zmiana opisu cofa jego zatwierdzenie.
+4. Gdy wszystko przy pozycji jest zatwierdzone, publikuje się **samo o wyznaczonej godzinie**
+   (automat sprawdza kalendarz co 10 minut). „Opublikuj teraz” publikuje od razu.
 
-1. **Najpierw wpis na blogu.** Wszystkie linki z kampanii prowadzą do niego.
-2. Ustaw **link w bio** na link z sekcji „Linki” (na czas kampanii).
-3. Rolki i karuzela kończą się prośbą: *napisz SŁOWO w komentarzu*. Każdemu, kto napisze,
-   wyślij w DM gotową odpowiedź z paczki. Można to zautomatyzować w ManyChat.
-4. W dniu posta wrzuć story z naklejką „Link” w wolnym miejscu pod tekstem.
-5. Ten sam post wrzuć na Facebooka i do wizytówki Google (teksty są w paczce).
+Story z naklejką „Link” wrzucasz ręcznie (Instagram nie pozwala dodać linku automatem). W karcie
+story jest grafika do pobrania i gotowy link.
+
+## Prawdy
+
+**Panel → Prawdy** to lista faktów o Twojej ofercie: czego nie sprzedajesz, kto nie dostanie
+danej polisy, czego nie piszemy. Claude czyta ją przed każdą paczką. Nigdy jej nie zaprzeczy
+i nie porusza tych tematów w treściach, tylko je omija.
+
+## Jednorazowa konfiguracja
+
+Raz, na start (Claude przeprowadzi Cię krok po kroku):
+
+1. **Baza:** wklej plik `supabase/migrations/20261008090000_content_calendar.sql`
+   w Supabase → SQL Editor → Run.
+2. **Klucz bazy** (Supabase → Project Settings → API Keys → Secret keys):
+   - w Cloudflare (Worker `oscare` → Settings → Variables and Secrets) jako Secret
+     `SUPABASE_SERVICE_ROLE_KEY`,
+   - w pliku `.env.local` w projekcie, linia `SUPABASE_SERVICE_ROLE_KEY=…`
+     (z niego Claude wysyła paczki do panelu).
+3. **Instagram i Facebook:** konto Instagram przełączone na firmowe i podpięte do strony na
+   Facebooku. Potem aplikacja w Meta for Developers: jej App ID i App Secret wpisz w Cloudflare
+   jako `META_APP_ID` i `META_APP_SECRET` (Secret). Na koniec w **Panel → Połączenia** kliknij
+   „Połącz z Facebookiem i Instagramem”.
 
 ## Ustawienia
 
 Plik **`marketing/brand.mjs`**: adres strony (zmień po podpięciu domeny), telefon, miasto,
-konto na Instagramie, autor wpisów. Miasto i Instagram dają lepsze lokalne SEO.
+Instagram, autor wpisów i **rytm tygodnia** (dni i godziny publikacji).
 
 ## Co narzędzie robi z grafikami NN
 
-- Usuwa logo NN, ich pomarańczową ramkę i hasztag kampanii. Zostawia samo zdjęcie i składa
-  nową grafikę w kolorach i fontach strony OSCare, z napisem „Materiał marketingowy”.
-- Teksty pisze od nowa: bez nazw produktów NN i bez ich nagród. Nagroda Superbrands należy do NN,
-  nie do OSCare, więc takich grafik nie przerabia.
-- Animacji NN nie da się przemalować klatka po klatce. Z animacji bierze pomysł i treść
-  i robi z nich post oraz rolkę.
+- Usuwa logo NN, ich pomarańczową ramkę i hasztag kampanii. Zostawia samo zdjęcie i składa nową
+  grafikę w kolorach i fontach OSCare, z napisem „Materiał marketingowy”.
+- Teksty pisze od nowa: bez nazw produktów NN i bez ich nagród (Superbrands to nagroda NN).
+- Animacji NN nie przerabia klatka po klatce. Bierze z nich pomysł i robi post oraz rolkę.
 
 > Upewnij się, że umowa z ubezpieczycielem pozwala używać jego zdjęć w Twojej oprawie,
-> i sprawdzaj notatki „Zanim opublikujesz” w każdej paczce.
+> i czytaj notatki „Zanim opublikujesz” przy każdej kampanii w kalendarzu.

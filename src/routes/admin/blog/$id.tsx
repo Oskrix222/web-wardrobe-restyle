@@ -65,6 +65,7 @@ function EditPost() {
               status: post.status,
               coverImageUrl: post.coverImageUrl,
               contentJson: post.contentJson,
+              contentHtml: post.contentHtml,
             }}
             saving={saving}
             onSave={onSave}

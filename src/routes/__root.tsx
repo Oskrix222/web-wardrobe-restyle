@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -111,6 +112,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -120,8 +122,9 @@ function RootComponent() {
       <Toaster position="top-center" />
       {/* Google Analytics / Ads load from here, and only after cookie consent. */}
       <CookieConsent />
-      {/* Live chat with Oskar and Izumi — loads Crisp only when clicked. */}
-      <LiveChat />
+      {/* Live chat with Oskar and Izumi — loads Crisp only when clicked. Hidden in the
+          admin panel, where the bubble would cover its buttons. */}
+      {pathname.startsWith("/admin") ? null : <LiveChat />}
     </QueryClientProvider>
   );
 }

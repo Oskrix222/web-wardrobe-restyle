@@ -34,9 +34,14 @@ export type PostEditorValue = {
   status: "draft" | "published";
   coverImageUrl: string | null;
   contentJson: Json;
+  /** Fallback for posts that arrive as HTML only (content packages sent from marketing/tools). */
+  contentHtml?: string;
 };
 
 const EMPTY_DOC = { type: "doc", content: [{ type: "paragraph" }] };
+
+const isDoc = (json: Json) =>
+  typeof json === "object" && json !== null && !Array.isArray(json) && json["type"] === "doc";
 
 const ALIGN_BUTTONS: { value: ImageAlign; label: string; icon: typeof AlignLeft }[] = [
   { value: "left", label: "Zdjęcie do lewej (tekst obok)", icon: AlignLeft },
@@ -224,7 +229,9 @@ export function PostEditor({
       LinkExtension.configure({ openOnClick: false }),
       Placeholder.configure({ placeholder: "Zacznij pisać treść wpisu…" }),
     ],
-    content: (initial.contentJson as object) ?? EMPTY_DOC,
+    content: isDoc(initial.contentJson)
+      ? (initial.contentJson as object)
+      : initial.contentHtml || EMPTY_DOC,
     immediatelyRender: false,
   });
 
