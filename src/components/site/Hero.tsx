@@ -3,6 +3,7 @@ import { Button, ButtonLink } from "@/components/ui/Button";
 import { Pill } from "@/components/ui/Box";
 import { CountUp } from "@/components/ui/CountUp";
 import hero640 from "@/assets/hero-family-640.webp";
+import hero960 from "@/assets/hero-family-960.webp";
 import hero1280 from "@/assets/hero-family-1280.webp";
 
 const stats: [string, string][] = [
@@ -82,7 +83,7 @@ export function Hero({
           <div className="hero__image-frame">
             <img
               src={hero1280}
-              srcSet={`${hero640} 640w, ${hero1280} 1280w`}
+              srcSet={`${hero640} 640w, ${hero960} 960w, ${hero1280} 1280w`}
               sizes="(min-width: 1024px) 58vw, 100vw"
               alt="Rodzina w jasnym salonie — ubezpieczenia OSCare"
               className="hero__image"
