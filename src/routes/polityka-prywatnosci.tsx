@@ -33,7 +33,7 @@ function PrivacyPolicy() {
         </Link>
       </header>
 
-      <main className="section">
+      <main className="section section--panel">
         <div className="container legal">
           <span className="eyebrow">Dokument prawny</span>
           <h1 className="section-heading">POLITYKA PRYWATNOŚCI</h1>

@@ -42,7 +42,7 @@ function BlogIndex() {
       <Header onContact={goToForm} />
 
       <main>
-        <section className="blog-index section">
+        <section className="blog-index section section--panel">
           <div className="container">
             <Breadcrumbs items={[{ label: "Strona główna", to: "/" }, { label: "Blog" }]} />
 

@@ -21,7 +21,7 @@ export function Hero({
   rating?: number | null | undefined;
 }) {
   return (
-    <section id="top" className="hero">
+    <section id="top" className="hero section--panel">
       <div className="hero__grid">
         <div className="hero__copy">
           <Pill icon={Shield}>Ubezpieczenia dla całej rodziny</Pill>

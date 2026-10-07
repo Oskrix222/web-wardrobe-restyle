@@ -177,7 +177,7 @@ export function Categories({ onPick }: { onPick: (value: string) => void }) {
   }, [activeCategory]);
 
   return (
-    <section id="oferta" className="categories section">
+    <section id="oferta" className="categories section section--panel">
       <div className="container">
         <div
           ref={headIn.ref}

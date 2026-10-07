@@ -7,6 +7,7 @@ import { Footer } from "@/components/site/Footer";
 import { ButtonLink, Button } from "@/components/ui/Button";
 import { BlogCard, PostMeta } from "@/components/blog/BlogCard";
 import { Breadcrumbs } from "@/components/blog/Breadcrumbs";
+import { PostToc } from "@/components/blog/PostToc";
 import {
   getPublishedPostBySlug,
   listPublishedPosts,
@@ -74,7 +75,7 @@ function BlogPost() {
       <Header onContact={goToForm} />
 
       <main>
-        <article className="blog-post section">
+        <article className="blog-post section section--panel">
           <div className="container blog-post__container">
             <Breadcrumbs
               items={[
@@ -93,6 +94,8 @@ function BlogPost() {
             {post.coverImageUrl ? (
               <img src={post.coverImageUrl} alt="" className="blog-post__cover" />
             ) : null}
+
+            <PostToc headings={post.headings} />
 
             <div
               className="blog-post__content"

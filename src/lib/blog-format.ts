@@ -18,3 +18,54 @@ export function readingMinutes(html: string): number {
     .filter(Boolean).length;
   return Math.max(1, Math.round(words / 200));
 }
+
+/** "Nowa oferta OC!" -> "nowa-oferta-oc" — a reasonable starting slug the author can still edit. */
+export function slugify(title: string): string {
+  return title
+    .trim()
+    .toLowerCase()
+    // "ł" has no decomposed form, so NFD alone would turn "małej" into "ma-ej".
+    .replace(/ł/g, "l")
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
+export type PostHeading = { id: string; text: string };
+
+const ENTITIES: Record<string, string> = {
+  amp: "&",
+  lt: "<",
+  gt: ">",
+  quot: '"',
+  "#39": "'",
+  nbsp: " ",
+};
+
+const decodeEntities = (text: string) =>
+  text.replace(/&(amp|lt|gt|quot|#39|nbsp);/g, (entity, name: string) => ENTITIES[name] ?? entity);
+
+/**
+ * Gives every <h2> of a post an id ("#na-co-uwazac") so the table of contents
+ * (and Google's "Przejdź do" links) can jump to it. Returns the headings in order.
+ */
+export function withHeadingAnchors(html: string): { html: string; headings: PostHeading[] } {
+  const headings: PostHeading[] = [];
+  const used = new Set<string>();
+  const withIds = html.replace(
+    /<h2(\s[^>]*)?>([\s\S]*?)<\/h2>/gi,
+    (match, attrs: string | undefined = "", inner: string) => {
+      const text = decodeEntities(inner.replace(/<[^>]+>/g, "")).trim();
+      if (!text) return match;
+      const existing = /\sid="([^"]+)"/.exec(attrs)?.[1];
+      let id = existing ?? (slugify(text) || "sekcja");
+      for (let n = 2; !existing && used.has(id); n++) id = `${slugify(text) || "sekcja"}-${n}`;
+      used.add(id);
+      headings.push({ id, text });
+      return existing ? match : `<h2${attrs} id="${id}">${inner}</h2>`;
+    },
+  );
+  return { html: withIds, headings };
+}

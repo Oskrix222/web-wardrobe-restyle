@@ -397,6 +397,8 @@
       font-family: $font-display;
       font-weight: $weight-normal;
       font-size: $text-2xl;
+      // Jump links from the table of contents land below the fixed header.
+      scroll-margin-top: 6rem;
     }
 
     h3 {
@@ -462,5 +464,197 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: $space-3;
+  }
+}
+
+// -------------------- TABLE OF CONTENTS (timeline) -------------
+.post-toc {
+  margin-top: $space-8;
+  scroll-margin-top: 6rem;
+  padding: $space-5 $space-6;
+  border: 1px solid var(--border);
+  border-radius: $radius-xl;
+  background-color: var(--secondary-soft);
+
+  &__title {
+    @include eyebrow;
+  }
+
+  &__list {
+    margin-top: $space-3;
+    padding: 0;
+    list-style: none;
+
+    li {
+      position: relative;
+      padding-left: $space-8;
+
+      // The timeline: a line through every item and a dot per section.
+      &::before {
+        content: "";
+        position: absolute;
+        left: 0.4rem;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: var(--border);
+      }
+
+      &:first-child::before {
+        top: 50%;
+      }
+
+      &:last-child::before {
+        bottom: 50%;
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 0.95rem;
+        height: 0.95rem;
+        margin-top: -0.475rem;
+        border: 2px solid var(--border);
+        border-radius: $radius-full;
+        background-color: var(--card);
+        transition:
+          background-color $transition-base,
+          border-color $transition-base,
+          box-shadow $transition-base;
+      }
+
+      &.is-done::after {
+        border-color: var(--terracotta);
+        background-color: var(--terracotta-tint);
+      }
+
+      &.is-active::after {
+        border-color: var(--terracotta);
+        background-color: var(--terracotta);
+        box-shadow: 0 0 0 4px var(--terracotta-tint);
+      }
+
+      &.is-active a {
+        color: var(--terracotta);
+      }
+    }
+
+    a {
+      display: flex;
+      gap: $space-3;
+      padding: $space-2 0;
+      font-size: $text-sm;
+      font-weight: $weight-semibold;
+      line-height: $leading-snug;
+      color: var(--foreground);
+      text-decoration: none;
+      transition: color $transition-base;
+
+      &:hover {
+        color: var(--terracotta);
+      }
+
+      &:focus-visible {
+        @include focus-ring;
+      }
+    }
+  }
+
+  &__num {
+    flex: none;
+    padding-top: 0.15em;
+    font-family: $font-mono;
+    font-size: $text-xs;
+    color: var(--terracotta);
+  }
+}
+
+// Pinned under the fixed site header once the table of contents scrolls away.
+.post-progress {
+  position: fixed;
+  top: 70px; // .site-header height
+  left: 0;
+  right: 0;
+  z-index: 45;
+  border-bottom: 1px solid var(--border);
+  background-color: color-mix(in oklch, var(--background) 94%, transparent);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  transform: translateY(-0.5rem);
+  pointer-events: none;
+  transition:
+    opacity $transition-base,
+    transform $transition-base;
+
+  &.is-visible {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  &__inner {
+    max-width: 44rem;
+    margin-inline: auto;
+    padding: $space-2 $page-padding-mobile $space-2;
+  }
+
+  &__label {
+    display: flex;
+    align-items: baseline;
+    gap: $space-2;
+    min-width: 0;
+    font-size: $text-xs;
+    color: var(--foreground);
+    text-decoration: none;
+
+    &:hover .post-progress__name {
+      color: var(--terracotta);
+    }
+  }
+
+  &__count {
+    flex: none;
+    font-family: $font-mono;
+    color: var(--terracotta);
+  }
+
+  &__name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-weight: $weight-semibold;
+    transition: color $transition-base;
+  }
+
+  &__track {
+    margin-top: $space-1;
+    display: flex;
+    gap: 4px;
+  }
+
+  // One segment per section: a 4 px bar inside a taller, easier-to-tap link.
+  &__seg {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    height: 14px;
+    background: linear-gradient(var(--border), var(--border)) center / 100% 4px no-repeat;
+    border-radius: $radius-full;
+
+    span {
+      display: block;
+      width: 100%;
+      height: 4px;
+      border-radius: $radius-full;
+      background-color: var(--terracotta);
+      transform-origin: 0 50%;
+      transition: transform 120ms linear;
+    }
+
+    &:focus-visible {
+      @include focus-ring;
+    }
   }
 }

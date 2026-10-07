@@ -29,19 +29,7 @@ export type AdminBlogPostInput = {
   author: string;
 };
 
-/** "Nowa oferta OC!" -> "nowa-oferta-oc" — a reasonable starting slug the author can still edit. */
-export function slugify(title: string): string {
-  return title
-    .trim()
-    .toLowerCase()
-    // "ł" has no decomposed form, so NFD alone would turn "małej" into "ma-ej".
-    .replace(/ł/g, "l")
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 80);
-}
+export { slugify } from "@/lib/blog-format";
 
 function mapRow(row: {
   id: string;

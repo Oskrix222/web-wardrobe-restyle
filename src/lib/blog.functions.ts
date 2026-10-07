@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { supabase } from "@/integrations/supabase/client";
-import { readingMinutes } from "@/lib/blog-format";
+import { readingMinutes, withHeadingAnchors, type PostHeading } from "@/lib/blog-format";
 
 export type BlogPostSummary = {
   slug: string;
@@ -16,6 +16,8 @@ export type BlogPostSummary = {
 
 export type BlogPost = BlogPostSummary & {
   contentHtml: string;
+  /** The post's <h2> sections, in order — the table of contents at the top of the post. */
+  headings: PostHeading[];
 };
 
 /** Published posts, newest first — used by the /blog listing and "Czytaj także". */
@@ -56,11 +58,13 @@ export const getPublishedPostBySlug = createServerFn({ method: "GET" })
     if (error) throw new Error("Nie udało się wczytać wpisu.");
     if (!data) return null;
 
+    const { html, headings } = withHeadingAnchors(data.content_html);
     return {
       slug: data.slug,
       title: data.title,
       excerpt: data.excerpt,
-      contentHtml: data.content_html,
+      contentHtml: html,
+      headings,
       coverImageUrl: data.cover_image_url,
       author: data.author,
       publishedAt: data.published_at,

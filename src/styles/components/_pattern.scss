@@ -1,34 +1,37 @@
 @use "../brandbook" as *;
 
-// Large, faint drifting icon pattern used on sections with a tinted or dark
-// background (About, Benefits, GroupInsurance, Footer) — adds a touch of
-// depth on top of the whole-page pattern in _base.scss.
-.pattern-layer {
+// Large, faint drifting icon pattern. Fades in/out vertically ($fade) so it
+// never shows as a hard-edged strip right at a section's top/bottom boundary.
+@mixin drifting-pattern($fade: 30%) {
   position: absolute;
   inset: -20% -60%;
-  z-index: 0;
   pointer-events: none;
   background-repeat: repeat;
   background-size: 420px 420px;
   animation: pattern-drift-x 104.76s linear infinite;
   will-change: transform;
-
-  // Fades the pattern in/out vertically so it never shows as a hard-edged
-  // strip right at a section's top/bottom boundary.
   -webkit-mask-image: linear-gradient(
     to bottom,
     transparent 0%,
-    black 30%,
-    black 70%,
+    black $fade,
+    black (100% - $fade),
     transparent 100%
   );
   mask-image: linear-gradient(
     to bottom,
     transparent 0%,
-    black 30%,
-    black 70%,
+    black $fade,
+    black (100% - $fade),
     transparent 100%
   );
+}
+
+// Used on sections with a tinted or dark background (About, Benefits,
+// GroupInsurance, Footer) — adds a touch of depth on top of the whole-page
+// pattern in _base.scss.
+.pattern-layer {
+  @include drifting-pattern;
+  z-index: 0;
 
   &--dark {
     background-image: url("/pattern-icons-lg.svg");
@@ -36,6 +39,42 @@
 
   &--light {
     background-image: url("/pattern-icons-lg-light.svg");
+  }
+}
+
+// Solid sections (Hero, Oferta, blog, legal): a slightly narrower sheet in the
+// page colour, floating on the same tinted, drifting pattern as the sections
+// around it, with a micro shadow so the sheet stands out from the movement.
+// The section's own padding narrows the content together with the sheet.
+.section--panel {
+  --panel-gutter: clamp(0.5rem, 2.5vw, 3rem);
+  position: relative;
+  isolation: isolate;
+  padding-inline: var(--panel-gutter);
+  background-color: color-mix(in oklch, var(--secondary-soft) 85%, transparent);
+  // clip, not hidden — see .about.
+  overflow: hidden;
+  overflow: clip;
+
+  // The drifting pattern, visible in the gutters beside the sheet.
+  &::before {
+    @include drifting-pattern(12%);
+    content: "";
+    z-index: -2;
+    background-image: url("/pattern-icons-lg.svg");
+  }
+
+  // The sheet itself — same colour as the page (body/header use #f8f5ec).
+  &::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0 var(--panel-gutter);
+    border-radius: $radius-2xl;
+    background-color: #f8f5ec;
+    box-shadow:
+      0 0 0 1px oklch(0.15 0.04 35 / 5%),
+      0 6px 18px -8px oklch(0.15 0.04 35 / 22%);
   }
 }
 
@@ -49,7 +88,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pattern-layer {
+  .pattern-layer,
+  .section--panel::before {
     animation: none;
   }
 }
