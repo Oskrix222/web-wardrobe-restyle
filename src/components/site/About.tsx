@@ -1,27 +1,16 @@
-import { HeartHandshake, Banknote, Clock, Phone, Sparkles, Shield } from "lucide-react";
+import { Phone } from "lucide-react";
 import { Button, ButtonLink } from "@/components/ui/Button";
-import { Box, IconCircle } from "@/components/ui/Box";
+import { Box } from "@/components/ui/Box";
+import { AboutHighlights } from "@/components/site/AboutHighlights";
 import { useReveal } from "@/hooks/useReveal";
 import { cn } from "@/lib/utils";
 import { useInView } from "@/hooks/useInView";
 import advisorImage from "@/assets/advisor.jpg";
 import teamImage from "@/assets/team-business.jpg";
-import familyImage from "@/assets/about-family.jpg";
-
-const stats = [
-  { value: "+150", label: "zadowolonych klientów", icon: HeartHandshake },
-  { value: "+78", label: "Zrealizowanych wypłat", icon: Banknote },
-  { value: "24h", label: "Na przygotowanie oferty", icon: Clock },
-  { value: "100%", label: "Kontaktu w 24h", icon: Phone },
-  { value: "100%", label: "Świeże oferty", icon: Sparkles },
-  { value: "100%", label: "Ochrony w budżecie klienta", icon: Shield },
-];
 
 export function About({ onContact }: { onContact: () => void }) {
   const reveal = useReveal<HTMLDivElement>();
   const figuresIn = useInView();
-  const asideIn = useInView<HTMLImageElement>();
-  const statsIn = useInView();
 
   return (
     <section id="o-nas" className="about section section--soft">
@@ -90,30 +79,7 @@ export function About({ onContact }: { onContact: () => void }) {
           </div>
         </Box>
 
-        <div className="about__aside">
-          <img
-            src={familyImage}
-            alt="Rodzina trzymająca się za ręce o zachodzie słońca"
-            ref={asideIn.ref}
-            className={cn("about__aside-image", asideIn.inView && "is-in")}
-            data-animate="zoom"
-            width={1280}
-            height={853}
-            loading="lazy"
-            decoding="async"
-          />
-          <div ref={statsIn.ref} className={cn("about__stats stagger", statsIn.inView && "is-in")}>
-            {stats.map(({ value, label, icon }) => (
-              <Box key={label} className="about__stat">
-                <div>
-                  <p className="about__stat-value">{value}</p>
-                  <p className="about__stat-label">{label}</p>
-                </div>
-                <IconCircle icon={icon} size="md" />
-              </Box>
-            ))}
-          </div>
-        </div>
+        <AboutHighlights />
       </div>
     </section>
   );

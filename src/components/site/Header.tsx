@@ -20,6 +20,15 @@ export function Header({ onContact }: { onContact: () => void }) {
   const isBlog = pathname.startsWith("/blog");
   const [scrolled, setScrolled] = useState(false);
 
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
   // Hairline + soft shadow under the header once the page moves; state only
   // changes when crossing the threshold, so scrolling doesn't re-render.
   useEffect(() => {
@@ -85,55 +94,56 @@ export function Header({ onContact }: { onContact: () => void }) {
 
         <button
           type="button"
-          className="site-header__toggle"
+          className={open ? "site-header__toggle is-open" : "site-header__toggle"}
           onClick={() => setOpen((o) => !o)}
           aria-expanded={open}
           aria-label={open ? "Zamknij menu" : "Otwórz menu"}
         >
-          {open ? <X /> : <Menu />}
+          <Menu className="site-header__toggle-icon site-header__toggle-icon--menu" />
+          <X className="site-header__toggle-icon site-header__toggle-icon--close" />
         </button>
       </div>
 
-      {open && (
-        <div className="site-header__mobile">
-          <nav className="site-header__mobile-nav" aria-label="Nawigacja mobilna">
-            {navItems.map((item) => {
-              const isActive = isHome && activeId === item.href.slice(1);
-              return (
-                <a
-                  key={item.label}
-                  href={isHome ? item.href : `/${item.href}`}
-                  onClick={() => setOpen(false)}
-                  aria-current={isActive ? "location" : undefined}
-                  className={
-                    isActive ? "site-header__mobile-link is-active" : "site-header__mobile-link"
-                  }
-                >
-                  {item.label}
-                </a>
-              );
-            })}
-            <Link
-              to="/blog"
-              onClick={() => setOpen(false)}
-              aria-current={isBlog ? "location" : undefined}
-              className={isBlog ? "site-header__mobile-link is-active" : "site-header__mobile-link"}
-            >
-              Blog
-            </Link>
-            <Button
-              block
-              className="site-header__mobile-cta"
-              onClick={() => {
-                setOpen(false);
-                onContact();
-              }}
-            >
-              CHCĘ OFERTĘ!
-            </Button>
-          </nav>
-        </div>
-      )}
+      {/* Always mounted so it can slide in and out; inert keeps closed links
+          out of the tab order and away from screen readers. */}
+      <div className={open ? "site-header__mobile is-open" : "site-header__mobile"} inert={!open}>
+        <nav className="site-header__mobile-nav" aria-label="Nawigacja mobilna">
+          {navItems.map((item) => {
+            const isActive = isHome && activeId === item.href.slice(1);
+            return (
+              <a
+                key={item.label}
+                href={isHome ? item.href : `/${item.href}`}
+                onClick={() => setOpen(false)}
+                aria-current={isActive ? "location" : undefined}
+                className={
+                  isActive ? "site-header__mobile-link is-active" : "site-header__mobile-link"
+                }
+              >
+                {item.label}
+              </a>
+            );
+          })}
+          <Link
+            to="/blog"
+            onClick={() => setOpen(false)}
+            aria-current={isBlog ? "location" : undefined}
+            className={isBlog ? "site-header__mobile-link is-active" : "site-header__mobile-link"}
+          >
+            Blog
+          </Link>
+          <Button
+            block
+            className="site-header__mobile-cta"
+            onClick={() => {
+              setOpen(false);
+              onContact();
+            }}
+          >
+            CHCĘ OFERTĘ!
+          </Button>
+        </nav>
+      </div>
     </header>
   );
 }

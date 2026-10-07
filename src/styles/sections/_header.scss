@@ -91,9 +91,31 @@
     background: transparent;
     cursor: pointer;
 
-    svg {
+    // Both icons share one cell and cross-fade with a small turn.
+    > svg {
+      grid-area: 1 / 1;
       width: 1.5rem;
       height: 1.5rem;
+      transition:
+        opacity 0.25s ease,
+        transform 0.35s cubic-bezier(0.22, 0.8, 0.24, 1);
+    }
+
+    .site-header__toggle-icon--close {
+      opacity: 0;
+      transform: rotate(-90deg) scale(0.7);
+    }
+
+    &.is-open {
+      .site-header__toggle-icon--menu {
+        opacity: 0;
+        transform: rotate(90deg) scale(0.7);
+      }
+
+      .site-header__toggle-icon--close {
+        opacity: 1;
+        transform: none;
+      }
     }
 
     @include lg {
@@ -101,10 +123,36 @@
     }
   }
 
+  // Phone/tablet menu: a panel dropping down under the bar (the header is a
+  // fixed-height row, so it must sit outside the flow to not get clipped).
   &__mobile {
-    border-top: 1px solid var(--border-soft);
-    background-color: var(--background);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: calc(100dvh - 70px);
+    overflow-y: auto;
     padding: $space-4;
+    border-top: 1px solid var(--border-soft);
+    background-color: #f8f5ec;
+    box-shadow: 0 18px 30px -20px oklch(0.15 0.04 35 / 35%);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition:
+      opacity 0.25s ease,
+      transform 0.35s cubic-bezier(0.22, 0.8, 0.24, 1),
+      visibility 0s linear 0.35s;
+
+    &.is-open {
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      transition:
+        opacity 0.25s ease,
+        transform 0.35s cubic-bezier(0.22, 0.8, 0.24, 1),
+        visibility 0s;
+    }
 
     @include lg {
       display: none;
@@ -112,9 +160,31 @@
   }
 
   &__mobile-nav {
+    @include container;
     display: flex;
     flex-direction: column;
     gap: $space-1;
+    padding-inline: 0;
+
+    // Links slide in one after another as the panel opens.
+    > * {
+      opacity: 0;
+      transform: translateY(-6px);
+      transition:
+        opacity 0.3s ease,
+        transform 0.35s cubic-bezier(0.22, 0.8, 0.24, 1);
+    }
+  }
+
+  &__mobile.is-open &__mobile-nav > * {
+    opacity: 1;
+    transform: none;
+
+    @for $i from 1 through 8 {
+      &:nth-child(#{$i}) {
+        transition-delay: #{($i - 1) * 35}ms;
+      }
+    }
   }
 
   &__mobile-link {
@@ -136,5 +206,13 @@
 
   &__mobile-cta {
     margin-top: $space-2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header__mobile,
+  .site-header__mobile-nav > *,
+  .site-header__toggle > svg {
+    transition: none !important;
   }
 }

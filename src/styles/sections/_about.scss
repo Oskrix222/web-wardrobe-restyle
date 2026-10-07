@@ -70,8 +70,14 @@
 
     @include sm {
       flex-direction: row;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: center;
+    }
+
+    // Never squeeze a button below its label; wrap to a new row instead.
+    .btn {
+      flex-shrink: 0;
     }
 
     .btn--outline {
@@ -97,12 +103,14 @@
     }
   }
 
+  // Two tiles per row from the smallest phones up.
   &__stats {
     display: grid;
-    gap: $space-4;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: $space-3;
 
     @include sm {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: $space-4;
     }
   }
 
@@ -112,6 +120,17 @@
     align-items: center;
     gap: $space-3;
     padding: $space-5;
+
+    // Phones: icon on top, number and label below, so two fit side by side.
+    @media (max-width: #{$screen-sm - 1px}) {
+      grid-template-columns: minmax(0, 1fr);
+      gap: $space-2;
+      padding: $space-4;
+
+      > :last-child {
+        grid-row: 1;
+      }
+    }
   }
 
   &__stat-value {
@@ -123,5 +142,10 @@
     margin-top: $space-1;
     font-size: $text-sm;
     color: var(--muted-foreground);
+
+    @media (max-width: #{$screen-sm - 1px}) {
+      font-size: $text-xs;
+      line-height: $leading-snug;
+    }
   }
 }

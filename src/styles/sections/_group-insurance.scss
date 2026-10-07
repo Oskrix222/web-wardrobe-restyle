@@ -8,7 +8,8 @@
     position: relative;
     z-index: 1;
     display: grid;
-    grid-template-columns: 1fr;
+    // minmax(0, …) so a wide row of buttons can't push the column past the screen.
+    grid-template-columns: minmax(0, 1fr);
     gap: $space-10;
 
     @include lg {
@@ -50,12 +51,18 @@
   &__actions {
     margin-top: $space-8;
     display: flex;
+    flex-wrap: wrap;
     align-items: stretch;
     gap: $space-2;
+
+    @include sm {
+      flex-wrap: nowrap;
+    }
   }
 
   &__cta {
-    flex: 1.1 1 0;
+    // Phones: full-width CTA, the two phone buttons share the row below.
+    flex: 1 1 100%;
     min-width: 0;
     height: auto;
     padding-block: 0.625rem;
@@ -63,6 +70,10 @@
     font-size: calc(#{$text-sm} + 1px);
     white-space: normal;
     line-height: $leading-tight;
+
+    @include sm {
+      flex: 1.1 1 0;
+    }
   }
 
   &__call {

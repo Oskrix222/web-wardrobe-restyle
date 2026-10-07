@@ -9,6 +9,7 @@ import { GroupInsurance } from "@/components/site/GroupInsurance";
 import { LeadForm } from "@/components/site/LeadForm";
 import { Footer } from "@/components/site/Footer";
 import { GoogleProfile } from "@/components/site/GoogleProfile";
+import { AboutHighlights } from "@/components/site/AboutHighlights";
 import { getGoogleReviews } from "@/lib/google-reviews.functions";
 import { PageScrollNav } from "@/components/site/PageScrollNav";
 import { useReveal } from "@/hooks/useReveal";
@@ -93,7 +94,11 @@ function Index() {
           <div ref={benefitsReveal.ref} className={cn("benefits__grid", benefitsReveal.className)}>
             <GoogleProfile feed={reviews} />
 
-            <LeadForm preselected={preselected} />
+            <div className="benefits__contact">
+              {/* Desktop only: photo + stats beside the form; phones get just the form. */}
+              <AboutHighlights className="benefits__highlights" />
+              <LeadForm preselected={preselected} />
+            </div>
           </div>
         </section>
       </main>

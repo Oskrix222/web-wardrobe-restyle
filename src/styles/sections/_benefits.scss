@@ -12,10 +12,30 @@
     flex-direction: column;
     gap: $space-16;
 
-    > .lead-form {
-      width: 100%;
-      max-width: 48rem;
-      margin-inline: auto;
+  }
+
+  // Form on its own (centred) on phones, tablets and small laptops; photo + stats beside it from 1280px.
+  &__contact {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: $space-12;
+    width: 100%;
+    max-width: 48rem;
+    margin-inline: auto;
+
+    @include xl {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: center;
+      max-width: none;
+    }
+  }
+
+  // Only from 1280px: below that the form would get too narrow beside it.
+  &__highlights {
+    display: none;
+
+    @include xl {
+      display: flex;
     }
   }
 }
