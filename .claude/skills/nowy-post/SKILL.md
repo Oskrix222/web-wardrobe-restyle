@@ -1,0 +1,138 @@
+---
+name: nowy-post
+description: Turns marketing graphics or animations (typically Nationale-Nederlanden posts) into a complete OSCare content package — rebranded post + carousel + story + blog cover, Instagram/Facebook/Google captions, a ready-to-paste SEO blog article, 3 reel scripts, UTM links and a publishing plan. Use whenever the user attaches/pastes graphics, drops them into marketing/wrzuc-tutaj, or asks for "nowy post", "paczka", "przerób grafikę", "zrób opis / wpis / rolki do tej grafiki".
+---
+
+# /nowy-post — z grafiki pełna paczka OSCare
+
+The user (Oskar, non-technical, Polish) gets marketing graphics from Nationale-Nederlanden every few weeks.
+Your job: one topic → one package with everything needed to publish and sell. You write all the
+copy; `marketing/tools/generate.mjs` renders the graphics and the copy-paste page (`paczka.html`).
+Talk to the user in plain Polish. Never ask them to run commands.
+
+## Workflow
+
+1. **Collect inputs.** Paths the user attached (pasted images carry a source path), files in
+   `marketing/wrzuc-tutaj/`, or a folder they name. Ignore `Thumbs.db`, `.DS_Store`.
+2. **Look at every file.** Read each image. For `.mp4`, grab 6 frames into the scratchpad
+   (`ffmpeg -ss <t> -i f.mp4 -frames:v 1 -vf scale=360:-1 out_<t>.jpg`, t spread over the duration,
+   then `hstack` them into one grid) and read the grid. Write down: headline, subline, product,
+   occasion/date (often in the filename, e.g. „31 października”), where the people/faces are.
+3. **Group by topic.** Same message or same filename with „(1)”, „(2)” → one package; the extra
+   photos become `variants`. Different products → separate packages.
+4. **Decide per topic** using the rules below: skip or reframe? `layout` photo or text?
+   `formType` (life | home | travel | business — the website form's options), comment `keyword`,
+   main publish date.
+5. **Create the folder** `marketing/posty/<YYYY-MM-DD>-<temat>/` (date = planned main post day) and
+   move the sources into its `zrodlo/` (out of `wrzuc-tutaj`; copy if they live elsewhere).
+6. **Write `spec.mjs`.** Follow `marketing/tools/example-spec.mjs`: same structure and the same
+   quality bar. Template literals let you write multi-line text without escaping.
+7. **Render:** `node marketing/tools/generate.mjs marketing/posty/<folder>` (≈20–60 s).
+8. **QA — always look.** Read `post-1.png`, one carousel slide, `story.png` and every variant
+   (or hstack them with ffmpeg into one image). Check: no trace of NN (logo, orange frame, their
+   hashtag); faces/subject not cut (fix `focus`); headline didn't shrink into small type (shorten
+   it); text reads naturally in Polish. Fix the spec and re-render until it's right.
+9. **Hand over.** Open `paczka.html` in the browser pane (`file://` URL) and tell the user in a
+   few lines: what's in the package, the plan dates, and the „Zanim opublikujesz” notes.
+   `marketing/posty/` is git-ignored — nothing to commit.
+
+## Spec reference
+
+| Field | What |
+|---|---|
+| `topic`, `campaign` | Package title; `campaign` = utm_campaign (`<temat>-<rrrr>-<mm>`). |
+| `formType` | `life`, `home`, `travel`, `business`. |
+| `keyword` | ONE uppercase word for comments/DM (WSPARCIE, DZIECKO, PODRÓŻ…). Unique per campaign. |
+| `label` | Default eyebrow / carousel footer (2–4 words). |
+| `post` | `source` (path in `zrodlo/`), `at` (seconds, video frame), `focus: [x, y]` 0–1 within the clean photo (default `[0.5, 0.4]`), `cleanBottom` (px, only if frame detection fails), `layout: "text"` + `cards: [{ icon, text, note }]` for graphics without a usable photo, `label`, `headline` (array of lines), `sub`, `footnote`, `cta` (default „Napisz „KEYWORD” w komentarzu”). |
+| `variants` | `[{ source, focus }]` — same texts, another photo. |
+| `carousel` | 3 × `{ title, text }`; the CTA slide is added automatically (`carouselCta` to override). |
+| `story` | `{ label, text }`. |
+| `captions` | `instagram`, `alt`, `facebook` (with `{link}`), `google`, optional `linkedin` (B2B only). |
+| `hashtags`, `dm` | 3–5 hashtags; DM reply with `{link}`. |
+| `blog` | `title`, `excerpt`, `keyword`, `keywords`, `html` (`slug` only to override). |
+| `reels` | Exactly 3 × `{ title, format, length, hook, cover, audio, scenes: [{ time, shot, say, text }], tips, caption }`. |
+| `plan`, `notes` | Dated steps; things the user must check before publishing. |
+
+Text markup in graphic fields: `*słowa*` = terracotta accent, `**słowa**` = bold.
+Icons: lucide names (https://lucide.dev/icons) — e.g. hand-coins, stethoscope, activity,
+shield-check, heart-pulse, plane, house, baby, users, piggy-bank, briefcase, dog, car.
+
+## Rules
+
+### Branding and legal (non-negotiable)
+- Nothing of NN survives: logo, name in the graphic, the orange speech-bubble frame, their
+  hashtag `#ZdrowyDialog`, their slogans. The generator removes the visuals; you rewrite the copy.
+- **Awards, rankings and brand claims of the insurer** (e.g. Superbrands, „najsilniejsza marka”)
+  are NOT OSCare's. Skip that graphic and tell the user why; offer a truthful alternative only if
+  they confirm it (e.g. „Współpracujemy z ubezpieczycielem nagrodzonym…”).
+- **Named insurer products** (Pakiet Ortopeda Plus, Asystent domu Premium…): in graphics and
+  captions describe the benefit generically („w wybranych pakietach assistance”). In the blog
+  name a product only with its insurer and add a note asking the user to confirm they sell it.
+- Amounts/limits only as given in the source, phrased „nawet do …” with
+  `footnote: "*Zależnie od wariantu i OWU ubezpieczyciela."`.
+- Never invent statistics, prices, waiting times, client stories or reviews. Scenes are POV or
+  hypothetical („POV:”, „Wyobraź sobie…”), never „nasza klientka…”.
+- Health topics: calm and empathetic, no fear-mongering, no medical advice. Point to free public
+  options where they exist (NFZ, screening programmes). Mental health: always include
+  800 70 2222 (całą dobę), 116 123 and 112.
+- Not sure about a fact (programme, age range, law)? Check it with WebSearch first; if you can't
+  confirm it, leave it out.
+- `marketing/brand.mjs` holds site URL, phone, city, Instagram, author and the legal footnote.
+  If `city` or `instagram` is empty, mention once that filling it improves local SEO.
+
+### Voice
+Polish, „Ty” form, warm and concrete. OSCare speaks as „my”: porównujemy oferty, tłumaczymy
+drobny druk, pomagamy wybrać. Explain jargon (OWU, karencja, suma ubezpieczenia) in a few words.
+No „najtańszy”, „gwarancja”, „100%”. Short sentences.
+
+### Graphic copy
+- `headline`: 2 lines (3 max), ≤ ~22 characters each; 1–3 accent words.
+- `sub`: ≤ 110 characters, the benefit in **bold**.
+- Carousel: problem/benefit → what to check → common mistake or myth. Title ≤ 35 characters
+  with one accent; text ≤ 190 characters with one bold phrase.
+
+### Captions (SEO for Instagram search)
+- First line ≤ 125 characters: hook + the phrase people actually search
+  („ubezpieczenie dziecka”, „ubezpieczenie turystyczne”), not internal jargon.
+- 120–220 words, short paragraphs, a ✔️ list of 3 benefits, one sentence on why OSCare,
+  CTA = keyword comment + „link w bio”.
+- Hashtags 3–5: one broad, two niche, the occasion if any, `#OSCare` (+ `#ubezpieczenia<Miasto>`
+  when the city is set).
+- `alt`: what's in the photo + the key phrase, ≤ 200 characters.
+- `facebook`: shorter, includes `{link}`. `google`: 600–900 characters, no hashtags, phone at
+  the end. `linkedin`: only for business topics.
+- `dm`: thanks → `{link}` → 2-line takeaway → one qualifying question (age, existing policy,
+  family) → signature „Oskar, OSCare”.
+
+### Blog (the site blog: tiptap editor, pasted as rich text)
+- `title` ≤ 60 characters, starting with the main phrase. `excerpt` 140–160 characters (it is the
+  meta description).
+- 900–1400 words. Allowed HTML: p, h2, h3, ul/ol/li, strong, em, blockquote, a. No tables,
+  images or h1.
+- Structure: intro answering the search intent, main phrase in the first 100 words → H2s phrased
+  like Google questions → „na co uważać” list → mid-article `<blockquote>` CTA with
+  `<a href="/#kontakt">` → „Ile to kosztuje?” without invented prices → H2 „Najczęstsze pytania”
+  with 3–5 H3 questions → summary + CTA with phone. Secondary phrases once or twice each, naturally.
+- The legal footnote is appended automatically.
+
+### Reels — exactly 3, three different formats
+1. Myth vs fact / educational hook, to camera, 20–30 s.
+2. POV scene or B-roll with captions (voice-over optional), 25–35 s.
+3. Answering a question (Q&A, ideally „Odpowiedz rolką” on a real comment), 30–45 s.
+
+Each: hook within 2 s (spoken + on-screen), scenes of 2–10 s, last scene = keyword CTA,
+cover text ≤ 5 words, audio suggestion, filming tip, caption ≤ 300 characters + 3 hashtags.
+
+### Plan
+Blog first (all links point to it) → reel 1 → post/carousel + story + Facebook + Google on the
+main day (the occasion, if there is one) → reels 2 and 3 one to two days apart → DM follow-up.
+Use real dates from today's date; write them like „czw 08.10”.
+
+### Special inputs
+- **Animations (.mp4):** NN's motion graphics can't be rebranded frame by frame. Take the message
+  from the frames, build a `layout: "text"` post (or use `at` on a frame with a clean photo), and
+  tell the user the animation itself isn't reused — reel 2 can recreate the idea.
+- **Little clean photo** (generator warns under 420 px above NN's frame): switch to
+  `layout: "text"`.
+- **Variants:** suggest posting them on Facebook, or as a repost/ad test two weeks later.

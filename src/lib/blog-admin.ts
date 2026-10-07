@@ -34,6 +34,8 @@ export function slugify(title: string): string {
   return title
     .trim()
     .toLowerCase()
+    // "ł" has no decomposed form, so NFD alone would turn "małej" into "ma-ej".
+    .replace(/ł/g, "l")
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
