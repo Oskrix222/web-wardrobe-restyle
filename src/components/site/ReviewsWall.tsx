@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Star } from "lucide-react";
+import { ExternalLink, Star } from "lucide-react";
 
 import type { GoogleReview } from "@/lib/google-reviews.functions";
 import { cn } from "@/lib/utils";
@@ -47,9 +47,24 @@ function GoogleG() {
   );
 }
 
-function ReviewTile({ review, leaving }: { review: GoogleReview; leaving: boolean }) {
+/** Opens the listing's reviews on Google (a single review has no public link). */
+function ReviewTile({
+  review,
+  leaving,
+  href,
+}: {
+  review: GoogleReview;
+  leaving: boolean;
+  href: string;
+}) {
   return (
-    <article className={cn("review-tile", leaving && "is-leaving")}>
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={cn("review-tile", leaving && "is-leaving")}
+      aria-label={`Opinia: ${review.name}, ${review.rating} na 5 — zobacz opinie w Google (nowa karta)`}
+    >
       <header className="review-tile__head">
         <span className="review-tile__avatar" aria-hidden="true">
           {initials(review.name)}
@@ -68,7 +83,11 @@ function ReviewTile({ review, leaving }: { review: GoogleReview; leaving: boolea
         ))}
       </span>
       <p className="review-tile__text">{review.text}</p>
-    </article>
+      <span className="review-tile__more" aria-hidden="true">
+        Zobacz w Google
+        <ExternalLink />
+      </span>
+    </a>
   );
 }
 
@@ -78,7 +97,7 @@ function ReviewTile({ review, leaving }: { review: GoogleReview; leaving: boolea
  * wall is off screen, the tab is hidden or the visitor hovers it, and is off
  * entirely for prefers-reduced-motion.
  */
-export function ReviewsWall({ reviews }: { reviews: GoogleReview[] }) {
+export function ReviewsWall({ reviews, href }: { reviews: GoogleReview[]; href: string }) {
   const count = Math.min(SLOTS, reviews.length);
   const [slots, setSlots] = useState(() => Array.from({ length: count }, (_, i) => i));
   const [leaving, setLeaving] = useState<number | null>(null);
@@ -140,7 +159,12 @@ export function ReviewsWall({ reviews }: { reviews: GoogleReview[] }) {
       {slots.map((reviewIndex, slot) => {
         const review = reviews[reviewIndex]!;
         return (
-          <ReviewTile key={`${slot}-${review.id}`} review={review} leaving={leaving === slot} />
+          <ReviewTile
+            key={`${slot}-${review.id}`}
+            review={review}
+            leaving={leaving === slot}
+            href={href}
+          />
         );
       })}
     </div>

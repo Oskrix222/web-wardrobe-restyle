@@ -1,7 +1,11 @@
 @use "../brandbook" as *;
 
 .group-insurance {
+  // clip, not hidden: a hidden overflow is still a scroll container that
+  // focus/scrollIntoView can shift sideways (the pattern layer is wider
+  // than the screen). "hidden" stays as a fallback for old browsers.
   overflow: hidden;
+  overflow: clip;
 
   &__grid {
     @include container;

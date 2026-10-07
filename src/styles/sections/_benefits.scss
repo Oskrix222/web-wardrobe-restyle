@@ -1,7 +1,11 @@
 @use "../brandbook" as *;
 
 .benefits {
+  // clip, not hidden: a hidden overflow is still a scroll container that
+  // focus/scrollIntoView can shift sideways (the pattern layer is wider
+  // than the screen). "hidden" stays as a fallback for old browsers.
   overflow: hidden;
+  overflow: clip;
 
   // Google block on top (full width), contact form centred below it.
   &__grid {
@@ -146,10 +150,27 @@
   border: 1px solid var(--border);
   border-radius: $radius-xl;
   box-shadow: $shadow-sm;
+  color: inherit;
+  text-decoration: none;
   animation: review-in 0.5s cubic-bezier(0.22, 0.8, 0.24, 1);
   transition:
     opacity 0.4s ease,
-    transform 0.4s ease;
+    transform 0.4s ease,
+    border-color $transition-base,
+    box-shadow 0.35s ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--terracotta-line);
+    box-shadow: $shadow-md;
+    transform: translateY(-3px);
+  }
+
+  &:hover .review-tile__more,
+  &:focus-visible .review-tile__more {
+    opacity: 1;
+    transform: none;
+  }
 
   &.is-leaving {
     opacity: 0;
@@ -214,6 +235,32 @@
       &.is-on {
         color: #f5b400;
       }
+    }
+  }
+
+  // "Zobacz w Google ↗" — shown on hover/focus (always on touch screens).
+  &__more {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+    font-size: $text-xs;
+    font-weight: $weight-semibold;
+    color: var(--terracotta-strong);
+    opacity: 0;
+    transform: translateY(3px);
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease;
+
+    svg {
+      width: 0.8rem;
+      height: 0.8rem;
+    }
+
+    @media (hover: none) {
+      opacity: 1;
+      transform: none;
     }
   }
 

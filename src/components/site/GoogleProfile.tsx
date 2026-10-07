@@ -55,7 +55,7 @@ export function GoogleProfile({ feed }: { feed: GoogleReviewsFeed | null }) {
         </div>
 
         {reviews.length > 0 ? (
-          <ReviewsWall reviews={reviews} />
+          <ReviewsWall reviews={reviews} href={googleLinks.reviews} />
         ) : (
           <div className="google-profile__empty">Opinie z Google pojawią się tu automatycznie.</div>
         )}
