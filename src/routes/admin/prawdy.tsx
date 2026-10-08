@@ -4,6 +4,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { AdminShell } from "@/components/admin/AdminShell";
+import { isMissingSetup, SetupNotice } from "@/components/admin/SetupNotice";
 import {
   addTruth,
   deleteTruth,
@@ -26,11 +27,18 @@ function AdminTruths() {
   const [body, setBody] = useState("");
   const [category, setCategory] = useState<TruthCategory>("oferta");
   const [editing, setEditing] = useState<{ id: string; body: string } | null>(null);
+  const [missingSetup, setMissingSetup] = useState(false);
 
   const load = () => {
     listTruths()
       .then(setTruths)
-      .catch(() => toast.error("Nie udało się wczytać listy. Czy baza ma już tabele kalendarza?"));
+      .catch((error: unknown) => {
+        if (isMissingSetup(error)) setMissingSetup(true);
+        else {
+          setTruths([]);
+          toast.error("Nie udało się wczytać listy. Odśwież stronę.");
+        }
+      });
   };
   useEffect(load, []);
 
@@ -103,7 +111,9 @@ function AdminTruths() {
           </button>
         </form>
 
-        {truths === null ? (
+        {missingSetup ? (
+          <SetupNotice />
+        ) : truths === null ? (
           <p>Wczytywanie…</p>
         ) : (
           TRUTH_CATEGORIES.map((group) => {

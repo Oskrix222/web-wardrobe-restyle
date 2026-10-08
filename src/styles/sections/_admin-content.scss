@@ -972,3 +972,31 @@
     list-style: disc inside;
   }
 }
+
+// -------------------- SETUP NOTICE --------------------------------
+.content-setup {
+  margin-top: $space-6;
+  max-width: 40rem;
+  padding: $space-6;
+  background-color: var(--card);
+  border: 1px solid var(--terracotta);
+  border-radius: $radius-xl;
+  font-size: $text-sm;
+  line-height: $leading-relaxed;
+
+  h2 {
+    font-family: $font-display;
+    font-size: $text-xl;
+    font-weight: $weight-normal;
+    text-transform: uppercase;
+  }
+
+  ol {
+    margin: $space-3 0 $space-5;
+    padding-left: $space-5;
+    list-style: decimal;
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+  }
+}

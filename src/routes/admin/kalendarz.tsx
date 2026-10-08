@@ -4,6 +4,7 @@ import { toast } from "sonner";
 
 import { AdminShell } from "@/components/admin/AdminShell";
 import { ContentItemCard, statusOf } from "@/components/admin/ContentItemCard";
+import { isMissingSetup, SetupNotice } from "@/components/admin/SetupNotice";
 import {
   deleteCampaign,
   getConnectionStatus,
@@ -46,6 +47,7 @@ function AdminCalendar() {
   const [items, setItems] = useState<ContentItem[] | null>(null);
   const [connection, setConnection] = useState<ConnectionStatus | null>(null);
   const [filter, setFilter] = useState<Filter>("upcoming");
+  const [missingSetup, setMissingSetup] = useState(false);
 
   const load = useCallback(() => {
     listCalendar()
@@ -53,7 +55,13 @@ function AdminCalendar() {
         setCampaigns(data.campaigns);
         setItems(data.items);
       })
-      .catch(() => toast.error("Nie udało się wczytać kalendarza. Czy baza ma już tabele kalendarza?"));
+      .catch((error: unknown) => {
+        if (isMissingSetup(error)) setMissingSetup(true);
+        else {
+          setItems([]);
+          toast.error("Nie udało się wczytać kalendarza. Odśwież stronę.");
+        }
+      });
     getConnectionStatus()
       .then(setConnection)
       .catch(() => setConnection(null));
@@ -166,7 +174,9 @@ function AdminCalendar() {
           </div>
         </div>
 
-        {items === null ? (
+        {missingSetup ? (
+          <SetupNotice />
+        ) : items === null ? (
           <p>Wczytywanie…</p>
         ) : weeks.length === 0 ? (
           <div className="content-cal__empty">

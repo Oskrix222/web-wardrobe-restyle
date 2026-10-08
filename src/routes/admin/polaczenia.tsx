@@ -5,6 +5,7 @@ import { CircleCheck, CircleAlert, Copy } from "lucide-react";
 import { toast } from "sonner";
 
 import { AdminShell } from "@/components/admin/AdminShell";
+import { isMissingSetup, SetupNotice } from "@/components/admin/SetupNotice";
 import { getConnectionStatus, type ConnectionStatus } from "@/lib/content-admin";
 import { disconnectMeta, getMetaConnectUrl, getServerSetup } from "@/lib/content.functions";
 
@@ -42,12 +43,16 @@ function AdminConnections() {
   const [status, setStatus] = useState<ConnectionStatus | null>(null);
   const [setup, setSetup] = useState<{ serviceKey: boolean; metaApp: boolean } | null>(null);
   const [connecting, setConnecting] = useState(false);
+  const [missingSetup, setMissingSetup] = useState(false);
   const callbackUrl = typeof window === "undefined" ? "" : `${window.location.origin}/api/meta/callback`;
 
   const load = () => {
     getConnectionStatus()
       .then(setStatus)
-      .catch(() => toast.error("Nie udało się wczytać statusu. Czy baza ma już tabele kalendarza?"));
+      .catch((error: unknown) => {
+        if (isMissingSetup(error)) setMissingSetup(true);
+        else toast.error("Nie udało się wczytać statusu. Odśwież stronę.");
+      });
     fetchSetup()
       .then(setSetup)
       .catch(() => setSetup(null));
@@ -92,6 +97,7 @@ function AdminConnections() {
     <AdminShell>
       <div className="content-connections">
         <h1>Połączenia</h1>
+        {missingSetup ? <SetupNotice /> : null}
 
         <section className="content-connections__card">
           <h2>Instagram i Facebook</h2>
