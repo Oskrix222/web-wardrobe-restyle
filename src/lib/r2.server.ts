@@ -39,9 +39,15 @@ const encodePath = (key: string) =>
     .join("/");
 
 /** SigV4 query-string signature for one request against the bucket. */
-async function presign(method: "PUT" | "DELETE", key: string, expiresSeconds: number) {
+async function presign(
+  method: "GET" | "PUT" | "DELETE",
+  key: string,
+  expiresSeconds: number,
+  params: Record<string, string> = {},
+) {
   const host = `${env("R2_ACCOUNT_ID")}.r2.cloudflarestorage.com`;
-  const path = `/${env("R2_BUCKET")}/${encodePath(key)}`;
+  // An empty key addresses the bucket itself (listing).
+  const path = key ? `/${env("R2_BUCKET")}/${encodePath(key)}` : `/${env("R2_BUCKET")}`;
   const now = new Date();
   const amzDate = now
     .toISOString()
@@ -56,6 +62,7 @@ async function presign(method: "PUT" | "DELETE", key: string, expiresSeconds: nu
     "X-Amz-Date": amzDate,
     "X-Amz-Expires": String(expiresSeconds),
     "X-Amz-SignedHeaders": "host",
+    ...params,
   });
   const canonicalQuery = [...query.entries()]
     .sort(([a], [b]) => (a < b ? -1 : 1))
@@ -94,4 +101,24 @@ export async function r2Delete(key: string) {
   const res = await fetch(await presign("DELETE", key, 300), { method: "DELETE" });
   if (!res.ok && res.status !== 404)
     throw new Error(`R2: nie udało się usunąć pliku (HTTP ${res.status}).`);
+}
+
+/** Total size of everything in the bucket (ListObjectsV2, 1000 keys per page). */
+export async function r2StoredBytes(): Promise<number> {
+  let total = 0;
+  let token = "";
+  for (;;) {
+    const params: Record<string, string> = { "list-type": "2" };
+    if (token) params["continuation-token"] = token;
+    const res = await fetch(await presign("GET", "", 300, params));
+    if (!res.ok)
+      throw new Error(`R2: nie udało się sprawdzić zajętego miejsca (HTTP ${res.status}).`);
+    const xml = await res.text();
+    for (const m of xml.matchAll(/<Size>(\d+)<\/Size>/g)) total += Number(m[1]);
+    const next = /<IsTruncated>true<\/IsTruncated>/.test(xml)
+      ? /<NextContinuationToken>([^<]+)<\/NextContinuationToken>/.exec(xml)?.[1]
+      : undefined;
+    if (!next) return total;
+    token = next.replace(/&amp;/g, "&");
+  }
 }

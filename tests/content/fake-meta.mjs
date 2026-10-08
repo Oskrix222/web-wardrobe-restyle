@@ -14,6 +14,11 @@ export function createFakeMeta(account) {
       calls.push({ host: "r2", method, path: decodeURIComponent(url.pathname) });
       return new Response(null, { status: 204 });
     }
+    // Size check before publishing (usage-guard): every stored file is 500 kB.
+    if (method === "HEAD") {
+      calls.push({ host: url.hostname, method, path: url.pathname });
+      return new Response(null, { headers: { "content-length": "500000" } });
+    }
     if (url.hostname === "rupload.facebook.com") {
       calls.push({
         host: "rupload",

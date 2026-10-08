@@ -1364,3 +1364,43 @@
     font-size: $text-xs;
   }
 }
+
+// Panel → Połączenia → Limity
+.content-usage {
+  margin-top: $space-4;
+
+  &__label {
+    display: flex;
+    justify-content: space-between;
+    gap: $space-3;
+    font-size: $text-sm;
+    margin-bottom: $space-1;
+
+    span:last-child {
+      font-variant-numeric: tabular-nums;
+      color: var(--muted-foreground);
+    }
+  }
+
+  &__track {
+    height: 0.5rem;
+    border-radius: 999px;
+    background-color: var(--muted);
+    overflow: hidden;
+  }
+
+  &__fill {
+    height: 100%;
+    border-radius: inherit;
+    background-color: var(--primary);
+    transition: width 0.3s ease;
+  }
+
+  &.is-high &__fill {
+    background-color: #d97706;
+  }
+
+  &.is-full &__fill {
+    background-color: var(--destructive);
+  }
+}

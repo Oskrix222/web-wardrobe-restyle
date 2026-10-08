@@ -7,7 +7,12 @@ import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { isMissingSetup, SetupNotice } from "@/components/admin/SetupNotice";
 import { getConnectionStatus, type ConnectionStatus } from "@/lib/content-admin";
-import { disconnectMeta, getMetaConnectUrl, getServerSetup } from "@/lib/content.functions";
+import {
+  disconnectMeta,
+  getMetaConnectUrl,
+  getServerSetup,
+  getUsage,
+} from "@/lib/content.functions";
 
 export const Route = createFileRoute("/admin/polaczenia")({
   // ?meta=ok|<error> comes back from the Facebook login (/api/meta/callback).
@@ -34,10 +39,35 @@ function Check({ ok, children }: { ok: boolean; children: ReactNode }) {
   );
 }
 
+type Usage = Awaited<ReturnType<typeof getUsage>>;
+
+const sizeLabel = (bytes: number) =>
+  bytes >= 1024 ** 3
+    ? `${(bytes / 1024 ** 3).toFixed(2).replace(".", ",")} GB`
+    : `${Math.round(bytes / 1024 ** 2)} MB`;
+
+function UsageBar({ label, used, limit }: { label: string; used: number | null; limit: number }) {
+  const ratio = used == null ? 0 : Math.min(1, used / limit);
+  const level = ratio >= 1 ? "is-full" : ratio >= 0.8 ? "is-high" : "";
+  return (
+    <div className={`content-usage ${level}`}>
+      <div className="content-usage__label">
+        <span>{label}</span>
+        <span>{used == null ? "—" : `${sizeLabel(used)} z ${sizeLabel(limit)}`}</span>
+      </div>
+      <div className="content-usage__track">
+        <div className="content-usage__fill" style={{ width: `${ratio * 100}%` }} />
+      </div>
+    </div>
+  );
+}
+
 function AdminConnections() {
   const { meta: metaResult } = Route.useSearch();
   const navigate = Route.useNavigate();
   const fetchSetup = useServerFn(getServerSetup);
+  const fetchUsage = useServerFn(getUsage);
+  const [usage, setUsage] = useState<Usage | null>(null);
   const fetchConnectUrl = useServerFn(getMetaConnectUrl);
   const disconnect = useServerFn(disconnectMeta);
   const [status, setStatus] = useState<ConnectionStatus | null>(null);
@@ -59,6 +89,9 @@ function AdminConnections() {
     fetchSetup()
       .then(setSetup)
       .catch(() => setSetup(null));
+    fetchUsage()
+      .then(setUsage)
+      .catch(() => setUsage(null));
   };
   useEffect(load, []);
 
@@ -222,6 +255,32 @@ function AdminConnections() {
               <code>R2_SECRET_ACCESS_KEY</code>. Claude przeprowadzi Cię przez to krok po kroku.
             </Check>
           </ul>
+        </section>
+
+        <section className="content-connections__card">
+          <h2>Limity (ochrona przed rachunkami)</h2>
+          <p>
+            Twarde blokady w kodzie: po dojściu do limitu panel odmawia wgrania pliku, a automat
+            wstrzymuje publikację do 1. dnia następnego miesiąca. Pojedynczy plik: rolka do 300 MB,
+            ZIP do 50 MB, zdjęcie do 10 MB.
+          </p>
+          {usage ? (
+            <>
+              <UsageBar
+                label={`Transfer w tym miesiącu (${usage.month})`}
+                used={usage.transfer.used}
+                limit={usage.transfer.limit}
+              />
+              <UsageBar
+                label="Pliki w Supabase"
+                used={usage.supabase.used}
+                limit={usage.supabase.limit}
+              />
+              <UsageBar label="Rolki w R2" used={usage.r2.used} limit={usage.r2.limit} />
+            </>
+          ) : (
+            <p>Zużycie pokaże się po dodaniu klucza bazy (SUPABASE_SERVICE_ROLE_KEY).</p>
+          )}
         </section>
       </div>
     </AdminShell>

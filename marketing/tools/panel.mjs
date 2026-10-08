@@ -53,6 +53,39 @@ function check(result, what) {
   return result.data;
 }
 
+// ------------------------------------------------------------------ monthly transfer limit
+// Same counter and limit as the site (src/lib/usage-guard.server.ts): downloads and uploads
+// made from this Mac count too, so the month never goes past 9 GB.
+const MONTHLY_TRANSFER_LIMIT = 9 * 1024 ** 3;
+const monthNow = () =>
+  new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Warsaw", year: "numeric", month: "2-digit" })
+    .format(new Date())
+    .slice(0, 7);
+
+async function countTransfer(db, bytes) {
+  const { data } = await db
+    .from("content_integrations")
+    .select("data")
+    .eq("provider", "usage")
+    .maybeSingle();
+  const month = monthNow();
+  const used = data?.data?.month === month ? Number(data.data.bytes) || 0 : 0;
+  if (used + bytes > MONTHLY_TRANSFER_LIMIT) {
+    const gb = (n) => (n / 1024 ** 3).toFixed(2);
+    throw new Error(
+      `Miesięczny limit transferu 9 GB (zużyto ${gb(used)} GB). Spróbuj 1. dnia następnego miesiąca.`,
+    );
+  }
+  check(
+    await db.from("content_integrations").upsert({
+      provider: "usage",
+      data: { month, bytes: used + bytes },
+      updated_at: new Date().toISOString(),
+    }),
+    "Licznik transferu",
+  );
+}
+
 // ------------------------------------------------------------------ Polish time
 const TZ = "Europe/Warsaw";
 
@@ -198,7 +231,7 @@ async function pullUploads() {
   const uploads = check(
     await db
       .from("content_uploads")
-      .select("id, file_name, path")
+      .select("id, file_name, path, size")
       .eq("status", "new")
       .order("created_at"),
     "Paczki",
@@ -208,6 +241,7 @@ async function pullUploads() {
     return;
   }
   for (const u of uploads) {
+    await countTransfer(db, u.size ?? 0);
     const target = path.join(ROOT, "marketing/wrzuc-tutaj", u.id);
     mkdirSync(target, { recursive: true });
     const { data, error } = await db.storage.from("content").download(u.path);
@@ -284,8 +318,10 @@ function toJpeg(png, outDir) {
 }
 
 async function upload(db, bucket, storagePath, file) {
+  const body = readFileSync(file);
+  await countTransfer(db, body.length);
   check(
-    await db.storage.from(bucket).upload(storagePath, readFileSync(file), {
+    await db.storage.from(bucket).upload(storagePath, body, {
       contentType: "image/jpeg",
       cacheControl: "31536000",
       upsert: true,

@@ -23,6 +23,7 @@ import {
 } from "@/lib/meta-graph.server";
 import { r2Delete } from "@/lib/r2.server";
 import { createAdminClient, type AdminClient } from "@/lib/supabase-admin.server";
+import { countTransfer, LimitError } from "@/lib/usage-guard.server";
 import type { Database, Json } from "@/integrations/supabase/types";
 
 type ItemRow = Database["public"]["Tables"]["content_items"]["Row"];
@@ -36,7 +37,13 @@ type ChannelState = {
   commented?: boolean;
   commentError?: string;
 };
-type PublishState = { instagram?: ChannelState; facebook?: ChannelState; waiting?: string };
+type PublishState = {
+  instagram?: ChannelState;
+  facebook?: ChannelState;
+  waiting?: string;
+  /** This item's downloads are already on the monthly transfer counter. */
+  counted?: boolean;
+};
 type AutoReplyChannel = { enabled: boolean; message: string; publicReply: string };
 
 const MAX_ATTEMPTS = 4;
@@ -210,6 +217,23 @@ async function cleanUpVideo(item: ItemRow) {
   }
 }
 
+const FALLBACK_IMAGE_BYTES = 1024 * 1024;
+
+/**
+ * Bytes Instagram/Facebook will pull from Supabase for this item (each channel downloads
+ * every file once). Files in R2 are free to download, so they don't count.
+ */
+async function supabaseDownloadBytes(item: ItemRow): Promise<number> {
+  let perChannel = 0;
+  for (const m of item.media as Media[]) {
+    if (m.path?.startsWith("r2:")) continue;
+    const res = await fetch(m.url, { method: "HEAD" }).catch(() => null);
+    const size = Number(res?.headers.get("content-length"));
+    perChannel += size > 0 ? size : FALLBACK_IMAGE_BYTES;
+  }
+  return perChannel * (item.channels as Channel[]).length;
+}
+
 async function processItem(
   db: AdminClient,
   acc: MetaAccount | null,
@@ -247,6 +271,20 @@ async function processItem(
       await save({ last_error: "Brak połączenia z Instagramem/Facebookiem — Panel → Połączenia." });
       report.errors.push({ title: item.title, error: "brak połączenia z Meta" });
       return;
+    }
+
+    if (!state.counted) {
+      try {
+        await countTransfer(db, await supabaseDownloadBytes(item));
+      } catch (error) {
+        if (!(error instanceof LimitError)) throw error;
+        // Not the item's fault — wait for next month without using up attempts.
+        state.waiting = error.message;
+        await save({});
+        report.inProgress.push(item.title);
+        return;
+      }
+      state.counted = true;
     }
 
     for (const channel of item.channels as Channel[]) {

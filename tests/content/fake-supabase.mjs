@@ -218,6 +218,22 @@ export function createFakeSupabase(seed = {}) {
             ? { data: new Blob([buf]), error: null }
             : { data: null, error: { message: "not found" } };
         },
+        // One level of a "folder": files carry an id + size, sub-folders don't.
+        list: async (prefix = "", { limit = 100, offset = 0 } = {}) => {
+          const base = prefix ? `${bucket}/${prefix}/` : `${bucket}/`;
+          const entries = new Map();
+          for (const [key, buf] of Object.entries(storage)) {
+            if (!key.startsWith(base)) continue;
+            const [name, ...rest] = key.slice(base.length).split("/");
+            entries.set(
+              name,
+              rest.length
+                ? { name, id: null, metadata: null }
+                : { name, id: key, metadata: { size: buf.length } },
+            );
+          }
+          return { data: [...entries.values()].slice(offset, offset + limit), error: null };
+        },
         remove: async (paths) => {
           for (const p of paths) delete storage[`${bucket}/${p}`];
           return { data: paths, error: null };

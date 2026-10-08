@@ -63,17 +63,45 @@ export const publishItemNow = createServerFn({ method: "POST" })
 /**
  * Where the browser should upload a reel: a presigned R2 URL (big files, free 10 GB),
  * or null when R2 isn't set up yet — then the panel falls back to Supabase (50 MB).
+ * Refuses files that would break a limit (usage-guard.server.ts).
  */
 export const getVideoUploadTarget = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .validator(
-    z.object({ itemId: z.string().uuid(), extension: z.string().regex(/^[a-z0-9]{2,5}$/) }),
+    z.object({
+      itemId: z.string().uuid(),
+      extension: z.string().regex(/^[a-z0-9]{2,5}$/),
+      size: z.number().int().positive(),
+    }),
   )
   .handler(async ({ data }) => {
-    const { r2Configured, r2PublicUrl, r2UploadUrl } = await import("./r2.server");
-    if (!r2Configured()) return null;
+    const { reserveUpload } = await import("./usage-guard.server");
+    const { createAdminClient } = await import("./supabase-admin.server");
+    const { store } = await reserveUpload(createAdminClient(), "reel", data.size);
+    if (store !== "r2") return null;
+    const { r2PublicUrl, r2UploadUrl } = await import("./r2.server");
     const key = `rolki/${data.itemId}-${Date.now()}.${data.extension}`;
     return { key, uploadUrl: await r2UploadUrl(key), publicUrl: r2PublicUrl(key) };
+  });
+
+/** Checks a ZIP or image against the limits (and counts it) before the browser uploads it. */
+export const reserveFileUpload = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .validator(z.object({ kind: z.enum(["zip", "image"]), size: z.number().int().positive() }))
+  .handler(async ({ data }) => {
+    const { reserveUpload } = await import("./usage-guard.server");
+    const { createAdminClient } = await import("./supabase-admin.server");
+    await reserveUpload(createAdminClient(), data.kind, data.size);
+    return { ok: true };
+  });
+
+/** Transfer this month + stored files, for Panel → Połączenia. */
+export const getUsage = createServerFn({ method: "GET" })
+  .middleware([requireAdmin])
+  .handler(async () => {
+    const { usageSummary } = await import("./usage-guard.server");
+    const { createAdminClient } = await import("./supabase-admin.server");
+    return usageSummary(createAdminClient());
   });
 
 export const deleteR2Video = createServerFn({ method: "POST" })

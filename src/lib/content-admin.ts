@@ -168,7 +168,6 @@ export async function shiftCampaign(campaign: Campaign, items: ContentItem[], da
 }
 
 /** Supabase Free stores files up to 50 MB — only used until R2 is set up. */
-export const MAX_SUPABASE_VIDEO_BYTES = 50 * 1024 * 1024;
 
 /** Video length in seconds, read from the file itself (Facebook Reels allow max 90 s). */
 function videoDuration(file: File): Promise<number | undefined> {
@@ -222,18 +221,16 @@ export async function uploadReelVideo(
   const ext = (file.name.split(".").pop() || "mp4").toLowerCase();
   const duration = await videoDuration(file);
   const { getVideoUploadTarget } = await import("@/lib/content.functions");
-  const target = await getVideoUploadTarget({ data: { itemId: item.id, extension: ext } });
+  // Also enforces the size/storage/monthly limits — throws with a readable message.
+  const target = await getVideoUploadTarget({
+    data: { itemId: item.id, extension: ext, size: file.size },
+  });
 
   let media: ContentMedia & { duration?: number };
   if (target) {
     await putWithProgress(target.uploadUrl, file, onProgress);
     media = { type: "video", url: target.publicUrl, path: `r2:${target.key}` };
   } else {
-    if (file.size > MAX_SUPABASE_VIDEO_BYTES) {
-      throw new Error(
-        "Plik ma ponad 50 MB, a magazyn na duże rolki (R2) nie jest jeszcze podłączony. Panel → Połączenia.",
-      );
-    }
     const path = `${item.campaignId}/${item.kind}-${item.position}-${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from("content").upload(path, file, {
       contentType: file.type || "video/mp4",
@@ -391,6 +388,8 @@ export async function uploadZip(file: File): Promise<void> {
   if (file.size > 50 * 1024 * 1024) {
     throw new Error("ZIP ma ponad 50 MB. Podziel grafiki na dwa mniejsze ZIP-y.");
   }
+  const { reserveFileUpload } = await import("@/lib/content.functions");
+  await reserveFileUpload({ data: { kind: "zip", size: file.size } });
   const path = `uploads/${crypto.randomUUID()}.zip`;
   const { error } = await supabase.storage.from("content").upload(path, file, {
     contentType: "application/zip",

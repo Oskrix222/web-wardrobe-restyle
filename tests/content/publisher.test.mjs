@@ -381,3 +381,32 @@ test("auto replies stay off when both switches are off", async () => {
   assert.equal(meta.graph("POST", "messages").length, 0);
   assert.equal(meta.graph("GET", "comments").length, 0, "comments aren't even fetched");
 });
+
+test("downloads from Supabase count toward the monthly limit; at the limit publishing waits", async () => {
+  db = createFakeSupabase(week());
+  await runPublisher();
+  // post: 2 images × 2 networks, story: 1 × 2, reel-short (Supabase): 1 × 2; the R2 reel is free.
+  const usage = db.tables.content_integrations.find((r) => r.provider === "usage").data;
+  assert.equal(usage.bytes, (4 + 2 + 2) * 500_000);
+
+  const month = usage.month;
+  db = createFakeSupabase(
+    week({
+      content_integrations: [
+        { provider: "meta", data: ACCOUNT },
+        { provider: "usage", data: { month, bytes: 9 * 1024 ** 3 - 100 } },
+      ],
+    }),
+  );
+  meta = createFakeMeta(ACCOUNT);
+  globalThis.fetch = meta.fetch;
+  await runPublisher();
+  assert.equal(byId("blog").status, "published", "the blog itself moves no files");
+  assert.equal(byId("reel-long").status, "published", "reels from R2 are free");
+  for (const id of ["post", "story", "reel-short"]) {
+    assert.equal(byId(id).status, "pending", `${id} waits for next month`);
+    assert.equal(byId(id).attempts, 0, "waiting doesn't use up attempts");
+    assert.match(byId(id).publish_state.waiting, /Miesięczny limit transferu/);
+  }
+  assert.equal(meta.graph("POST", "feed").length, 0, "nothing posted on Facebook");
+});

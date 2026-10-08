@@ -162,6 +162,9 @@ export async function listDailyStats(sinceDay: string): Promise<DailyStat[]> {
 
 /** Uploads an image to the public blog-images bucket and returns its public URL. */
 export async function uploadBlogImage(file: File): Promise<string> {
+  // Size + storage + monthly transfer limits (usage-guard.server.ts).
+  const { reserveFileUpload } = await import("@/lib/content.functions");
+  await reserveFileUpload({ data: { kind: "image", size: file.size } });
   const ext = file.name.split(".").pop() || "jpg";
   const path = `${crypto.randomUUID()}.${ext}`;
 
