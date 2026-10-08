@@ -26,6 +26,7 @@ export function campaignLinks(brand, spec) {
     slug,
     campaign,
     base,
+    utm,
     link: {
       bio: utm("instagram", "social", "bio"),
       story: utm("instagram", "social", "story"),

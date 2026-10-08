@@ -35,7 +35,7 @@ export default {
     text: "Porównamy oferty i pokażemy, która polisa daje realne wsparcie psychologiczne. Bez zobowiązań.",
   },
 
-  story: { label: "10.10 · Zdrowie psychiczne", text: "Na co uważać w polisie z psychologiem? *Kliknij link* ↓" },
+  story: { label: "10.10 · Zdrowie psychiczne", text: "Na co uważać w polisie z psychologiem? *Link w bio*" },
 
   hashtags: ["#zdrowiepsychiczne", "#ubezpieczenienazycie", "#ubezpieczeniezdrowotne", "#DzieńZdrowiaPsychicznego", "#OSCare"],
 
@@ -51,7 +51,7 @@ Coraz więcej polis na życie i ubezpieczeń zdrowotnych ma pakiety ze wsparciem
 
 Tylko że pakiety mocno się różnią: liczbą sesji w roku, karencją i wyłączeniami w OWU. Dlatego porównujemy oferty i tłumaczymy drobny druk, zanim cokolwiek podpiszesz.
 
-👉 Napisz „WSPARCIE” w komentarzu, a wyślę Ci krótki poradnik: na co patrzeć, wybierając ubezpieczenie z dostępem do psychologa. Cały artykuł: link w bio.
+👉 Napisz „WSPARCIE” w komentarzu, a podeślemy Ci ofertę z dostępem do psychologa. Cały poradnik: link w pierwszym komentarzu.
 
 Jesteś w kryzysie? Nie czekaj na polisę: 800 70 2222 (całą dobę) lub 116 123. W zagrożeniu życia dzwoń na 112.`,
 
@@ -168,7 +168,7 @@ Oskar, OSCare`,
         { time: "2–8 s", shot: "Plan średni, gest „stop”", say: "Wiele polis na życie i ubezpieczeń zdrowotnych ma dziś pakiety ze wsparciem psychologicznym.", text: "MIT: polisa nie pomoże" },
         { time: "8–18 s", shot: "Wyliczasz na palcach", say: "Konsultacje z psychologiem, także online. Wizyty u psychiatry. I infolinia, która sama umówi termin.", text: "✔ psycholog online ✔ psychiatra ✔ infolinia umawia" },
         { time: "18–25 s", shot: "Pokazujesz plik OWU / kartki", say: "Ale uwaga: pakiety różnią się liczbą sesji, karencją i wyłączeniami. To trzeba sprawdzić przed podpisaniem.", text: "⚠ limit sesji · karencja · wyłączenia" },
-        { time: "25–30 s", shot: "Wskazujesz w dół, na komentarze", say: "Napisz WSPARCIE w komentarzu, a wyślę Ci, na co patrzeć przy wyborze.", text: "Napisz „WSPARCIE” 👇" },
+        { time: "25–30 s", shot: "Wskazujesz w dół, na komentarze", say: "Napisz WSPARCIE w komentarzu, a podeślę Ci ofertę. Cały poradnik masz pod linkiem w bio.", text: "Napisz „WSPARCIE” 👇" },
       ],
       tips: "Pion, światło z okna przed Tobą, telefon na wysokości oczu. Włącz napisy automatyczne w edytorze Instagrama, bo większość ludzi ogląda bez dźwięku.",
       caption: `Ubezpieczenie z dostępem do psychologa? Tak, to istnieje. Ale zanim podpiszesz, sprawdź limit sesji, karencję i wyłączenia w OWU.
@@ -189,7 +189,7 @@ Napisz „WSPARCIE” w komentarzu, a wyślę Ci krótki poradnik.
         { time: "3–8 s", shot: "Ekran telefonu: przewijasz kalendarz wizyt", text: "Najbliższy wolny termin… za kilka tygodni 😶" },
         { time: "8–16 s", shot: "Przy biurku przeglądasz dokumenty polisy", say: "Zanim zapłacisz za prywatną wizytę, sprawdź swoją polisę. Wiele pakietów ma konsultacje z psychologiem i psychiatrą.", text: "A może masz to już w polisie?" },
         { time: "16–25 s", shot: "Rozmowa telefoniczna, ulga na twarzy", say: "W części z nich wystarczy jeden telefon, a infolinia umawia wizytę za Ciebie.", text: "Infolinia umawia termin za Ciebie" },
-        { time: "25–33 s", shot: "Patrzysz w kamerę, lekki uśmiech", say: "Nie wiesz, co jest w Twojej polisie? Napisz WSPARCIE, sprawdzę to z Tobą.", text: "Napisz „WSPARCIE” 👇" },
+        { time: "25–33 s", shot: "Patrzysz w kamerę, lekki uśmiech", say: "Nie wiesz, co jest w Twojej polisie? Napisz WSPARCIE, a podeślę Ci ofertę. Link do poradnika w bio.", text: "Napisz „WSPARCIE” 👇" },
       ],
       tips: "Kadry po 2–4 sekundy, bez długich ujęć. Scena „po ciemku” wystarczy z lampką w tle. Lektora nagraj osobno w cichym pokoju.",
       caption: `Od miesiąca źle śpisz, a najbliższy wolny termin jest za kilka tygodni? Sprawdź swoją polisę. Wiele pakietów ma konsultacje z psychologiem i psychiatrą.
@@ -210,7 +210,7 @@ Napisz „WSPARCIE”, a sprawdzimy, co już masz.
         { time: "3–12 s", shot: "Jeden palec", say: "Pierwsze: ile konsultacji dostaję w roku? I czy osobno u psychologa i u psychiatry?", text: "1. Ile sesji w roku?" },
         { time: "12–20 s", shot: "Dwa palce", say: "Drugie: czy wizyty są tylko online, czy też stacjonarnie w moim mieście?", text: "2. Online czy na miejscu?" },
         { time: "20–28 s", shot: "Trzy palce", say: "Trzecie: od kiedy działa ochrona? Zapytaj o karencję, czyli czas, w którym pakiet jeszcze nie działa.", text: "3. Od kiedy działa?" },
-        { time: "28–34 s", shot: "Wskazujesz na komentarze", say: "Napisz WSPARCIE w komentarzu, a sprawdzę te trzy rzeczy za Ciebie w kilku ofertach.", text: "Napisz „WSPARCIE” 👇" },
+        { time: "28–34 s", shot: "Wskazujesz na komentarze", say: "Napisz WSPARCIE w komentarzu, a podeślę Ci ofertę, w której sprawdziłem te trzy rzeczy. Link do poradnika w bio.", text: "Napisz „WSPARCIE” 👇" },
       ],
       tips: "Jedno ujęcie z ręki albo ze statywu. Każde pytanie jako duży napis na ekranie, żeby dało się obejrzeć bez dźwięku.",
       caption: `Kupujesz ubezpieczenie z dostępem do psychologa? Zapytaj o 3 rzeczy: ile sesji w roku, online czy stacjonarnie i od kiedy działa ochrona.
@@ -221,14 +221,9 @@ Napisz „WSPARCIE”, a sprawdzę to za Ciebie w kilku ofertach.
     },
   ],
 
-  // Week of the occasion (10.10). Without `publish` the panel picks the next free week.
-  publish: {
-    week: "2026-10-05",
-    blog: "2026-10-08 07:00",
-    post: "2026-10-10 10:00",
-    story: "2026-10-10 12:00",
-    reels: ["2026-10-08 19:00", "2026-10-09 19:00", "2026-10-12 19:00"],
-  },
+  // Optional `publish: { week, blog, post, story, reels: [..] }` pins exact dates
+  // ("YYYY-MM-DD HH:MM", Polish time) — only for occasions. Otherwise the next free
+  // week and the panel's Plan tygodnia apply.
 
   plan: [
     { date: "czw 08.10", what: "7:00 wpis na blogu, 19:00 rolka 1: mit kontra fakt. Ustaw link w bio (sekcja Linki)." },

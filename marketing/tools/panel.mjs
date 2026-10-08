@@ -5,10 +5,12 @@
 //   node marketing/tools/panel.mjs plan              what's scheduled + the next free week
 //   node marketing/tools/panel.mjs wyslij <folder>   upload a rendered package to Panel → Kalendarz
 //                                  [--nadpisz]       also replace items already approved
+//   node marketing/tools/panel.mjs pobierz           unpack ZIPs dropped into the panel into marketing/wrzuc-tutaj/<id>/
+//   node marketing/tools/panel.mjs zakoncz <id> "…"  mark a ZIP as done (shown in the panel); `blad <id> "…"` for errors
 //
 // Needs SUPABASE_SERVICE_ROLE_KEY in .env.local (Supabase → Project Settings → API Keys → secret key).
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createClient } from "@supabase/supabase-js";
@@ -106,8 +108,16 @@ function when(value, weekStart) {
   return warsaw(addDays(weekStart, value.day - 1), value.time);
 }
 
+/** A value from Panel → Kalendarz (Plan tygodnia, autorzy…), or the fallback. */
+async function setting(db, key, fallback) {
+  const { data, error } = await db.from("content_settings").select("value").eq("key", key).maybeSingle();
+  if (error && error.code !== "PGRST205") throw new Error(`Ustawienia: ${error.message}`);
+  return data?.value ?? fallback;
+}
+
 // ------------------------------------------------------------------ prawdy
 const CATEGORY = {
+  o_nas: "O nas (fakty, które możesz wykorzystać w treściach)",
   oferta: "Czego nie mam w ofercie",
   ograniczenie: "Ograniczenia i wykluczenia",
   zasada: "Inne zasady",
@@ -169,6 +179,49 @@ async function printPlan() {
   console.log(`\nNastępny wolny tydzień: ${await nextFreeWeek(db)}`);
 }
 
+// ------------------------------------------------------------------ ZIPs from the panel
+/** Downloads ZIPs dropped into Panel → Kalendarz and unpacks each into marketing/wrzuc-tutaj/<id>/. */
+async function pullUploads() {
+  const db = connect();
+  const uploads = check(
+    await db.from("content_uploads").select("id, file_name, path").eq("status", "new").order("created_at"),
+    "Paczki",
+  );
+  if (!uploads.length) {
+    console.log("Brak nowych ZIP-ów w panelu.");
+    return;
+  }
+  for (const u of uploads) {
+    const target = path.join(ROOT, "marketing/wrzuc-tutaj", u.id);
+    mkdirSync(target, { recursive: true });
+    const { data, error } = await db.storage.from("content").download(u.path);
+    if (error) throw new Error(`Pobieranie ${u.file_name}: ${error.message}`);
+    const zip = path.join(target, "paczka.zip");
+    writeFileSync(zip, Buffer.from(await data.arrayBuffer()));
+    execFileSync("ditto", ["-x", "-k", zip, target], { stdio: "pipe" });
+    rmSync(zip);
+    rmSync(path.join(target, "__MACOSX"), { recursive: true, force: true });
+    const files = execFileSync("find", [target, "-type", "f", "(", "-iname", "*.jpg", "-o", "-iname", "*.jpeg", "-o", "-iname", "*.png", "-o", "-iname", "*.webp", "-o", "-iname", "*.mp4", "-o", "-iname", "*.mov", ")"])
+      .toString()
+      .trim()
+      .split("\n")
+      .filter(Boolean);
+    check(await db.from("content_uploads").update({ status: "processing", note: null }).eq("id", u.id), "Paczki");
+    console.log(`\n${u.file_name} → ${path.relative(ROOT, target)} (id ${u.id}), plików: ${files.length}`);
+    for (const f of files) console.log(`  ${path.relative(ROOT, f)}`);
+  }
+  console.log("\nPo przygotowaniu paczek: node marketing/tools/panel.mjs zakoncz <id> \"<podsumowanie>\"");
+}
+
+async function finishUpload(id, note, failed) {
+  const db = connect();
+  check(
+    await db.from("content_uploads").update({ status: failed ? "error" : "done", note: note || null }).eq("id", id),
+    "Paczki",
+  );
+  console.log(`ZIP ${id}: ${failed ? "błąd" : "gotowe"}${note ? ` — ${note}` : ""}`);
+}
+
 // ------------------------------------------------------------------ wyslij
 function toJpeg(png, outDir) {
   const out = path.join(outDir, `${path.basename(png, path.extname(png))}.jpg`);
@@ -207,11 +260,25 @@ async function sendPackage(folderArg, { force }) {
     "Kampania",
   );
   const weekStart = publish.week ? mondayOf(publish.week) : (existing?.week_start ?? (await nextFreeWeek(db)));
+  // Blog authors take turns week by week (Panel → Kalendarz → Plan tygodnia).
+  const authors = await setting(db, "authors", [{ name: brand.author }]);
+  const { count: earlier } = await db
+    .from("content_campaigns")
+    .select("id", { count: "exact", head: true })
+    .lt("week_start", weekStart);
+  const author = spec.author ?? authors[(earlier ?? 0) % authors.length]?.name ?? brand.author;
   const campaign = check(
     await db
       .from("content_campaigns")
       .upsert(
-        { folder, title: spec.topic, keyword: spec.keyword ?? null, week_start: weekStart, notes: spec.notes ?? [] },
+        {
+          folder,
+          title: spec.topic,
+          keyword: spec.keyword ?? null,
+          week_start: weekStart,
+          notes: spec.notes ?? [],
+          author,
+        },
         { onConflict: "folder" },
       )
       .select("id")
@@ -245,7 +312,7 @@ async function sendPackage(folderArg, { force }) {
     old && (old.status === "published" || ((old.media_approved || old.caption_approved) && !force));
 
   // Blog post as a draft — the calendar publishes it at its time.
-  const { slug, link } = campaignLinks(brand, spec);
+  const { slug, link, utm } = campaignLinks(brand, spec);
   const coverUrl = await upload(db, "blog-images", `${slug}-${stamp}.jpg`, path.join(dir, "okladka-bloga.jpg"));
   const post = check(await db.from("blog_posts").select("id, status").eq("slug", slug).maybeSingle(), "Blog");
   let blogPostId = post?.id ?? null;
@@ -261,7 +328,7 @@ async function sendPackage(folderArg, { force }) {
       content_html: articleHtml(brand, spec),
       content_json: {},
       cover_image_url: coverUrl,
-      author: brand.author,
+      author,
       status: "draft",
     };
     const saved = check(
@@ -275,7 +342,10 @@ async function sendPackage(folderArg, { force }) {
 
   // Calendar items.
   const captions = captionsFor(brand, spec);
-  const s = brand.schedule;
+  const s = await setting(db, "schedule", brand.schedule);
+  // First comment under the post and each reel: the blog link (captions can't hold links on Instagram).
+  const comment = (content) =>
+    `${spec.captions?.comment ?? "Cały poradnik przeczytasz tutaj 👉"} ${utm("instagram", "social", content)}`;
   const linkList = [
     { label: "Link w bio (na czas kampanii)", url: link.bio },
     { label: "Naklejka „Link” w story", url: link.story },
@@ -301,16 +371,16 @@ async function sendPackage(folderArg, { force }) {
       scheduled_at: when(publish.post ?? s.post, weekStart),
       channels: ["instagram", "facebook"],
       caption: captions.instagram,
-      caption_facebook: captions.facebook,
+      first_comment: comment("post-comment"),
       media: postMedia,
       details: { alt: captions.alt, dm: captions.dm, google: captions.google, links: linkList },
     },
     {
       kind: "story",
       position: 0,
-      title: "Story z linkiem do wpisu",
+      title: "Story: link w bio",
       scheduled_at: when(publish.story ?? s.story, weekStart),
-      channels: [],
+      channels: ["instagram", "facebook"],
       media: storyMedia,
       details: { linkUrl: link.story },
     },
@@ -319,8 +389,9 @@ async function sendPackage(folderArg, { force }) {
       position: i + 1,
       title: `Rolka ${i + 1}: ${r.title}`,
       scheduled_at: when(publish.reels?.[i] ?? s.reels[i % s.reels.length], weekStart),
-      channels: ["instagram"],
+      channels: ["instagram", "facebook"],
       caption: fillLink(r.caption, link.bio),
+      first_comment: comment(`reel-${i + 1}`),
       media: [],
       details: {
         format: r.format,
@@ -384,9 +455,12 @@ const [command, arg, ...flags] = process.argv.slice(2);
 try {
   if (command === "prawdy") await printTruths();
   else if (command === "plan") await printPlan();
+  else if (command === "pobierz") await pullUploads();
+  else if (command === "zakoncz" && arg) await finishUpload(arg, flags.join(" "), false);
+  else if (command === "blad" && arg) await finishUpload(arg, flags.join(" "), true);
   else if (command === "wyslij" && arg) await sendPackage(arg, { force: flags.includes("--nadpisz") });
   else {
-    console.log(readFileSync(fileURLToPath(import.meta.url), "utf8").split("\n").slice(1, 9).join("\n"));
+    console.log(readFileSync(fileURLToPath(import.meta.url), "utf8").split("\n").slice(1, 11).join("\n"));
     process.exitCode = 1;
   }
 } catch (error) {

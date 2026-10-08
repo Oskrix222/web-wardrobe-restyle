@@ -55,7 +55,8 @@ function preparePhoto(g, name) {
 }
 
 const shield = await T.icon("shield", { size: 22, width: 2.2 });
-const defaults = { cta: `Napisz „${spec.keyword}” w komentarzu`, label: spec.label };
+// The comment keyword lives only in the captions — graphics stay clean.
+const defaults = { cta: "Bezpłatna wycena", ctaNote: "link w komentarzu · lub zadzwoń", label: spec.label };
 // Variants reuse the main post's texts but never its photo settings.
 const PHOTO_FIELDS = new Set(["source", "at", "focus", "cleanBottom", "nn", "layout"]);
 const postTexts = Object.fromEntries(Object.entries(spec.post).filter(([k]) => !PHOTO_FIELDS.has(k)));
@@ -91,8 +92,8 @@ if (points.length) {
   }
   const cta = {
     headline: ["Sprawdźmy", "*Twoją* ochronę"],
-    text: "Odpiszę w 24 h z konkretami. Bez zobowiązań i bez drobnego druku.",
-    pill: `Napisz *„${spec.keyword}”* w komentarzu`,
+    text: "Odpowiadamy w 24 h, z konkretami i bez zobowiązań.",
+    pill: "Link do bezpłatnej wyceny *w komentarzu*",
     ...spec.carouselCta,
   };
   await output(T.slideCta({ brand, cta, index: total, total }), `post-${total}`, 1080, 1350, "Karuzela: slajd końcowy (CTA)");
@@ -102,7 +103,7 @@ if (points.length) {
 await output(
   T.story({
     postUri: pathToFileURL(path.join(dir, "post-1.png")).href,
-    story: { label: "Nowy poradnik", text: "Cały poradnik na blogu: *kliknij link* ↓", ...spec.story },
+    story: { label: "Nowy poradnik", text: "Cały poradnik na blogu: *link w bio*", ...spec.story },
     shield,
   }),
   "story",
