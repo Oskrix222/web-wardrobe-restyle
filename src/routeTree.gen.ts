@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as NajnowszyRouteImport } from './routes/najnowszy'
 import { Route as PolitykaPrywatnosciRouteImport } from './routes/polityka-prywatnosci'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminKalendarzRouteImport } from './routes/admin/kalendarz'
@@ -30,6 +31,11 @@ import { Route as ApiMetaCallbackRouteImport } from './routes/api/meta/callback'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NajnowszyRoute = NajnowszyRouteImport.update({
+  id: '/najnowszy',
+  path: '/najnowszy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PolitykaPrywatnosciRoute = PolitykaPrywatnosciRouteImport.update({
@@ -115,6 +121,7 @@ const ApiMetaCallbackRoute = ApiMetaCallbackRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/najnowszy': typeof NajnowszyRoute
   '/polityka-prywatnosci': typeof PolitykaPrywatnosciRoute
   '/admin/kalendarz': typeof AdminKalendarzRoute
   '/admin/login': typeof AdminLoginRoute
@@ -134,6 +141,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/najnowszy': typeof NajnowszyRoute
   '/polityka-prywatnosci': typeof PolitykaPrywatnosciRoute
   '/admin/kalendarz': typeof AdminKalendarzRoute
   '/admin/login': typeof AdminLoginRoute
@@ -154,6 +162,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/najnowszy': typeof NajnowszyRoute
   '/polityka-prywatnosci': typeof PolitykaPrywatnosciRoute
   '/admin/kalendarz': typeof AdminKalendarzRoute
   '/admin/login': typeof AdminLoginRoute
@@ -175,6 +184,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/najnowszy'
     | '/polityka-prywatnosci'
     | '/admin/kalendarz'
     | '/admin/login'
@@ -194,6 +204,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/najnowszy'
     | '/polityka-prywatnosci'
     | '/admin/kalendarz'
     | '/admin/login'
@@ -213,6 +224,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/najnowszy'
     | '/polityka-prywatnosci'
     | '/admin/kalendarz'
     | '/admin/login'
@@ -233,6 +245,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  NajnowszyRoute: typeof NajnowszyRoute
   PolitykaPrywatnosciRoute: typeof PolitykaPrywatnosciRoute
   AdminKalendarzRoute: typeof AdminKalendarzRoute
   AdminLoginRoute: typeof AdminLoginRoute
@@ -258,6 +271,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/najnowszy': {
+      id: '/najnowszy'
+      path: '/najnowszy'
+      fullPath: '/najnowszy'
+      preLoaderRoute: typeof NajnowszyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/polityka-prywatnosci': {
@@ -377,6 +397,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  NajnowszyRoute: NajnowszyRoute,
   PolitykaPrywatnosciRoute: PolitykaPrywatnosciRoute,
   AdminKalendarzRoute: AdminKalendarzRoute,
   AdminLoginRoute: AdminLoginRoute,

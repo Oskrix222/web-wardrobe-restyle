@@ -69,3 +69,21 @@ export function withHeadingAnchors(html: string): { html: string; headings: Post
   );
   return { html: withIds, headings };
 }
+
+/**
+ * Puts a block (the "Zostaw kontakt" box) in the middle of a post: before the
+ * middle <h2>, or after the middle paragraph when the post has no sections.
+ * Done at render time, so it survives editing the post in the panel.
+ */
+export function withMiddleBlock(html: string, block: string): string {
+  const h2s = [...html.matchAll(/<h2[\s>]/gi)];
+  if (h2s.length >= 2) {
+    const at = h2s[Math.floor(h2s.length / 2)]!.index!;
+    return `${html.slice(0, at)}${block}${html.slice(at)}`;
+  }
+  const paragraphs = [...html.matchAll(/<\/p>/gi)];
+  if (paragraphs.length < 4) return html;
+  const end = paragraphs[Math.floor(paragraphs.length / 2)]!;
+  const at = end.index! + end[0].length;
+  return `${html.slice(0, at)}${block}${html.slice(at)}`;
+}

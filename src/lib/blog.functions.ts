@@ -2,7 +2,13 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { supabase } from "@/integrations/supabase/client";
-import { readingMinutes, withHeadingAnchors, type PostHeading } from "@/lib/blog-format";
+import { CONTACT_PHONES, telHref } from "@/config/business";
+import {
+  readingMinutes,
+  withHeadingAnchors,
+  withMiddleBlock,
+  type PostHeading,
+} from "@/lib/blog-format";
 
 export type BlogPostSummary = {
   slug: string;
@@ -44,6 +50,16 @@ export const listPublishedPosts = createServerFn({ method: "GET" }).handler(
   },
 );
 
+// Contact box placed in the middle of every post (see withMiddleBlock).
+// data-cta lets the post page count clicks like the button at the end.
+const CONTACT_BLOCK = `<aside class="blog-cta-inline" aria-label="Kontakt">
+<p class="blog-cta-inline__title">Nie wiesz, co wybrać? Sprawdzimy Twoją sytuację bezpłatnie.</p>
+<div class="blog-cta-inline__actions">
+<a class="btn btn--primary btn--md" href="/#kontakt" data-cta="form">Zostaw kontakt</a>
+${CONTACT_PHONES.map((c) => `<a class="blog-cta-inline__phone" href="${telHref(c.phone)}" data-cta="phone">${c.name}: ${c.phone}</a>`).join("\n")}
+</div>
+</aside>`;
+
 /** A single published post by slug — used by /blog/$slug. Null if not found. */
 export const getPublishedPostBySlug = createServerFn({ method: "GET" })
   .validator((slug: unknown) => z.string().min(1).parse(slug))
@@ -63,7 +79,7 @@ export const getPublishedPostBySlug = createServerFn({ method: "GET" })
       slug: data.slug,
       title: data.title,
       excerpt: data.excerpt,
-      contentHtml: html,
+      contentHtml: withMiddleBlock(html, CONTACT_BLOCK),
       headings,
       coverImageUrl: data.cover_image_url,
       author: data.author,

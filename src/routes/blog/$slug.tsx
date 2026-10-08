@@ -15,6 +15,7 @@ import {
   incrementPostContactClick,
 } from "@/lib/blog.functions";
 import { trackEvent } from "@/lib/analytics";
+import { CONTACT_PHONES, telHref } from "@/config/business";
 import { useInView } from "@/hooks/useInView";
 import { cn } from "@/lib/utils";
 
@@ -99,6 +100,9 @@ function BlogPost() {
 
             <div
               className="blog-post__content"
+              onClick={(e) => {
+                if ((e.target as HTMLElement).closest("[data-cta]")) onContactClick();
+              }}
               dangerouslySetInnerHTML={{ __html: post.contentHtml }}
             />
 
@@ -113,10 +117,17 @@ function BlogPost() {
                 >
                   Zostaw kontakt
                 </Button>
-                <ButtonLink href="tel:+48539075385" variant="outline" onClick={onContactClick}>
-                  <Phone className="btn__icon" aria-hidden="true" />
-                  +48 539 075 385
-                </ButtonLink>
+                {CONTACT_PHONES.map((c) => (
+                  <ButtonLink
+                    key={c.phone}
+                    href={telHref(c.phone)}
+                    variant="outline"
+                    onClick={onContactClick}
+                  >
+                    <Phone className="btn__icon" aria-hidden="true" />
+                    {c.name}: {c.phone}
+                  </ButtonLink>
+                ))}
               </div>
             </div>
 

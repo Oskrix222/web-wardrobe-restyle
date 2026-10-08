@@ -658,3 +658,44 @@
     }
   }
 }
+
+// "Zostaw kontakt" box injected in the middle of every post (withMiddleBlock).
+.blog-post__content .blog-cta-inline {
+  margin-block: $space-8;
+  padding: $space-6;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--terracotta);
+  border-radius: $radius-xl;
+  background-color: var(--card);
+  box-shadow: $shadow-sm;
+
+  .blog-cta-inline__title {
+    margin-top: 0;
+    font-weight: $weight-semibold;
+    line-height: $leading-snug;
+  }
+
+  .blog-cta-inline__actions {
+    margin-top: $space-4;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-3 $space-5;
+  }
+
+  a.btn {
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .blog-cta-inline__phone {
+    font-size: $text-sm;
+    font-weight: $weight-semibold;
+    color: var(--foreground);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--terracotta);
+    }
+  }
+}
