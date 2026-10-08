@@ -2,23 +2,42 @@
 // from the Worker's cron (src/server/cron-plugin.ts → /api/content/cron) and on
 // demand from the panel ("Opublikuj teraz"). Each run moves an item as far as it
 // can; Instagram processes reels asynchronously, so a reel may finish on the next run.
+// The same run answers keyword comments (Panel → Odpowiedzi).
 import {
+  fbComment,
+  fbListComments,
   fbPublishPhotos,
+  fbPublishPhotoStory,
+  fbPublishVideo,
+  igComment,
   igContainerStatus,
   igCreateCarousel,
   igCreateImage,
   igCreateReel,
+  igListComments,
   igPublish,
   loadMetaAccount,
+  replyUnderComment,
+  sendPrivateReply,
   type MetaAccount,
 } from "@/lib/meta-graph.server";
+import { r2Delete } from "@/lib/r2.server";
 import { createAdminClient, type AdminClient } from "@/lib/supabase-admin.server";
 import type { Database, Json } from "@/integrations/supabase/types";
 
 type ItemRow = Database["public"]["Tables"]["content_items"]["Row"];
-type Media = { type: "image" | "video"; url: string; path?: string };
-type ChannelState = { containerId?: string; done?: boolean; permalink?: string; id?: string };
+type Media = { type: "image" | "video"; url: string; path?: string; duration?: number };
+type Channel = "instagram" | "facebook";
+type ChannelState = {
+  containerId?: string;
+  done?: boolean;
+  permalink?: string;
+  id?: string;
+  commented?: boolean;
+  commentError?: string;
+};
 type PublishState = { instagram?: ChannelState; facebook?: ChannelState; waiting?: string };
+type AutoReplyChannel = { enabled: boolean; message: string; publicReply: string };
 
 const MAX_ATTEMPTS = 4;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -28,6 +47,7 @@ export type PublisherReport = {
   published: string[];
   inProgress: string[];
   errors: { title: string; error: string }[];
+  replies: number;
 };
 
 /** Approved + due items (or one item, when the admin presses "Opublikuj teraz"). */
@@ -79,14 +99,17 @@ async function waitForContainer(acc: MetaAccount, containerId: string, maxMs: nu
   }
 }
 
+const imagesOf = (item: ItemRow) =>
+  (item.media as Media[]).filter((m) => m.type === "image").map((m) => m.url);
+const videoOf = (item: ItemRow) => (item.media as Media[]).find((m) => m.type === "video");
+
 async function publishInstagram(acc: MetaAccount, item: ItemRow, state: ChannelState) {
-  const media = item.media as Media[];
-  const images = media.filter((m) => m.type === "image").map((m) => m.url);
+  const images = imagesOf(item);
   const details = (item.details ?? {}) as { alt?: string };
 
   if (!state.containerId) {
     if (item.kind === "reel") {
-      const video = media.find((m) => m.type === "video");
+      const video = videoOf(item);
       if (!video) throw new Error("Brak wgranej rolki (wideo).");
       state.containerId = await igCreateReel(acc, video.url, item.caption);
     } else if (item.kind === "story") {
@@ -121,12 +144,41 @@ async function publishInstagram(acc: MetaAccount, item: ItemRow, state: ChannelS
 }
 
 async function publishFacebook(acc: MetaAccount, item: ItemRow, state: ChannelState) {
-  const images = (item.media as Media[]).filter((m) => m.type === "image").map((m) => m.url);
-  if (item.kind !== "post" || !images.length) throw new Error("Na Facebooka publikujemy tylko posty z grafiką.");
-  const result = await fbPublishPhotos(acc, images, item.caption_facebook || item.caption);
-  state.id = result.postId;
-  state.permalink = result.permalink;
+  // Same content as on Instagram, unless a separate Facebook caption was written.
+  const caption = item.caption_facebook || item.caption;
+  if (item.kind === "post") {
+    const images = imagesOf(item);
+    if (!images.length) throw new Error("Brak grafiki posta.");
+    const result = await fbPublishPhotos(acc, images, caption);
+    state.id = result.postId;
+    state.permalink = result.permalink;
+  } else if (item.kind === "story") {
+    const image = imagesOf(item)[0];
+    if (!image) throw new Error("Brak grafiki story.");
+    const result = await fbPublishPhotoStory(acc, image);
+    state.id = result.postId;
+    state.permalink = result.permalink;
+  } else if (item.kind === "reel") {
+    const video = videoOf(item);
+    if (!video) throw new Error("Brak wgranej rolki (wideo).");
+    const result = await fbPublishVideo(acc, video.url, caption, video.duration);
+    state.id = result.postId;
+    state.permalink = result.permalink;
+  }
   state.done = true;
+}
+
+/** The blog link as the first comment. A failed comment never undoes the publication. */
+async function addFirstComment(acc: MetaAccount, item: ItemRow, channel: Channel, state: ChannelState) {
+  if (!item.first_comment.trim() || item.kind === "story" || !state.id || state.commented) return;
+  try {
+    if (channel === "instagram") await igComment(acc, state.id, item.first_comment);
+    else await fbComment(acc, state.id, item.first_comment);
+    state.commented = true;
+    delete state.commentError;
+  } catch (error) {
+    state.commentError = error instanceof Error ? error.message : String(error);
+  }
 }
 
 async function publishBlog(db: AdminClient, item: ItemRow): Promise<string> {
@@ -139,6 +191,13 @@ async function publishBlog(db: AdminClient, item: ItemRow): Promise<string> {
     .single();
   if (error) throw error;
   return `/blog/${data.slug}`;
+}
+
+/** Big reel files live in R2 only until the networks have them. */
+async function cleanUpVideo(item: ItemRow) {
+  for (const m of item.media as Media[]) {
+    if (m.type === "video" && m.path?.startsWith("r2:")) await r2Delete(m.path.slice(3)).catch(() => {});
+  }
 }
 
 async function processItem(db: AdminClient, acc: MetaAccount | null, item: ItemRow, report: PublisherReport) {
@@ -175,16 +234,19 @@ async function processItem(db: AdminClient, acc: MetaAccount | null, item: ItemR
       return;
     }
 
-    for (const channel of item.channels) {
-      const channelState = (state[channel as "instagram" | "facebook"] ??= {});
-      if (channelState.done) continue;
-      if (channel === "instagram") await publishInstagram(acc, item, channelState);
-      if (channel === "facebook") await publishFacebook(acc, item, channelState);
+    for (const channel of item.channels as Channel[]) {
+      const channelState = (state[channel] ??= {});
+      if (!channelState.done) {
+        if (channel === "instagram") await publishInstagram(acc, item, channelState);
+        if (channel === "facebook") await publishFacebook(acc, item, channelState);
+      }
+      if (channelState.done) await addFirstComment(acc, item, channel, channelState);
     }
 
-    const done = item.channels.every((c) => state[c as "instagram" | "facebook"]?.done);
+    const done = (item.channels as Channel[]).every((c) => state[c]?.done);
     if (done) {
       await save({ status: "published", published_at: new Date().toISOString(), last_error: null });
+      await cleanUpVideo(item);
       report.published.push(item.title);
     } else {
       await save({ status: "publishing", last_error: null });
@@ -202,9 +264,95 @@ async function processItem(db: AdminClient, acc: MetaAccount | null, item: ItemR
   }
 }
 
+// ------------------------------------------------------------------ keyword replies
+// "RAK", "rak!", "Rak 🙏" all count; Polish letters don't matter ("zdrowie" = "zdrówie").
+const normalize = (text: string) =>
+  text.toLowerCase().replace(/ł/g, "l").normalize("NFD").replace(/[̀-ͯ]/g, "");
+
+function mentionsKeyword(comment: string, keyword: string) {
+  const kw = normalize(keyword).trim();
+  if (!kw) return false;
+  const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`(^|[^a-z0-9])${escaped}([^a-z0-9]|$)`).test(normalize(comment));
+}
+
+const fill = (template: string, values: Record<string, string>) =>
+  template.replace(/\{(imie|slowo|link)\}/g, (_, key: string) => values[key] ?? "").trim();
+
+/** Answers comments containing the campaign keyword on posts/reels from the last 7 days. */
+async function answerKeywordComments(db: AdminClient, acc: MetaAccount, report: PublisherReport) {
+  const { data: setting } = await db
+    .from("content_settings")
+    .select("value")
+    .eq("key", "auto_reply")
+    .maybeSingle();
+  const config = setting?.value as Record<Channel, AutoReplyChannel> | undefined;
+  if (!config?.instagram?.enabled && !config?.facebook?.enabled) return;
+
+  const { data: items } = await db
+    .from("content_items")
+    .select("id, campaign_id, publish_state, first_comment")
+    .eq("status", "published")
+    .in("kind", ["post", "reel"])
+    .gte("published_at", new Date(Date.now() - 7 * 86_400_000).toISOString());
+  if (!items?.length) return;
+
+  const { data: campaigns } = await db
+    .from("content_campaigns")
+    .select("id, keyword")
+    .in("id", [...new Set(items.map((i) => i.campaign_id))]);
+  const keywordOf = new Map((campaigns ?? []).map((c) => [c.id, c.keyword ?? ""]));
+  const { data: handled } = await db
+    .from("content_replies")
+    .select("comment_id")
+    .in("item_id", items.map((i) => i.id));
+  const seen = new Set((handled ?? []).map((h) => h.comment_id));
+
+  for (const item of items) {
+    const keyword = keywordOf.get(item.campaign_id);
+    if (!keyword) continue;
+    const link = /https?:\/\/\S+/.exec(item.first_comment)?.[0] ?? "";
+    for (const platform of ["instagram", "facebook"] as const) {
+      const settings = config[platform];
+      const objectId = (item.publish_state as PublishState)[platform]?.id;
+      if (!settings?.enabled || !objectId) continue;
+
+      const comments = await (platform === "instagram"
+        ? igListComments(acc, objectId)
+        : fbListComments(acc, objectId)
+      ).catch(() => []);
+      for (const c of comments) {
+        const own = c.authorId === acc.igUserId || c.authorId === acc.pageId || c.author === acc.igUsername;
+        if (seen.has(c.id) || own || !mentionsKeyword(c.text, keyword)) continue;
+        seen.add(c.id);
+        const values = { imie: c.author, slowo: keyword, link };
+        let error: string | null = null;
+        try {
+          await sendPrivateReply(acc, platform, c.id, fill(settings.message, values));
+          if (settings.publicReply.trim()) {
+            await replyUnderComment(acc, platform, c.id, fill(settings.publicReply, values));
+          }
+          report.replies++;
+        } catch (e) {
+          error = e instanceof Error ? e.message : String(e);
+        }
+        await db.from("content_replies").insert({
+          platform,
+          comment_id: c.id,
+          item_id: item.id,
+          author: c.author,
+          comment: c.text.slice(0, 500),
+          status: error ? "failed" : "sent",
+          error,
+        });
+      }
+    }
+  }
+}
+
 export async function runPublisher({ itemId }: { itemId?: string } = {}): Promise<PublisherReport> {
   const db = createAdminClient();
-  const report: PublisherReport = { checked: 0, published: [], inProgress: [], errors: [] };
+  const report: PublisherReport = { checked: 0, published: [], inProgress: [], errors: [], replies: 0 };
   const acc = await loadMetaAccount(db);
 
   for (const item of await dueItems(db, itemId)) {
@@ -213,8 +361,16 @@ export async function runPublisher({ itemId }: { itemId?: string } = {}): Promis
     await processItem(db, acc, item, report);
   }
 
-  // Heartbeat for Panel → Połączenia ("automat ostatnio działał…").
   if (!itemId) {
+    if (acc) {
+      await answerKeywordComments(db, acc, report).catch((error: unknown) =>
+        report.errors.push({
+          title: "Automat odpowiedzi",
+          error: error instanceof Error ? error.message : String(error),
+        }),
+      );
+    }
+    // Heartbeat for Panel → Połączenia ("automat ostatnio działał…").
     await db.from("content_integrations").upsert({
       provider: "cron",
       data: { lastRunAt: new Date().toISOString(), ...report } as Json,

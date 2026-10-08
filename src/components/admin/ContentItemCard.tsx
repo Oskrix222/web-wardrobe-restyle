@@ -143,6 +143,7 @@ export function ContentItemCard({
   const [firstComment, setFirstComment] = useState(item.firstComment);
   const [when, setWhen] = useState(toLocalInput(item.scheduledAt));
   const [busy, setBusy] = useState<string | null>(null);
+  const [progress, setProgress] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
 
   // Keep drafts in sync when the item is reloaded from the server.
@@ -203,7 +204,8 @@ export function ContentItemCard({
   const onUpload = (file: File | undefined) => {
     if (!file) return;
     return run("upload", async () => {
-      onChange(await uploadReelVideo(item, file));
+      setProgress(0);
+      onChange(await uploadReelVideo(item, file, setProgress));
       toast.success("Rolka wgrana. Obejrzyj ją i zatwierdź.");
     });
   };
@@ -298,12 +300,17 @@ export function ContentItemCard({
                   >
                     <Upload className="btn__icon" aria-hidden="true" />
                     {busy === "upload"
-                      ? "Wysyłanie… (do minuty)"
+                      ? `Wysyłanie… ${Math.round(progress * 100)}%`
                       : hasVideo
                         ? "Podmień wideo"
                         : "Wgraj rolkę"}
                   </button>
-                  <small>MP4 lub MOV, pionowo, do 50 MB (1080p).</small>
+                  <small>
+                    MP4 lub MOV, pionowo, 1080p.
+                    {(item.media[0]?.duration ?? 0) > 90
+                      ? " Ta rolka ma ponad 90 s — na Facebooka pójdzie jako film (rolki FB do 90 s)."
+                      : ""}
+                  </small>
                 </>
               ) : null}
             </>

@@ -41,7 +41,9 @@ function AdminConnections() {
   const fetchConnectUrl = useServerFn(getMetaConnectUrl);
   const disconnect = useServerFn(disconnectMeta);
   const [status, setStatus] = useState<ConnectionStatus | null>(null);
-  const [setup, setSetup] = useState<{ serviceKey: boolean; metaApp: boolean } | null>(null);
+  const [setup, setSetup] = useState<{ serviceKey: boolean; metaApp: boolean; r2: boolean } | null>(
+    null,
+  );
   const [connecting, setConnecting] = useState(false);
   const [missingSetup, setMissingSetup] = useState(false);
   const callbackUrl = typeof window === "undefined" ? "" : `${window.location.origin}/api/meta/callback`;
@@ -191,6 +193,23 @@ function AdminConnections() {
               ))}
             </ul>
           ) : null}
+        </section>
+
+        <section className="content-connections__card">
+          <h2>Magazyn na rolki (Cloudflare R2)</h2>
+          <p>
+            Duże rolki (np. 1,5 min w 1080p) trzymamy w darmowym magazynie Cloudflare R2: 10 GB za
+            darmo, a po publikacji plik sam się kasuje. Bez niego panel przyjmie rolki tylko do
+            50 MB.
+          </p>
+          <ul className="content-connections__checks">
+            <Check ok={Boolean(setup?.r2)}>
+              Cloudflare → R2: włączone, bucket <code>oscare-rolki</code> z publicznym adresem
+              (r2.dev), a w ustawieniach Workera: <code>R2_ACCOUNT_ID</code>, <code>R2_BUCKET</code>,{" "}
+              <code>R2_PUBLIC_URL</code> oraz sekrety <code>R2_ACCESS_KEY_ID</code> i{" "}
+              <code>R2_SECRET_ACCESS_KEY</code>. Claude przeprowadzi Cię przez to krok po kroku.
+            </Check>
+          </ul>
         </section>
       </div>
     </AdminShell>

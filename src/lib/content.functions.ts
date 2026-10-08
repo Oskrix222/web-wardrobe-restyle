@@ -18,9 +18,11 @@ export const getServerSetup = createServerFn({ method: "GET" })
   .middleware([requireAdmin])
   .handler(async () => {
     const { metaAppConfigured } = await import("./meta-graph.server");
+    const { r2Configured } = await import("./r2.server");
     return {
       serviceKey: Boolean(process.env["SUPABASE_SERVICE_ROLE_KEY"]),
       metaApp: metaAppConfigured(),
+      r2: r2Configured(),
     };
   });
 
@@ -51,4 +53,27 @@ export const publishItemNow = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { runPublisher } = await import("./content-publisher.server");
     return runPublisher({ itemId: data.itemId });
+  });
+
+/**
+ * Where the browser should upload a reel: a presigned R2 URL (big files, free 10 GB),
+ * or null when R2 isn't set up yet — then the panel falls back to Supabase (50 MB).
+ */
+export const getVideoUploadTarget = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .validator(z.object({ itemId: z.string().uuid(), extension: z.string().regex(/^[a-z0-9]{2,5}$/) }))
+  .handler(async ({ data }) => {
+    const { r2Configured, r2PublicUrl, r2UploadUrl } = await import("./r2.server");
+    if (!r2Configured()) return null;
+    const key = `rolki/${data.itemId}-${Date.now()}.${data.extension}`;
+    return { key, uploadUrl: await r2UploadUrl(key), publicUrl: r2PublicUrl(key) };
+  });
+
+export const deleteR2Video = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .validator(z.object({ key: z.string().startsWith("rolki/") }))
+  .handler(async ({ data }) => {
+    const { r2Delete } = await import("./r2.server");
+    await r2Delete(data.key);
+    return { ok: true };
   });

@@ -13,8 +13,14 @@ const SCOPES = [
   "pages_show_list",
   "pages_read_engagement",
   "pages_manage_posts",
+  // First comment with the blog link + automatic replies to keyword comments.
+  "pages_manage_engagement",
+  "pages_read_user_content",
+  "pages_messaging",
   "instagram_basic",
   "instagram_content_publish",
+  "instagram_manage_comments",
+  "instagram_manage_messages",
   "business_management",
 ];
 
@@ -286,4 +292,129 @@ export async function fbPublishPhotos(acc: MetaAccount, imageUrls: string[], mes
   const { id } = await graph<Created>(`${acc.pageId}/feed`, params, "POST");
   const [pageId, postId] = id.split("_");
   return { postId: id, permalink: `https://www.facebook.com/${pageId}/posts/${postId}` };
+}
+
+/** Story from one image on the Page. */
+export async function fbPublishPhotoStory(acc: MetaAccount, imageUrl: string) {
+  const photo = await graph<Created>(
+    `${acc.pageId}/photos`,
+    { url: imageUrl, published: "false", access_token: acc.pageToken },
+    "POST",
+  );
+  const story = await graph<{ post_id?: string }>(
+    `${acc.pageId}/photo_stories`,
+    { photo_id: photo.id, access_token: acc.pageToken },
+    "POST",
+  );
+  return { postId: story.post_id ?? photo.id, permalink: `https://www.facebook.com/${acc.pageId}` };
+}
+
+/**
+ * Video on the Page: a Reel when it fits Facebook's 90 s limit, otherwise a regular
+ * video post. Facebook downloads the file from `videoUrl` itself.
+ */
+export async function fbPublishVideo(
+  acc: MetaAccount,
+  videoUrl: string,
+  description: string,
+  durationSeconds?: number,
+) {
+  if (durationSeconds && durationSeconds > 90) {
+    const { id } = await graph<Created>(
+      `${acc.pageId}/videos`,
+      { file_url: videoUrl, description, access_token: acc.pageToken },
+      "POST",
+    );
+    return { postId: id, permalink: `https://www.facebook.com/${acc.pageId}/videos/${id}` };
+  }
+  const start = await graph<{ video_id: string; upload_url: string }>(
+    `${acc.pageId}/video_reels`,
+    { upload_phase: "start", access_token: acc.pageToken },
+    "POST",
+  );
+  const upload = await fetch(start.upload_url, {
+    method: "POST",
+    headers: { Authorization: `OAuth ${acc.pageToken}`, file_url: videoUrl },
+  });
+  if (!upload.ok) throw new GraphError(`Facebook nie pobrał wideo (HTTP ${upload.status}).`);
+  await graph(
+    `${acc.pageId}/video_reels`,
+    {
+      upload_phase: "finish",
+      video_id: start.video_id,
+      video_state: "PUBLISHED",
+      description,
+      access_token: acc.pageToken,
+    },
+    "POST",
+  );
+  return { postId: start.video_id, permalink: `https://www.facebook.com/reel/${start.video_id}` };
+}
+
+// ------------------------------------------------------------ comments
+/** Comment under our own Instagram media / Facebook post (the blog link). */
+export async function igComment(acc: MetaAccount, mediaId: string, message: string) {
+  return (await graph<Created>(`${mediaId}/comments`, { message, access_token: acc.pageToken }, "POST")).id;
+}
+
+export async function fbComment(acc: MetaAccount, objectId: string, message: string) {
+  return (await graph<Created>(`${objectId}/comments`, { message, access_token: acc.pageToken }, "POST")).id;
+}
+
+export type SocialComment = { id: string; text: string; author: string; authorId?: string };
+
+export async function igListComments(acc: MetaAccount, mediaId: string): Promise<SocialComment[]> {
+  const res = await graph<{ data: { id: string; text?: string; username?: string; from?: { id: string } }[] }>(
+    `${mediaId}/comments`,
+    { fields: "id,text,username,from", limit: "50", access_token: acc.pageToken },
+  );
+  return res.data.map((c) => ({
+    id: c.id,
+    text: c.text ?? "",
+    author: c.username ?? "",
+    ...(c.from?.id ? { authorId: c.from.id } : {}),
+  }));
+}
+
+export async function fbListComments(acc: MetaAccount, objectId: string): Promise<SocialComment[]> {
+  const res = await graph<{ data: { id: string; message?: string; from?: { id: string; name: string } }[] }>(
+    `${objectId}/comments`,
+    { fields: "id,message,from", limit: "50", filter: "stream", access_token: acc.pageToken },
+  );
+  return res.data.map((c) => ({
+    id: c.id,
+    text: c.message ?? "",
+    author: c.from?.name ?? "",
+    ...(c.from?.id ? { authorId: c.from.id } : {}),
+  }));
+}
+
+/** Private message to the person who wrote a comment ("private reply"). */
+export async function sendPrivateReply(
+  acc: MetaAccount,
+  platform: "instagram" | "facebook",
+  commentId: string,
+  text: string,
+) {
+  const sender = platform === "instagram" ? acc.igUserId : acc.pageId;
+  await graph(
+    `${sender}/messages`,
+    {
+      recipient: JSON.stringify({ comment_id: commentId }),
+      message: JSON.stringify({ text }),
+      access_token: acc.pageToken,
+    },
+    "POST",
+  );
+}
+
+/** Short public answer under the comment. */
+export async function replyUnderComment(
+  acc: MetaAccount,
+  platform: "instagram" | "facebook",
+  commentId: string,
+  text: string,
+) {
+  const edge = platform === "instagram" ? "replies" : "comments";
+  await graph(`${commentId}/${edge}`, { message: text, access_token: acc.pageToken }, "POST");
 }

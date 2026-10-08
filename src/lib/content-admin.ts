@@ -6,7 +6,14 @@ import type { Database, Json } from "@/integrations/supabase/types";
 
 export type ContentKind = "blog" | "post" | "story" | "reel";
 export type ContentChannel = "instagram" | "facebook";
-export type ContentMedia = { type: "image" | "video"; url: string; path?: string };
+export type ContentMedia = {
+  type: "image" | "video";
+  url: string;
+  /** Storage path; "r2:<key>" for videos kept in Cloudflare R2. */
+  path?: string;
+  /** Video length in seconds. */
+  duration?: number;
+};
 export type ReelScene = { time: string; shot: string; say?: string; text?: string };
 
 export type ContentDetails = {
@@ -131,15 +138,13 @@ export function retryItem(id: string) {
 }
 
 export async function deleteItem(item: ContentItem): Promise<void> {
-  const paths = item.media.map((m) => m.path).filter((p): p is string => Boolean(p));
-  if (paths.length) await supabase.storage.from("content").remove(paths);
+  for (const m of item.media) if (m.path) await removeVideoOrImage(m.path);
   const { error } = await supabase.from("content_items").delete().eq("id", item.id);
   if (error) throw error;
 }
 
 export async function deleteCampaign(campaign: Campaign, items: ContentItem[]): Promise<void> {
-  const paths = items.flatMap((i) => i.media.map((m) => m.path)).filter((p): p is string => Boolean(p));
-  if (paths.length) await supabase.storage.from("content").remove(paths);
+  for (const m of items.flatMap((i) => i.media)) if (m.path) await removeVideoOrImage(m.path);
   const { error } = await supabase.from("content_campaigns").delete().eq("id", campaign.id);
   if (error) throw error;
 }
@@ -162,30 +167,87 @@ export async function shiftCampaign(campaign: Campaign, items: ContentItem[], da
   if (error) throw error;
 }
 
-/** Supabase Free stores files up to 50 MB — a 1080p reel of up to ~60 s fits. */
-export const MAX_VIDEO_BYTES = 50 * 1024 * 1024;
+/** Supabase Free stores files up to 50 MB — only used until R2 is set up. */
+export const MAX_SUPABASE_VIDEO_BYTES = 50 * 1024 * 1024;
+
+/** Video length in seconds, read from the file itself (Facebook Reels allow max 90 s). */
+function videoDuration(file: File): Promise<number | undefined> {
+  return new Promise((resolve) => {
+    const video = document.createElement("video");
+    const url = URL.createObjectURL(file);
+    const done = (value?: number) => {
+      URL.revokeObjectURL(url);
+      resolve(value);
+    };
+    video.preload = "metadata";
+    video.onloadedmetadata = () => done(Number.isFinite(video.duration) ? Math.round(video.duration) : undefined);
+    video.onerror = () => done(undefined);
+    video.src = url;
+  });
+}
+
+/** PUT with upload progress (fetch can't report it). */
+function putWithProgress(url: string, file: File, onProgress: (ratio: number) => void) {
+  return new Promise<void>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", url);
+    xhr.setRequestHeader("Content-Type", file.type || "video/mp4");
+    xhr.upload.onprogress = (e) => e.lengthComputable && onProgress(e.loaded / e.total);
+    xhr.onload = () =>
+      xhr.status >= 200 && xhr.status < 300
+        ? resolve()
+        : reject(new Error(`Wysyłanie przerwane (HTTP ${xhr.status}). Spróbuj ponownie.`));
+    xhr.onerror = () => reject(new Error("Brak połączenia — spróbuj ponownie."));
+    xhr.send(file);
+  });
+}
+
+/** Removes a stored file (R2 keys are stored as "r2:<key>"). */
+async function removeVideoOrImage(path: string) {
+  if (path.startsWith("r2:")) {
+    const { deleteR2Video } = await import("@/lib/content.functions");
+    await deleteR2Video({ data: { key: path.slice(3) } }).catch(() => {});
+  } else {
+    await supabase.storage.from("content").remove([path]);
+  }
+}
 
 /** Uploads the filmed reel and attaches it to the item (approval resets: watch it first). */
-export async function uploadReelVideo(item: ContentItem, file: File): Promise<ContentItem> {
-  if (file.size > MAX_VIDEO_BYTES) {
-    throw new Error("Plik ma ponad 50 MB. Wyeksportuj rolkę w 1080p (nie 4K) i spróbuj ponownie.");
-  }
+export async function uploadReelVideo(
+  item: ContentItem,
+  file: File,
+  onProgress: (ratio: number) => void = () => {},
+): Promise<ContentItem> {
   const ext = (file.name.split(".").pop() || "mp4").toLowerCase();
-  const path = `${item.campaignId}/${item.kind}-${item.position}-${Date.now()}.${ext}`;
-  const { error } = await supabase.storage.from("content").upload(path, file, {
-    contentType: file.type || "video/mp4",
-    cacheControl: "31536000",
-    upsert: false,
-  });
-  if (error) throw error;
-  const { data } = supabase.storage.from("content").getPublicUrl(path);
+  const duration = await videoDuration(file);
+  const { getVideoUploadTarget } = await import("@/lib/content.functions");
+  const target = await getVideoUploadTarget({ data: { itemId: item.id, extension: ext } });
+
+  let media: ContentMedia & { duration?: number };
+  if (target) {
+    await putWithProgress(target.uploadUrl, file, onProgress);
+    media = { type: "video", url: target.publicUrl, path: `r2:${target.key}` };
+  } else {
+    if (file.size > MAX_SUPABASE_VIDEO_BYTES) {
+      throw new Error(
+        "Plik ma ponad 50 MB, a magazyn na duże rolki (R2) nie jest jeszcze podłączony. Panel → Połączenia.",
+      );
+    }
+    const path = `${item.campaignId}/${item.kind}-${item.position}-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("content").upload(path, file, {
+      contentType: file.type || "video/mp4",
+      cacheControl: "31536000",
+      upsert: false,
+    });
+    if (error) throw error;
+    onProgress(1);
+    media = { type: "video", url: supabase.storage.from("content").getPublicUrl(path).data.publicUrl, path };
+  }
+  if (duration) media.duration = duration;
 
   const old = item.media.map((m) => m.path).filter((p): p is string => Boolean(p));
-  const updated = await updateItem(item.id, {
-    media: [{ type: "video", url: data.publicUrl, path }] as Json,
-    media_approved: false,
-  });
-  if (old.length) await supabase.storage.from("content").remove(old);
+  const updated = await updateItem(item.id, { media: [media] as Json, media_approved: false });
+  for (const path of old) await removeVideoOrImage(path);
   return updated;
 }
 
