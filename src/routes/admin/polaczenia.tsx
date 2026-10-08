@@ -46,7 +46,8 @@ function AdminConnections() {
   );
   const [connecting, setConnecting] = useState(false);
   const [missingSetup, setMissingSetup] = useState(false);
-  const callbackUrl = typeof window === "undefined" ? "" : `${window.location.origin}/api/meta/callback`;
+  const callbackUrl =
+    typeof window === "undefined" ? "" : `${window.location.origin}/api/meta/callback`;
 
   const load = () => {
     getConnectionStatus()
@@ -81,7 +82,12 @@ function AdminConnections() {
   };
 
   const onDisconnect = async () => {
-    if (!window.confirm("Rozłączyć konta? Automat przestanie publikować do czasu ponownego połączenia.")) return;
+    if (
+      !window.confirm(
+        "Rozłączyć konta? Automat przestanie publikować do czasu ponownego połączenia.",
+      )
+    )
+      return;
     try {
       await disconnect();
       toast.success("Rozłączono.");
@@ -116,8 +122,8 @@ function AdminConnections() {
             </p>
           ) : (
             <p>
-              Po połączeniu automat sam publikuje zatwierdzone posty, rolki i story. Logujesz się przez
-              Facebooka, bo to Facebook zarządza firmowymi kontami Instagrama.
+              Po połączeniu automat sam publikuje zatwierdzone posty, rolki i story. Logujesz się
+              przez Facebooka, bo to Facebook zarządza firmowymi kontami Instagrama.
             </p>
           )}
           <div className="content-connections__actions">
@@ -144,16 +150,22 @@ function AdminConnections() {
               <code>META_APP_SECRET</code>.
             </Check>
             <Check ok={Boolean(meta)}>
-              Konto Instagram przełączone na <b>firmowe lub twórcy</b> i podpięte do strony na Facebooku.
+              Konto Instagram przełączone na <b>firmowe lub twórcy</b> i podpięte do strony na
+              Facebooku.
             </Check>
             <li className="content-connections__plain">
-              W aplikacji Meta, w ustawieniach logowania przez Facebooka, dodaj adres przekierowania:
+              W aplikacji Meta, w ustawieniach logowania przez Facebooka, dodaj adres
+              przekierowania:
               <span className="content-connections__copy">
                 <code>{callbackUrl}</code>
                 <button
                   type="button"
                   aria-label="Kopiuj adres"
-                  onClick={() => navigator.clipboard.writeText(callbackUrl).then(() => toast.success("Skopiowano."))}
+                  onClick={() =>
+                    navigator.clipboard
+                      .writeText(callbackUrl)
+                      .then(() => toast.success("Skopiowano."))
+                  }
                 >
                   <Copy aria-hidden="true" />
                 </button>
@@ -199,14 +211,14 @@ function AdminConnections() {
           <h2>Magazyn na rolki (Cloudflare R2)</h2>
           <p>
             Duże rolki (np. 1,5 min w 1080p) trzymamy w darmowym magazynie Cloudflare R2: 10 GB za
-            darmo, a po publikacji plik sam się kasuje. Bez niego panel przyjmie rolki tylko do
-            50 MB.
+            darmo, a po publikacji plik sam się kasuje. Bez niego panel przyjmie rolki tylko do 50
+            MB.
           </p>
           <ul className="content-connections__checks">
             <Check ok={Boolean(setup?.r2)}>
               Cloudflare → R2: włączone, bucket <code>oscare-rolki</code> z publicznym adresem
-              (r2.dev), a w ustawieniach Workera: <code>R2_ACCOUNT_ID</code>, <code>R2_BUCKET</code>,{" "}
-              <code>R2_PUBLIC_URL</code> oraz sekrety <code>R2_ACCESS_KEY_ID</code> i{" "}
+              (r2.dev), a w ustawieniach Workera: <code>R2_ACCOUNT_ID</code>, <code>R2_BUCKET</code>
+              , <code>R2_PUBLIC_URL</code> oraz sekrety <code>R2_ACCESS_KEY_ID</code> i{" "}
               <code>R2_SECRET_ACCESS_KEY</code>. Claude przeprowadzi Cię przez to krok po kroku.
             </Check>
           </ul>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 
 import { AdminShell } from "@/components/admin/AdminShell";
@@ -12,6 +13,7 @@ import {
   type AutoReplyChannel,
   type Reply,
 } from "@/lib/content-admin";
+import { getMetaConnectUrl } from "@/lib/content.functions";
 
 export const Route = createFileRoute("/admin/odpowiedzi")({
   head: () => ({
@@ -37,6 +39,17 @@ function AdminReplies() {
   const [replies, setReplies] = useState<Reply[]>([]);
   const [dirty, setDirty] = useState(false);
   const [missingSetup, setMissingSetup] = useState(false);
+  const fetchConnectUrl = useServerFn(getMetaConnectUrl);
+
+  // Messaging permissions are asked for separately from publishing (see meta-graph.server.ts).
+  const allowMessages = async () => {
+    try {
+      const { url } = await fetchConnectUrl({ data: { messaging: true } });
+      window.location.href = url;
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Nie udało się rozpocząć logowania.");
+    }
+  };
 
   useEffect(() => {
     getSetting<AutoReply>("auto_reply", { instagram: EMPTY, facebook: EMPTY })
@@ -120,10 +133,15 @@ function AdminReplies() {
                 Zapisz
               </button>
             ) : null}
+            <button type="button" className="btn btn--outline btn--md" onClick={allowMessages}>
+              Pozwól automatowi wysyłać wiadomości
+            </button>
             <p className="content-replies__hint">
-              Działa po połączeniu kont w <Link to="/admin/polaczenia">Połączeniach</Link>.
-              Wysyłanie wiadomości do osób spoza Twojego konta może wymagać jednorazowej akceptacji
-              aplikacji przez Meta — przeprowadzi Cię przez nią Claude.
+              Ten przycisk loguje Cię do Facebooka jeszcze raz i dodaje uprawnienie do wiadomości
+              prywatnych. Działa po połączeniu kont w{" "}
+              <Link to="/admin/polaczenia">Połączeniach</Link>. Wysyłanie wiadomości do osób spoza
+              Twojego konta może wymagać jednorazowej akceptacji aplikacji przez Meta — przeprowadzi
+              Cię przez nią Claude.
             </p>
           </>
         ) : null}

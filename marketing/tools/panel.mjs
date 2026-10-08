@@ -37,7 +37,8 @@ function connect() {
   // New-style keys (sb_secret_…) are not JWTs: send them only as `apikey`.
   const apiKeyFetch = (input, init = {}) => {
     const headers = new Headers(init.headers);
-    if (key.startsWith("sb_") && headers.get("Authorization") === `Bearer ${key}`) headers.delete("Authorization");
+    if (key.startsWith("sb_") && headers.get("Authorization") === `Bearer ${key}`)
+      headers.delete("Authorization");
     headers.set("apikey", key);
     return fetch(input, { ...init, headers });
   };
@@ -110,7 +111,11 @@ function when(value, weekStart) {
 
 /** A value from Panel → Kalendarz (Plan tygodnia, autorzy…), or the fallback. */
 async function setting(db, key, fallback) {
-  const { data, error } = await db.from("content_settings").select("value").eq("key", key).maybeSingle();
+  const { data, error } = await db
+    .from("content_settings")
+    .select("value")
+    .eq("key", key)
+    .maybeSingle();
   if (error && error.code !== "PGRST205") throw new Error(`Ustawienia: ${error.message}`);
   return data?.value ?? fallback;
 }
@@ -144,7 +149,10 @@ async function printTruths() {
 // ------------------------------------------------------------------ plan
 async function takenWeeks(db) {
   const rows = check(
-    await db.from("content_campaigns").select("folder, title, week_start").gte("week_start", mondayOf(dayOf(new Date()))),
+    await db
+      .from("content_campaigns")
+      .select("folder, title, week_start")
+      .gte("week_start", mondayOf(dayOf(new Date()))),
     "Kampanie",
   );
   return rows;
@@ -163,7 +171,9 @@ async function printPlan() {
   const items = check(
     await db
       .from("content_items")
-      .select("title, kind, scheduled_at, status, media_approved, caption_approved, campaign_id, content_campaigns(folder)")
+      .select(
+        "title, kind, scheduled_at, status, media_approved, caption_approved, campaign_id, content_campaigns(folder)",
+      )
       .gte("scheduled_at", warsaw(mondayOf(dayOf(new Date())), "00:00").toISOString())
       .order("scheduled_at"),
     "Kalendarz",
@@ -174,7 +184,9 @@ async function printPlan() {
   console.log("\nNajbliższe publikacje:");
   for (const i of items.slice(0, 30)) {
     const ok = i.media_approved && i.caption_approved ? "zatwierdzone" : "czeka na Ciebie";
-    console.log(`  ${fmt.format(new Date(i.scheduled_at))}  ${i.kind.padEnd(5)} ${i.status === "published" ? "opublikowane" : ok}  ${i.title}`);
+    console.log(
+      `  ${fmt.format(new Date(i.scheduled_at))}  ${i.kind.padEnd(5)} ${i.status === "published" ? "opublikowane" : ok}  ${i.title}`,
+    );
   }
   console.log(`\nNastępny wolny tydzień: ${await nextFreeWeek(db)}`);
 }
@@ -184,7 +196,11 @@ async function printPlan() {
 async function pullUploads() {
   const db = connect();
   const uploads = check(
-    await db.from("content_uploads").select("id, file_name, path").eq("status", "new").order("created_at"),
+    await db
+      .from("content_uploads")
+      .select("id, file_name, path")
+      .eq("status", "new")
+      .order("created_at"),
     "Paczki",
   );
   if (!uploads.length) {
@@ -200,23 +216,58 @@ async function pullUploads() {
     writeFileSync(zip, Buffer.from(await data.arrayBuffer()));
     execFileSync("ditto", ["-x", "-k", zip, target], { stdio: "pipe" });
     rmSync(zip);
+    // The ZIP has done its job: free the storage (Supabase Free has 1 GB) and the public URL.
+    await db.storage.from("content").remove([u.path]);
     rmSync(path.join(target, "__MACOSX"), { recursive: true, force: true });
-    const files = execFileSync("find", [target, "-type", "f", "(", "-iname", "*.jpg", "-o", "-iname", "*.jpeg", "-o", "-iname", "*.png", "-o", "-iname", "*.webp", "-o", "-iname", "*.mp4", "-o", "-iname", "*.mov", ")"])
+    const files = execFileSync("find", [
+      target,
+      "-type",
+      "f",
+      "(",
+      "-iname",
+      "*.jpg",
+      "-o",
+      "-iname",
+      "*.jpeg",
+      "-o",
+      "-iname",
+      "*.png",
+      "-o",
+      "-iname",
+      "*.webp",
+      "-o",
+      "-iname",
+      "*.mp4",
+      "-o",
+      "-iname",
+      "*.mov",
+      ")",
+    ])
       .toString()
       .trim()
       .split("\n")
       .filter(Boolean);
-    check(await db.from("content_uploads").update({ status: "processing", note: null }).eq("id", u.id), "Paczki");
-    console.log(`\n${u.file_name} → ${path.relative(ROOT, target)} (id ${u.id}), plików: ${files.length}`);
+    check(
+      await db.from("content_uploads").update({ status: "processing", note: null }).eq("id", u.id),
+      "Paczki",
+    );
+    console.log(
+      `\n${u.file_name} → ${path.relative(ROOT, target)} (id ${u.id}), plików: ${files.length}`,
+    );
     for (const f of files) console.log(`  ${path.relative(ROOT, f)}`);
   }
-  console.log("\nPo przygotowaniu paczek: node marketing/tools/panel.mjs zakoncz <id> \"<podsumowanie>\"");
+  console.log(
+    '\nPo przygotowaniu paczek: node marketing/tools/panel.mjs zakoncz <id> "<podsumowanie>"',
+  );
 }
 
 async function finishUpload(id, note, failed) {
   const db = connect();
   check(
-    await db.from("content_uploads").update({ status: failed ? "error" : "done", note: note || null }).eq("id", id),
+    await db
+      .from("content_uploads")
+      .update({ status: failed ? "error" : "done", note: note || null })
+      .eq("id", id),
     "Paczki",
   );
   console.log(`ZIP ${id}: ${failed ? "błąd" : "gotowe"}${note ? ` — ${note}` : ""}`);
@@ -226,7 +277,9 @@ async function finishUpload(id, note, failed) {
 function toJpeg(png, outDir) {
   const out = path.join(outDir, `${path.basename(png, path.extname(png))}.jpg`);
   if (png.endsWith(".jpg")) return png;
-  execFileSync("sips", ["-s", "format", "jpeg", "-s", "formatOptions", "92", png, "--out", out], { stdio: "pipe" });
+  execFileSync("sips", ["-s", "format", "jpeg", "-s", "formatOptions", "92", png, "--out", out], {
+    stdio: "pipe",
+  });
   return out;
 }
 
@@ -250,7 +303,8 @@ async function sendPackage(folderArg, { force }) {
   if (!existsSync(path.join(dir, "spec.mjs")) || !existsSync(path.join(dir, "post-1.png"))) {
     throw new Error(`W ${dir} brakuje spec.mjs albo grafik — najpierw uruchom generate.mjs.`);
   }
-  const spec = (await import(`${pathToFileURL(path.join(dir, "spec.mjs")).href}?t=${Date.now()}`)).default;
+  const spec = (await import(`${pathToFileURL(path.join(dir, "spec.mjs")).href}?t=${Date.now()}`))
+    .default;
   const db = connect();
   const publish = spec.publish ?? {};
 
@@ -259,7 +313,9 @@ async function sendPackage(folderArg, { force }) {
     await db.from("content_campaigns").select("id, week_start").eq("folder", folder).maybeSingle(),
     "Kampania",
   );
-  const weekStart = publish.week ? mondayOf(publish.week) : (existing?.week_start ?? (await nextFreeWeek(db)));
+  const weekStart = publish.week
+    ? mondayOf(publish.week)
+    : (existing?.week_start ?? (await nextFreeWeek(db)));
   // Blog authors take turns week by week (Panel → Kalendarz → Plan tygodnia).
   const authors = await setting(db, "authors", [{ name: brand.author }]);
   const { count: earlier } = await db
@@ -296,10 +352,20 @@ async function sendPackage(folderArg, { force }) {
   const postMedia = [];
   for (const f of postFiles) {
     const storagePath = `${campaign.id}/${stamp}-${f.replace(".png", ".jpg")}`;
-    postMedia.push({ type: "image", path: storagePath, url: await upload(db, "content", storagePath, toJpeg(path.join(dir, f), work)) });
+    postMedia.push({
+      type: "image",
+      path: storagePath,
+      url: await upload(db, "content", storagePath, toJpeg(path.join(dir, f), work)),
+    });
   }
   const storyPath = `${campaign.id}/${stamp}-story.jpg`;
-  const storyMedia = [{ type: "image", path: storyPath, url: await upload(db, "content", storyPath, toJpeg(path.join(dir, "story.png"), work)) }];
+  const storyMedia = [
+    {
+      type: "image",
+      path: storyPath,
+      url: await upload(db, "content", storyPath, toJpeg(path.join(dir, "story.png"), work)),
+    },
+  ];
 
   const current = check(
     await db
@@ -313,14 +379,27 @@ async function sendPackage(folderArg, { force }) {
 
   // Blog post as a draft — the calendar publishes it at its time.
   const { slug, link, utm } = campaignLinks(brand, spec);
-  const coverUrl = await upload(db, "blog-images", `${slug}-${stamp}.jpg`, path.join(dir, "okladka-bloga.jpg"));
-  const post = check(await db.from("blog_posts").select("id, status").eq("slug", slug).maybeSingle(), "Blog");
+  const post = check(
+    await db
+      .from("blog_posts")
+      .select("id, status, cover_image_url")
+      .eq("slug", slug)
+      .maybeSingle(),
+    "Blog",
+  );
   let blogPostId = post?.id ?? null;
+  let coverUrl = post?.cover_image_url ?? null;
   if (post?.status === "published") {
     console.log(`Wpis /blog/${slug} jest już opublikowany — zostawiam go bez zmian.`);
   } else if (post && locked(current.find((c) => c.kind === "blog"))) {
     console.log(`Wpis /blog/${slug} jest już zatwierdzony — zostawiam go bez zmian.`);
   } else {
+    coverUrl = await upload(
+      db,
+      "blog-images",
+      `${slug}-${stamp}.jpg`,
+      path.join(dir, "okladka-bloga.jpg"),
+    );
     const fields = {
       slug,
       title: spec.blog.title,
@@ -338,6 +417,9 @@ async function sendPackage(folderArg, { force }) {
       "Blog",
     );
     blogPostId = saved.id;
+    // The previous cover of this draft is no longer used.
+    const oldCover = post?.cover_image_url?.split("/blog-images/")[1];
+    if (oldCover) await db.storage.from("blog-images").remove([oldCover]);
   }
 
   // Calendar items.
@@ -410,12 +492,16 @@ async function sendPackage(folderArg, { force }) {
   for (const row of rows) {
     const old = current.find((c) => c.kind === row.kind && c.position === row.position);
     if (locked(old)) {
-      report.push(`  pominięte (${old.status === "published" ? "opublikowane" : "już zatwierdzane"}): ${row.title}`);
+      report.push(
+        `  pominięte (${old.status === "published" ? "opublikowane" : "już zatwierdzane"}): ${row.title}`,
+      );
       continue;
     }
     if (row.scheduled_at.getTime() < soon) {
       row.scheduled_at = new Date(Math.ceil((Date.now() + 60 * 60_000) / 600_000) * 600_000);
-      report.push(`  UWAGA: termin „${row.title}” już minął — ustawiony na ${fmt.format(row.scheduled_at)}.`);
+      report.push(
+        `  UWAGA: termin „${row.title}” już minął — ustawiony na ${fmt.format(row.scheduled_at)}.`,
+      );
     }
     // A reel keeps the video already uploaded in the panel.
     const media = row.kind === "reel" && old?.media?.length ? old.media : row.media;
@@ -440,7 +526,9 @@ async function sendPackage(folderArg, { force }) {
       row.title,
     );
     // Graphics from the previous upload of this item are no longer used.
-    const stale = (old?.media ?? []).filter((m) => m.path && media !== old.media).map((m) => m.path);
+    const stale = (old?.media ?? [])
+      .filter((m) => m.path && media !== old.media)
+      .map((m) => m.path);
     if (stale.length) await db.storage.from("content").remove(stale);
     report.push(`  ${fmt.format(row.scheduled_at)}  ${row.title}`);
   }
@@ -458,9 +546,15 @@ try {
   else if (command === "pobierz") await pullUploads();
   else if (command === "zakoncz" && arg) await finishUpload(arg, flags.join(" "), false);
   else if (command === "blad" && arg) await finishUpload(arg, flags.join(" "), true);
-  else if (command === "wyslij" && arg) await sendPackage(arg, { force: flags.includes("--nadpisz") });
+  else if (command === "wyslij" && arg)
+    await sendPackage(arg, { force: flags.includes("--nadpisz") });
   else {
-    console.log(readFileSync(fileURLToPath(import.meta.url), "utf8").split("\n").slice(1, 11).join("\n"));
+    console.log(
+      readFileSync(fileURLToPath(import.meta.url), "utf8")
+        .split("\n")
+        .slice(1, 11)
+        .join("\n"),
+    );
     process.exitCode = 1;
   }
 } catch (error) {

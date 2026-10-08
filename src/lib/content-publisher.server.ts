@@ -131,7 +131,11 @@ async function publishInstagram(acc: MetaAccount, item: ItemRow, state: ChannelS
     }
   }
 
-  const status = await waitForContainer(acc, state.containerId, item.kind === "reel" ? 60_000 : 20_000);
+  const status = await waitForContainer(
+    acc,
+    state.containerId,
+    item.kind === "reel" ? 60_000 : 20_000,
+  );
   if (status.code === "IN_PROGRESS") return; // Instagram still processing — next run publishes it.
   if (status.code === "ERROR" || status.code === "EXPIRED") {
     delete state.containerId; // start over with a fresh container next time
@@ -169,7 +173,12 @@ async function publishFacebook(acc: MetaAccount, item: ItemRow, state: ChannelSt
 }
 
 /** The blog link as the first comment. A failed comment never undoes the publication. */
-async function addFirstComment(acc: MetaAccount, item: ItemRow, channel: Channel, state: ChannelState) {
+async function addFirstComment(
+  acc: MetaAccount,
+  item: ItemRow,
+  channel: Channel,
+  state: ChannelState,
+) {
   if (!item.first_comment.trim() || item.kind === "story" || !state.id || state.commented) return;
   try {
     if (channel === "instagram") await igComment(acc, state.id, item.first_comment);
@@ -196,11 +205,17 @@ async function publishBlog(db: AdminClient, item: ItemRow): Promise<string> {
 /** Big reel files live in R2 only until the networks have them. */
 async function cleanUpVideo(item: ItemRow) {
   for (const m of item.media as Media[]) {
-    if (m.type === "video" && m.path?.startsWith("r2:")) await r2Delete(m.path.slice(3)).catch(() => {});
+    if (m.type === "video" && m.path?.startsWith("r2:"))
+      await r2Delete(m.path.slice(3)).catch(() => {});
   }
 }
 
-async function processItem(db: AdminClient, acc: MetaAccount | null, item: ItemRow, report: PublisherReport) {
+async function processItem(
+  db: AdminClient,
+  acc: MetaAccount | null,
+  item: ItemRow,
+  report: PublisherReport,
+) {
   const state = { ...((item.publish_state ?? {}) as PublishState) };
   delete state.waiting;
   const save = (fields: Partial<ItemRow>) =>
@@ -305,7 +320,10 @@ async function answerKeywordComments(db: AdminClient, acc: MetaAccount, report: 
   const { data: handled } = await db
     .from("content_replies")
     .select("comment_id")
-    .in("item_id", items.map((i) => i.id));
+    .in(
+      "item_id",
+      items.map((i) => i.id),
+    );
   const seen = new Set((handled ?? []).map((h) => h.comment_id));
 
   for (const item of items) {
@@ -317,12 +335,12 @@ async function answerKeywordComments(db: AdminClient, acc: MetaAccount, report: 
       const objectId = (item.publish_state as PublishState)[platform]?.id;
       if (!settings?.enabled || !objectId) continue;
 
-      const comments = await (platform === "instagram"
-        ? igListComments(acc, objectId)
-        : fbListComments(acc, objectId)
+      const comments = await (
+        platform === "instagram" ? igListComments(acc, objectId) : fbListComments(acc, objectId)
       ).catch(() => []);
       for (const c of comments) {
-        const own = c.authorId === acc.igUserId || c.authorId === acc.pageId || c.author === acc.igUsername;
+        const own =
+          c.authorId === acc.igUserId || c.authorId === acc.pageId || c.author === acc.igUsername;
         if (seen.has(c.id) || own || !mentionsKeyword(c.text, keyword)) continue;
         seen.add(c.id);
         const values = { imie: c.author, slowo: keyword, link };
@@ -352,7 +370,13 @@ async function answerKeywordComments(db: AdminClient, acc: MetaAccount, report: 
 
 export async function runPublisher({ itemId }: { itemId?: string } = {}): Promise<PublisherReport> {
   const db = createAdminClient();
-  const report: PublisherReport = { checked: 0, published: [], inProgress: [], errors: [], replies: 0 };
+  const report: PublisherReport = {
+    checked: 0,
+    published: [],
+    inProgress: [],
+    errors: [],
+    replies: 0,
+  };
   const acc = await loadMetaAccount(db);
 
   for (const item of await dueItems(db, itemId)) {

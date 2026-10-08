@@ -9,20 +9,22 @@ import { createAdminClient } from "@/lib/supabase-admin.server";
 const GRAPH_VERSION = "v23.0";
 const GRAPH = `https://graph.facebook.com/${GRAPH_VERSION}`;
 
+// Publishing + the first comment with the blog link + reading comments.
 const SCOPES = [
   "pages_show_list",
   "pages_read_engagement",
   "pages_manage_posts",
-  // First comment with the blog link + automatic replies to keyword comments.
   "pages_manage_engagement",
   "pages_read_user_content",
-  "pages_messaging",
   "instagram_basic",
   "instagram_content_publish",
   "instagram_manage_comments",
-  "instagram_manage_messages",
   "business_management",
 ];
+// Private replies to keyword comments. Asked for separately (Panel → Odpowiedzi): if the
+// Meta app doesn't have messaging set up yet, Facebook rejects the whole login, and
+// publishing must keep working regardless.
+const MESSAGING_SCOPES = ["pages_messaging", "instagram_manage_messages"];
 
 export type MetaAccount = {
   pageId: string;
@@ -59,7 +61,10 @@ async function graph<T>(
   const json = (await res.json().catch(() => ({}))) as T & GraphErrorBody;
   if (!res.ok || json.error) {
     const e = json.error;
-    throw new GraphError(e?.error_user_msg || e?.message || `Meta API: HTTP ${res.status}`, e?.code);
+    throw new GraphError(
+      e?.error_user_msg || e?.message || `Meta API: HTTP ${res.status}`,
+      e?.code,
+    );
   }
   return json;
 }
@@ -100,17 +105,19 @@ async function hmac(secret: string, data: string) {
 
 const redirectUri = (origin: string) => `${origin}/api/meta/callback`;
 
-export async function buildConnectUrl(origin: string): Promise<string> {
+export async function buildConnectUrl(origin: string, { messaging = false } = {}): Promise<string> {
   const { appId, appSecret } = appConfig();
   const payload = b64url(
-    new TextEncoder().encode(JSON.stringify({ exp: Date.now() + 15 * 60_000, n: crypto.randomUUID() })),
+    new TextEncoder().encode(
+      JSON.stringify({ exp: Date.now() + 15 * 60_000, n: crypto.randomUUID() }),
+    ),
   );
   const state = `${payload}.${await hmac(appSecret, payload)}`;
   const url = new URL(`https://www.facebook.com/${GRAPH_VERSION}/dialog/oauth`);
   url.searchParams.set("client_id", appId);
   url.searchParams.set("redirect_uri", redirectUri(origin));
   url.searchParams.set("state", state);
-  url.searchParams.set("scope", SCOPES.join(","));
+  url.searchParams.set("scope", [...SCOPES, ...(messaging ? MESSAGING_SCOPES : [])].join(","));
   url.searchParams.set("response_type", "code");
   return url.toString();
 }
@@ -231,7 +238,12 @@ export async function igCreateCarousel(acc: MetaAccount, children: string[], cap
   return (
     await graph<Created>(
       `${acc.igUserId}/media`,
-      { media_type: "CAROUSEL", children: children.join(","), caption, access_token: acc.pageToken },
+      {
+        media_type: "CAROUSEL",
+        children: children.join(","),
+        caption,
+        access_token: acc.pageToken,
+      },
       "POST",
     )
   ).id;
@@ -354,20 +366,27 @@ export async function fbPublishVideo(
 // ------------------------------------------------------------ comments
 /** Comment under our own Instagram media / Facebook post (the blog link). */
 export async function igComment(acc: MetaAccount, mediaId: string, message: string) {
-  return (await graph<Created>(`${mediaId}/comments`, { message, access_token: acc.pageToken }, "POST")).id;
+  return (
+    await graph<Created>(`${mediaId}/comments`, { message, access_token: acc.pageToken }, "POST")
+  ).id;
 }
 
 export async function fbComment(acc: MetaAccount, objectId: string, message: string) {
-  return (await graph<Created>(`${objectId}/comments`, { message, access_token: acc.pageToken }, "POST")).id;
+  return (
+    await graph<Created>(`${objectId}/comments`, { message, access_token: acc.pageToken }, "POST")
+  ).id;
 }
 
 export type SocialComment = { id: string; text: string; author: string; authorId?: string };
 
 export async function igListComments(acc: MetaAccount, mediaId: string): Promise<SocialComment[]> {
-  const res = await graph<{ data: { id: string; text?: string; username?: string; from?: { id: string } }[] }>(
-    `${mediaId}/comments`,
-    { fields: "id,text,username,from", limit: "50", access_token: acc.pageToken },
-  );
+  const res = await graph<{
+    data: { id: string; text?: string; username?: string; from?: { id: string } }[];
+  }>(`${mediaId}/comments`, {
+    fields: "id,text,username,from",
+    limit: "50",
+    access_token: acc.pageToken,
+  });
   return res.data.map((c) => ({
     id: c.id,
     text: c.text ?? "",
@@ -377,10 +396,14 @@ export async function igListComments(acc: MetaAccount, mediaId: string): Promise
 }
 
 export async function fbListComments(acc: MetaAccount, objectId: string): Promise<SocialComment[]> {
-  const res = await graph<{ data: { id: string; message?: string; from?: { id: string; name: string } }[] }>(
-    `${objectId}/comments`,
-    { fields: "id,message,from", limit: "50", filter: "stream", access_token: acc.pageToken },
-  );
+  const res = await graph<{
+    data: { id: string; message?: string; from?: { id: string; name: string } }[];
+  }>(`${objectId}/comments`, {
+    fields: "id,message,from",
+    limit: "50",
+    filter: "stream",
+    access_token: acc.pageToken,
+  });
   return res.data.map((c) => ({
     id: c.id,
     text: c.message ?? "",

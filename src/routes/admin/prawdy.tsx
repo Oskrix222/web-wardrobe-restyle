@@ -81,9 +81,9 @@ function AdminTruths() {
       <div className="content-truths">
         <h1>Prawdy o ofercie</h1>
         <p className="content-truths__hint">
-          Wpisz tu wszystko, co jest prawdą o Twojej ofercie i jej ograniczeniach. Claude czyta tę listę
-          przed napisaniem każdej paczki: nigdy jej nie zaprzeczy i nie będzie poruszał tych tematów w
-          postach, na blogu ani w rolkach, po prostu je omija. Listę widzisz tylko Ty.
+          Wpisz tu wszystko, co jest prawdą o Twojej ofercie i jej ograniczeniach. Claude czyta tę
+          listę przed napisaniem każdej paczki: nigdy jej nie zaprzeczy i nie będzie poruszał tych
+          tematów w postach, na blogu ani w rolkach, po prostu je omija. Listę widzisz tylko Ty.
         </p>
 
         <form className="content-truths__form" onSubmit={onAdd}>
@@ -137,11 +137,17 @@ function AdminTruths() {
                             <button
                               type="button"
                               className="btn btn--primary btn--sm"
-                              onClick={() => save(truth.id, { body: editing.body.trim() }, "Zapisano.")}
+                              onClick={() =>
+                                save(truth.id, { body: editing.body.trim() }, "Zapisano.")
+                              }
                             >
                               Zapisz
                             </button>
-                            <button type="button" className="btn btn--ghost btn--sm" onClick={() => setEditing(null)}>
+                            <button
+                              type="button"
+                              className="btn btn--ghost btn--sm"
+                              onClick={() => setEditing(null)}
+                            >
                               Anuluj
                             </button>
                           </div>

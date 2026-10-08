@@ -16,7 +16,8 @@ export const r2Configured = () =>
 const encoder = new TextEncoder();
 const hex = (buf: ArrayBuffer) =>
   [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
-const sha256 = async (text: string) => hex(await crypto.subtle.digest("SHA-256", encoder.encode(text)));
+const sha256 = async (text: string) =>
+  hex(await crypto.subtle.digest("SHA-256", encoder.encode(text)));
 
 async function hmac(key: ArrayBuffer | Uint8Array<ArrayBuffer>, data: string) {
   const k = await crypto.subtle.importKey("raw", key, { name: "HMAC", hash: "SHA-256" }, false, [
@@ -29,7 +30,12 @@ async function hmac(key: ArrayBuffer | Uint8Array<ArrayBuffer>, data: string) {
 const encodePath = (key: string) =>
   key
     .split("/")
-    .map((part) => encodeURIComponent(part).replace(/[!'()*]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`))
+    .map((part) =>
+      encodeURIComponent(part).replace(
+        /[!'()*]/g,
+        (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,
+      ),
+    )
     .join("/");
 
 /** SigV4 query-string signature for one request against the bucket. */
@@ -37,7 +43,10 @@ async function presign(method: "PUT" | "DELETE", key: string, expiresSeconds: nu
   const host = `${env("R2_ACCOUNT_ID")}.r2.cloudflarestorage.com`;
   const path = `/${env("R2_BUCKET")}/${encodePath(key)}`;
   const now = new Date();
-  const amzDate = now.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  const amzDate = now
+    .toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\.\d{3}/, "");
   const day = amzDate.slice(0, 8);
   const scope = `${day}/auto/s3/aws4_request`;
 
@@ -52,8 +61,18 @@ async function presign(method: "PUT" | "DELETE", key: string, expiresSeconds: nu
     .sort(([a], [b]) => (a < b ? -1 : 1))
     .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
     .join("&");
-  const canonicalRequest = [method, path, canonicalQuery, `host:${host}`, "", "host", "UNSIGNED-PAYLOAD"].join("\n");
-  const stringToSign = ["AWS4-HMAC-SHA256", amzDate, scope, await sha256(canonicalRequest)].join("\n");
+  const canonicalRequest = [
+    method,
+    path,
+    canonicalQuery,
+    `host:${host}`,
+    "",
+    "host",
+    "UNSIGNED-PAYLOAD",
+  ].join("\n");
+  const stringToSign = ["AWS4-HMAC-SHA256", amzDate, scope, await sha256(canonicalRequest)].join(
+    "\n",
+  );
 
   let signingKey = await hmac(encoder.encode(`AWS4${env("R2_SECRET_ACCESS_KEY")}`), day);
   for (const part of ["auto", "s3", "aws4_request"]) signingKey = await hmac(signingKey, part);
@@ -73,5 +92,6 @@ export function r2UploadUrl(key: string) {
 
 export async function r2Delete(key: string) {
   const res = await fetch(await presign("DELETE", key, 300), { method: "DELETE" });
-  if (!res.ok && res.status !== 404) throw new Error(`R2: nie udało się usunąć pliku (HTTP ${res.status}).`);
+  if (!res.ok && res.status !== 404)
+    throw new Error(`R2: nie udało się usunąć pliku (HTTP ${res.status}).`);
 }

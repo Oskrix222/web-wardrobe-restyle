@@ -29,9 +29,14 @@ export const getServerSetup = createServerFn({ method: "GET" })
 /** Facebook login URL for connecting the Page + Instagram account. */
 export const getMetaConnectUrl = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .handler(async () => {
+  .validator(z.object({ messaging: z.boolean().optional() }).optional())
+  .handler(async ({ data }) => {
     const { buildConnectUrl } = await import("./meta-graph.server");
-    return { url: await buildConnectUrl(new URL(getRequest().url).origin) };
+    return {
+      url: await buildConnectUrl(new URL(getRequest().url).origin, {
+        messaging: data?.messaging ?? false,
+      }),
+    };
   });
 
 export const disconnectMeta = createServerFn({ method: "POST" })
@@ -61,7 +66,9 @@ export const publishItemNow = createServerFn({ method: "POST" })
  */
 export const getVideoUploadTarget = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .validator(z.object({ itemId: z.string().uuid(), extension: z.string().regex(/^[a-z0-9]{2,5}$/) }))
+  .validator(
+    z.object({ itemId: z.string().uuid(), extension: z.string().regex(/^[a-z0-9]{2,5}$/) }),
+  )
   .handler(async ({ data }) => {
     const { r2Configured, r2PublicUrl, r2UploadUrl } = await import("./r2.server");
     if (!r2Configured()) return null;

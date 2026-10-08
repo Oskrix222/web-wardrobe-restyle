@@ -9,7 +9,8 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test:content": "node --import ./tests/content/register.mjs --experimental-transform-types --experimental-test-module-mocks --no-warnings --test \"tests/content/*.test.mjs\""
   },
   "overrides": {
     "rolldown": "1.2.1"
@@ -40,6 +41,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.3.16",
     "@eslint/js": "^9.32.0",
     "@lovable.dev/vite-tanstack-config": "^2.20.0",
     "@types/node": "^22.16.5",

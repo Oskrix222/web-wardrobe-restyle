@@ -222,7 +222,7 @@ export function ContentItemCard({
         toast.success(
           "Instagram jeszcze przetwarza wideo — automat dokończy publikację w ciągu 10 minut.",
         );
-      } else toast.message("Nic do opublikowania — sprawdź zatwierdzenia i kanały.");
+      } else toast.message("Nic nie zostało opublikowane — powód znajdziesz w karcie.");
       onChange(await getItem(item.id));
     });
   };

@@ -180,7 +180,8 @@ function videoDuration(file: File): Promise<number | undefined> {
       resolve(value);
     };
     video.preload = "metadata";
-    video.onloadedmetadata = () => done(Number.isFinite(video.duration) ? Math.round(video.duration) : undefined);
+    video.onloadedmetadata = () =>
+      done(Number.isFinite(video.duration) ? Math.round(video.duration) : undefined);
     video.onerror = () => done(undefined);
     video.src = url;
   });
@@ -241,7 +242,11 @@ export async function uploadReelVideo(
     });
     if (error) throw error;
     onProgress(1);
-    media = { type: "video", url: supabase.storage.from("content").getPublicUrl(path).data.publicUrl, path };
+    media = {
+      type: "video",
+      url: supabase.storage.from("content").getPublicUrl(path).data.publicUrl,
+      path,
+    };
   }
   if (duration) media.duration = duration;
 
@@ -261,7 +266,11 @@ export const TRUTH_CATEGORIES: { value: TruthCategory; label: string; hint: stri
     label: "O nas (fakty do wykorzystania)",
     hint: "np. W branży od 2005 roku. Działamy w Warszawie i okolicach.",
   },
-  { value: "oferta", label: "Czego nie mam w ofercie", hint: "np. Nie mam w ofercie ubezpieczenia samochodu." },
+  {
+    value: "oferta",
+    label: "Czego nie mam w ofercie",
+    hint: "np. Nie mam w ofercie ubezpieczenia samochodu.",
+  },
   {
     value: "ograniczenie",
     label: "Ograniczenia i wykluczenia",
