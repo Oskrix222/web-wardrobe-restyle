@@ -129,6 +129,7 @@ export type Database = {
       }
       content_campaigns: {
         Row: {
+          author: string | null
           created_at: string
           folder: string
           id: string
@@ -138,6 +139,7 @@ export type Database = {
           week_start: string
         }
         Insert: {
+          author?: string | null
           created_at?: string
           folder: string
           id?: string
@@ -147,6 +149,7 @@ export type Database = {
           week_start: string
         }
         Update: {
+          author?: string | null
           created_at?: string
           folder?: string
           id?: string
@@ -168,6 +171,7 @@ export type Database = {
           channels: string[]
           created_at: string
           details: Json
+          first_comment: string
           id: string
           kind: string
           last_error: string | null
@@ -192,6 +196,7 @@ export type Database = {
           channels?: string[]
           created_at?: string
           details?: Json
+          first_comment?: string
           id?: string
           kind: string
           last_error?: string | null
@@ -216,6 +221,7 @@ export type Database = {
           channels?: string[]
           created_at?: string
           details?: Json
+          first_comment?: string
           id?: string
           kind?: string
           last_error?: string | null
@@ -256,6 +262,90 @@ export type Database = {
           created_at?: string
           id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      content_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
+      }
+      content_uploads: {
+        Row: {
+          created_at: string
+          file_name: string
+          id: string
+          note: string | null
+          path: string
+          size: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          id?: string
+          note?: string | null
+          path: string
+          size?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          id?: string
+          note?: string | null
+          path?: string
+          size?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      content_replies: {
+        Row: {
+          author: string | null
+          comment: string | null
+          comment_id: string
+          created_at: string
+          error: string | null
+          item_id: string | null
+          platform: string
+          status: string
+        }
+        Insert: {
+          author?: string | null
+          comment?: string | null
+          comment_id: string
+          created_at?: string
+          error?: string | null
+          item_id?: string | null
+          platform: string
+          status?: string
+        }
+        Update: {
+          author?: string | null
+          comment?: string | null
+          comment_id?: string
+          created_at?: string
+          error?: string | null
+          item_id?: string | null
+          platform?: string
+          status?: string
         }
         Relationships: []
       }

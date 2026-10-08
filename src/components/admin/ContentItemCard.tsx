@@ -30,8 +30,14 @@ const CHANNELS: Record<ContentKind, { value: ContentChannel; label: string }[]> 
     { value: "instagram", label: "Instagram" },
     { value: "facebook", label: "Facebook" },
   ],
-  story: [{ value: "instagram", label: "Instagram (bez naklejki z linkiem)" }],
-  reel: [{ value: "instagram", label: "Instagram" }],
+  story: [
+    { value: "instagram", label: "Instagram" },
+    { value: "facebook", label: "Facebook" },
+  ],
+  reel: [
+    { value: "instagram", label: "Instagram" },
+    { value: "facebook", label: "Facebook" },
+  ],
 };
 
 const IG_CAPTION_LIMIT = 2200;
@@ -63,11 +69,13 @@ export function statusOf(item: ContentItem): { tone: ItemTone; label: string } {
   if (item.status === "failed") return { tone: "error", label: "Błąd publikacji" };
   if (item.status === "publishing") return { tone: "busy", label: "Publikowanie…" };
   if (item.kind === "reel" && !item.media.length) return { tone: "todo", label: "Wgraj rolkę" };
-  if (!item.mediaApproved || !item.captionApproved) return { tone: "todo", label: "Do zatwierdzenia" };
+  if (!item.mediaApproved || !item.captionApproved)
+    return { tone: "todo", label: "Do zatwierdzenia" };
   if (item.kind !== "blog" && !item.channels.length) {
     return { tone: "manual", label: "Do wrzucenia ręcznie" };
   }
-  if (new Date(item.scheduledAt) <= new Date()) return { tone: "ok", label: "W kolejce (do 10 min)" };
+  if (new Date(item.scheduledAt) <= new Date())
+    return { tone: "ok", label: "W kolejce (do 10 min)" };
   return { tone: "ok", label: "Zaplanowane" };
 }
 
@@ -132,14 +140,14 @@ export function ContentItemCard({
 }) {
   const publishNow = useServerFn(publishItemNow);
   const [caption, setCaption] = useState(item.caption);
-  const [captionFb, setCaptionFb] = useState(item.captionFacebook);
+  const [firstComment, setFirstComment] = useState(item.firstComment);
   const [when, setWhen] = useState(toLocalInput(item.scheduledAt));
   const [busy, setBusy] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   // Keep drafts in sync when the item is reloaded from the server.
   useEffect(() => setCaption(item.caption), [item.caption]);
-  useEffect(() => setCaptionFb(item.captionFacebook), [item.captionFacebook]);
+  useEffect(() => setFirstComment(item.firstComment), [item.firstComment]);
   useEffect(() => setWhen(toLocalInput(item.scheduledAt)), [item.scheduledAt]);
 
   const status = statusOf(item);
@@ -147,7 +155,7 @@ export function ContentItemCard({
   const needsCaption = item.kind === "post" || item.kind === "reel";
   const hasVideo = item.media.some((m) => m.type === "video");
   const images = item.media.filter((m) => m.type === "image");
-  const captionDirty = caption !== item.caption || captionFb !== item.captionFacebook;
+  const captionDirty = caption !== item.caption || firstComment !== item.firstComment;
   const whenDirty = when !== toLocalInput(item.scheduledAt);
   const hashtags = (caption.match(/#[\p{L}\p{N}_]+/gu) ?? []).length;
 
@@ -179,7 +187,7 @@ export function ContentItemCard({
 
   const saveCaption = () =>
     save(
-      { caption, caption_facebook: captionFb, caption_approved: false },
+      { caption, first_comment: firstComment, caption_approved: false },
       "Opis zapisany — zatwierdź go jeszcze raz.",
     );
 
@@ -209,7 +217,9 @@ export function ContentItemCard({
       if (report.errors.length) toast.error(report.errors[0]!.error);
       else if (report.published.length) toast.success("Opublikowane.");
       else if (report.inProgress.length) {
-        toast.success("Instagram jeszcze przetwarza wideo — automat dokończy publikację w ciągu 10 minut.");
+        toast.success(
+          "Instagram jeszcze przetwarza wideo — automat dokończy publikację w ciągu 10 minut.",
+        );
       } else toast.message("Nic do opublikowania — sprawdź zatwierdzenia i kanały.");
       onChange(await getItem(item.id));
     });
@@ -223,9 +233,10 @@ export function ContentItemCard({
     });
   };
 
-  const permalinks = [item.publishState.instagram?.permalink, item.publishState.facebook?.permalink].filter(
-    (link): link is string => Boolean(link),
-  );
+  const permalinks = [
+    item.publishState.instagram?.permalink,
+    item.publishState.facebook?.permalink,
+  ].filter((link): link is string => Boolean(link));
 
   return (
     <article className={`content-item is-${status.tone}`}>
@@ -233,7 +244,8 @@ export function ContentItemCard({
         <div className="content-item__when">
           <span className="content-item__day">{weekday.format(new Date(item.scheduledAt))}</span>
           <span className="content-item__date">
-            {dayMonth.format(new Date(item.scheduledAt))}, {hourMinute.format(new Date(item.scheduledAt))}
+            {dayMonth.format(new Date(item.scheduledAt))},{" "}
+            {hourMinute.format(new Date(item.scheduledAt))}
           </span>
         </div>
         <span className="content-item__kind">
@@ -251,7 +263,9 @@ export function ContentItemCard({
         </p>
       ) : null}
 
-      {item.lastError && !published ? <p className="content-item__error">{item.lastError}</p> : null}
+      {item.lastError && !published ? (
+        <p className="content-item__error">{item.lastError}</p>
+      ) : null}
       {item.publishState.waiting && !published ? (
         <p className="content-item__note">{item.publishState.waiting}</p>
       ) : null}
@@ -283,7 +297,11 @@ export function ContentItemCard({
                     onClick={() => fileRef.current?.click()}
                   >
                     <Upload className="btn__icon" aria-hidden="true" />
-                    {busy === "upload" ? "Wysyłanie… (do minuty)" : hasVideo ? "Podmień wideo" : "Wgraj rolkę"}
+                    {busy === "upload"
+                      ? "Wysyłanie… (do minuty)"
+                      : hasVideo
+                        ? "Podmień wideo"
+                        : "Wgraj rolkę"}
                   </button>
                   <small>MP4 lub MOV, pionowo, do 50 MB (1080p).</small>
                 </>
@@ -319,21 +337,22 @@ export function ContentItemCard({
                 ) : null}
               </div>
               <p className="content-item__hint">
-                Wpis czeka w „Wpisach” jako szkic. Po zatwierdzeniu opublikuje się sam o tej godzinie.
+                Wpis czeka w „Wpisach” jako szkic. Po zatwierdzeniu opublikuje się sam o tej
+                godzinie.
               </p>
             </>
           ) : item.kind === "story" ? (
             <>
               <p className="content-item__hint">
-                Instagram nie pozwala dodać naklejki z linkiem przez API. Zostaw kanał odznaczony i wrzuć
-                story ręcznie z naklejką „Link”, albo zaznacz Instagram, żeby poszło samo, bez linku.
+                Story pójdzie samo w swoim terminie. Klikalnej naklejki z linkiem API nie pozwala
+                dodać, dlatego na grafice jest „Link w bio”. W bio ustaw raz adres <b>/najnowszy</b>{" "}
+                — zawsze prowadzi do najnowszego wpisu.
               </p>
-              {item.details.linkUrl ? <CopyBlock label="Link do naklejki" text={item.details.linkUrl} /> : null}
             </>
           ) : (
             <>
               <label className="content-item__label">
-                Opis {item.channels.includes("facebook") ? "na Instagram" : ""}
+                Opis (ten sam na Instagram i Facebook)
                 <textarea
                   value={caption}
                   onChange={(e) => setCaption(e.target.value)}
@@ -341,22 +360,32 @@ export function ContentItemCard({
                   disabled={published}
                 />
               </label>
-              <p className={caption.length > IG_CAPTION_LIMIT || hashtags > 30 ? "content-item__count is-over" : "content-item__count"}>
+              <p
+                className={
+                  caption.length > IG_CAPTION_LIMIT || hashtags > 30
+                    ? "content-item__count is-over"
+                    : "content-item__count"
+                }
+              >
                 {caption.length} / {IG_CAPTION_LIMIT} znaków · {hashtags} / 30 hasztagów
               </p>
-              {item.kind === "post" && item.channels.includes("facebook") ? (
-                <label className="content-item__label">
-                  Opis na Facebook
-                  <textarea
-                    value={captionFb}
-                    onChange={(e) => setCaptionFb(e.target.value)}
-                    rows={8}
-                    disabled={published}
-                  />
-                </label>
-              ) : null}
+              <label className="content-item__label">
+                Pierwszy komentarz (link do wpisu — dodaje się sam zaraz po publikacji)
+                <textarea
+                  value={firstComment}
+                  onChange={(e) => setFirstComment(e.target.value)}
+                  rows={2}
+                  placeholder="Puste = bez komentarza"
+                  disabled={published}
+                />
+              </label>
               {captionDirty ? (
-                <button type="button" className="btn btn--primary btn--sm" onClick={saveCaption} disabled={busy === "save"}>
+                <button
+                  type="button"
+                  className="btn btn--primary btn--sm"
+                  onClick={saveCaption}
+                  disabled={busy === "save"}
+                >
                   Zapisz opis
                 </button>
               ) : null}
@@ -378,7 +407,10 @@ export function ContentItemCard({
         <>
           <div className="content-item__approvals">
             {item.kind === "blog" || item.kind === "story" ? (
-              <ApproveButton approved={item.mediaApproved && item.captionApproved} onClick={toggleMedia}>
+              <ApproveButton
+                approved={item.mediaApproved && item.captionApproved}
+                onClick={toggleMedia}
+              >
                 {item.mediaApproved && item.captionApproved
                   ? item.kind === "blog"
                     ? "Wpis zatwierdzony"
@@ -451,12 +483,22 @@ export function ContentItemCard({
                 </button>
               ) : null}
               {status.tone === "ok" ? (
-                <button type="button" className="btn btn--outline btn--sm" onClick={onPublishNow} disabled={busy === "publish"}>
+                <button
+                  type="button"
+                  className="btn btn--outline btn--sm"
+                  onClick={onPublishNow}
+                  disabled={busy === "publish"}
+                >
                   <Send className="btn__icon" aria-hidden="true" />
                   {busy === "publish" ? "Publikowanie…" : "Opublikuj teraz"}
                 </button>
               ) : null}
-              <button type="button" className="content-item__delete" onClick={onDelete} aria-label="Usuń z kalendarza">
+              <button
+                type="button"
+                className="content-item__delete"
+                onClick={onDelete}
+                aria-label="Usuń z kalendarza"
+              >
                 <Trash2 aria-hidden="true" />
               </button>
             </div>
@@ -466,13 +508,25 @@ export function ContentItemCard({
 
       {item.kind === "reel" && item.details.scenes?.length ? <ReelScript item={item} /> : null}
 
-      {item.kind === "post" && (item.details.dm || item.details.google || item.details.links?.length) ? (
+      {item.kind === "post" &&
+      (item.details.dm || item.details.google || item.details.links?.length) ? (
         <details className="content-item__more">
           <summary>Odpowiedź w DM, wizytówka Google i linki</summary>
-          {item.details.dm ? <CopyBlock label="Odpowiedź w DM (dla osób, które napiszą słowo)" text={item.details.dm} /> : null}
-          {item.details.google ? <CopyBlock label="Wizytówka Google — aktualność" text={item.details.google} /> : null}
-          {item.details.links?.map((l) => <CopyBlock key={l.url} label={l.label} text={l.url} />)}
-          {item.details.alt ? <CopyBlock label="Tekst alternatywny (Instagram)" text={item.details.alt} /> : null}
+          {item.details.dm ? (
+            <CopyBlock
+              label="Odpowiedź w DM (dla osób, które napiszą słowo)"
+              text={item.details.dm}
+            />
+          ) : null}
+          {item.details.google ? (
+            <CopyBlock label="Wizytówka Google — aktualność" text={item.details.google} />
+          ) : null}
+          {item.details.links?.map((l) => (
+            <CopyBlock key={l.url} label={l.label} text={l.url} />
+          ))}
+          {item.details.alt ? (
+            <CopyBlock label="Tekst alternatywny (Instagram)" text={item.details.alt} />
+          ) : null}
         </details>
       ) : null}
     </article>

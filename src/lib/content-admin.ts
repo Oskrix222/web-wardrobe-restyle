@@ -39,6 +39,8 @@ export type ContentItem = {
   channels: ContentChannel[];
   caption: string;
   captionFacebook: string;
+  /** Posted as the first comment right after publishing — the blog link lives here. */
+  firstComment: string;
   media: ContentMedia[];
   details: ContentDetails;
   blogPostId: string | null;
@@ -73,6 +75,7 @@ function mapItem(row: ItemRow): ContentItem {
     channels: row.channels as ContentChannel[],
     caption: row.caption,
     captionFacebook: row.caption_facebook,
+    firstComment: row.first_comment ?? "",
     media: (row.media ?? []) as ContentMedia[],
     details: (row.details ?? {}) as ContentDetails,
     blogPostId: row.blog_post_id,
@@ -187,10 +190,15 @@ export async function uploadReelVideo(item: ContentItem, file: File): Promise<Co
 }
 
 // ------------------------------------------------------------------ truths
-export type TruthCategory = "oferta" | "ograniczenie" | "zasada";
+export type TruthCategory = "o_nas" | "oferta" | "ograniczenie" | "zasada";
 export type Truth = { id: string; body: string; category: TruthCategory; active: boolean };
 
 export const TRUTH_CATEGORIES: { value: TruthCategory; label: string; hint: string }[] = [
+  {
+    value: "o_nas",
+    label: "O nas (fakty do wykorzystania)",
+    hint: "np. W branży od 2005 roku. Działamy w Warszawie i okolicach.",
+  },
   { value: "oferta", label: "Czego nie mam w ofercie", hint: "np. Nie mam w ofercie ubezpieczenia samochodu." },
   {
     value: "ograniczenie",
@@ -243,4 +251,117 @@ export async function getConnectionStatus(): Promise<ConnectionStatus> {
   if (error) throw error;
   const status = (data ?? {}) as Partial<ConnectionStatus>;
   return { meta: status.meta ?? null, cron: status.cron ?? null };
+}
+
+// ------------------------------------------------------------------ settings
+export type Slot = { day: number; time: string };
+export type WeekPlan = { blog: Slot; post: Slot; story: Slot; reels: Slot[] };
+export type Author = { name: string; phone: string };
+export type AutoReplyChannel = { enabled: boolean; message: string; publicReply: string };
+export type AutoReply = { instagram: AutoReplyChannel; facebook: AutoReplyChannel };
+
+export const DEFAULT_WEEK_PLAN: WeekPlan = {
+  blog: { day: 1, time: "07:00" },
+  post: { day: 3, time: "18:00" },
+  story: { day: 3, time: "20:00" },
+  reels: [
+    { day: 2, time: "19:00" },
+    { day: 4, time: "19:00" },
+    { day: 6, time: "10:00" },
+  ],
+};
+
+export async function getSetting<T>(key: string, fallback: T): Promise<T> {
+  const { data, error } = await supabase
+    .from("content_settings")
+    .select("value")
+    .eq("key", key)
+    .maybeSingle();
+  if (error) throw error;
+  return (data?.value as T | undefined) ?? fallback;
+}
+
+export async function saveSetting(key: string, value: unknown): Promise<void> {
+  const { error } = await supabase
+    .from("content_settings")
+    .upsert({ key, value: value as Json }, { onConflict: "key" });
+  if (error) throw error;
+}
+
+// ------------------------------------------------------------------ ZIP uploads
+export type Upload = {
+  id: string;
+  fileName: string;
+  size: number | null;
+  status: "new" | "processing" | "done" | "error";
+  note: string | null;
+  createdAt: string;
+};
+
+export async function listUploads(): Promise<Upload[]> {
+  const { data, error } = await supabase
+    .from("content_uploads")
+    .select("id, file_name, size, status, note, created_at")
+    .order("created_at", { ascending: false })
+    .limit(20);
+  if (error) throw error;
+  return data.map((u) => ({
+    id: u.id,
+    fileName: u.file_name,
+    size: u.size,
+    status: u.status as Upload["status"],
+    note: u.note,
+    createdAt: u.created_at,
+  }));
+}
+
+/** Stores a ZIP of graphics; Claude Code on the Mac picks it up (/nowy-post). */
+export async function uploadZip(file: File): Promise<void> {
+  if (file.size > 50 * 1024 * 1024) {
+    throw new Error("ZIP ma ponad 50 MB. Podziel grafiki na dwa mniejsze ZIP-y.");
+  }
+  const path = `uploads/${crypto.randomUUID()}.zip`;
+  const { error } = await supabase.storage.from("content").upload(path, file, {
+    contentType: "application/zip",
+    upsert: false,
+  });
+  if (error) throw error;
+  const insert = await supabase
+    .from("content_uploads")
+    .insert({ file_name: file.name, path, size: file.size });
+  if (insert.error) throw insert.error;
+}
+
+export async function deleteUpload(id: string): Promise<void> {
+  const { data } = await supabase.from("content_uploads").select("path").eq("id", id).single();
+  if (data?.path) await supabase.storage.from("content").remove([data.path]);
+  const { error } = await supabase.from("content_uploads").delete().eq("id", id);
+  if (error) throw error;
+}
+
+// ------------------------------------------------------------------ automatic replies
+export type Reply = {
+  platform: "instagram" | "facebook";
+  author: string | null;
+  comment: string | null;
+  status: "sent" | "failed";
+  error: string | null;
+  createdAt: string;
+};
+
+export async function listReplies(): Promise<Reply[]> {
+  const { data, error } = await supabase
+    .from("content_replies")
+    .select("platform, author, comment, status, error, created_at")
+    .order("created_at", { ascending: false })
+    .limit(30);
+  if (error) throw error;
+  return data.map((r) => ({
+    platform: r.platform as Reply["platform"],
+    author: r.author,
+    comment: r.comment,
+    status: r.status as Reply["status"],
+    error: r.error,
+    createdAt: r.created_at,
+  }));
 }

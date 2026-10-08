@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { ContentItemCard, statusOf } from "@/components/admin/ContentItemCard";
 import { isMissingSetup, SetupNotice } from "@/components/admin/SetupNotice";
+import { WeekPlanBox, ZipUploadBox } from "@/components/admin/CalendarSidebar";
 import {
   deleteCampaign,
   getConnectionStatus,
@@ -87,7 +88,11 @@ function AdminCalendar() {
 
   const weeks = useMemo(() => {
     const visible = (items ?? []).filter((i) =>
-      filter === "all" ? true : filter === "published" ? i.status === "published" : i.status !== "published",
+      filter === "all"
+        ? true
+        : filter === "published"
+          ? i.status === "published"
+          : i.status !== "published",
     );
     const groups = new Map<string, ContentItem[]>();
     for (const item of visible) {
@@ -100,8 +105,14 @@ function AdminCalendar() {
 
   const onShift = async (campaign: Campaign, days: number) => {
     try {
-      await shiftCampaign(campaign, (items ?? []).filter((i) => i.campaignId === campaign.id), days);
-      toast.success(days > 0 ? "Przesunięto o tydzień do przodu." : "Przesunięto o tydzień wcześniej.");
+      await shiftCampaign(
+        campaign,
+        (items ?? []).filter((i) => i.campaignId === campaign.id),
+        days,
+      );
+      toast.success(
+        days > 0 ? "Przesunięto o tydzień do przodu." : "Przesunięto o tydzień wcześniej.",
+      );
       load();
     } catch {
       toast.error("Nie udało się przesunąć kampanii.");
@@ -109,9 +120,15 @@ function AdminCalendar() {
   };
 
   const onDeleteCampaign = async (campaign: Campaign) => {
-    if (!window.confirm(`Usunąć całą kampanię „${campaign.title}” (wszystkie posty, rolki i story)?`)) return;
+    if (
+      !window.confirm(`Usunąć całą kampanię „${campaign.title}” (wszystkie posty, rolki i story)?`)
+    )
+      return;
     try {
-      await deleteCampaign(campaign, (items ?? []).filter((i) => i.campaignId === campaign.id));
+      await deleteCampaign(
+        campaign,
+        (items ?? []).filter((i) => i.campaignId === campaign.id),
+      );
       toast.success("Kampania usunięta. Szkic wpisu został w „Wpisach”.");
       load();
     } catch {
@@ -174,70 +191,88 @@ function AdminCalendar() {
           </div>
         </div>
 
-        {missingSetup ? (
-          <SetupNotice />
-        ) : items === null ? (
-          <p>Wczytywanie…</p>
-        ) : weeks.length === 0 ? (
-          <div className="content-cal__empty">
-            <p>
-              {filter === "published"
-                ? "Nic jeszcze nie zostało opublikowane."
-                : "Kalendarz jest pusty. Wyślij Claude'owi nowe grafiki: zrobi paczkę i wstawi ją tutaj na najbliższy wolny tydzień."}
-            </p>
-          </div>
-        ) : (
-          weeks.map(([key, weekItems]) => {
-            const weekCampaigns = [...new Set(weekItems.map((i) => i.campaignId))]
-              .map((id) => campaignById.get(id))
-              .filter((c): c is Campaign => Boolean(c));
-            return (
-              <section key={key} className="content-cal__week">
-                <header className="content-cal__week-head">
-                  <h2>{weekLabel(key)}</h2>
-                  {weekCampaigns.map((c) => (
-                    <div key={c.id} className="content-cal__campaign">
-                      <span>
-                        {c.title}
-                        {c.keyword ? <em> · {c.keyword}</em> : null}
-                      </span>
-                      <button type="button" onClick={() => onShift(c, -7)} title="Cała kampania tydzień wcześniej">
-                        −7 dni
-                      </button>
-                      <button type="button" onClick={() => onShift(c, 7)} title="Cała kampania tydzień później">
-                        +7 dni
-                      </button>
-                      <button type="button" onClick={() => onDeleteCampaign(c)}>
-                        Usuń
-                      </button>
-                      {c.notes.length ? (
-                        <details>
-                          <summary>Zanim opublikujesz ({c.notes.length})</summary>
-                          <ul>
-                            {c.notes.map((n) => (
-                              <li key={n}>{n}</li>
-                            ))}
-                          </ul>
-                        </details>
-                      ) : null}
+        <div className="content-cal__layout">
+          {missingSetup ? null : (
+            <aside className="cal-side">
+              <ZipUploadBox />
+              <WeekPlanBox />
+            </aside>
+          )}
+          <div className="content-cal__main">
+            {missingSetup ? (
+              <SetupNotice />
+            ) : items === null ? (
+              <p>Wczytywanie…</p>
+            ) : weeks.length === 0 ? (
+              <div className="content-cal__empty">
+                <p>
+                  {filter === "published"
+                    ? "Nic jeszcze nie zostało opublikowane."
+                    : "Kalendarz jest pusty. Wyślij Claude'owi nowe grafiki: zrobi paczkę i wstawi ją tutaj na najbliższy wolny tydzień."}
+                </p>
+              </div>
+            ) : (
+              weeks.map(([key, weekItems]) => {
+                const weekCampaigns = [...new Set(weekItems.map((i) => i.campaignId))]
+                  .map((id) => campaignById.get(id))
+                  .filter((c): c is Campaign => Boolean(c));
+                return (
+                  <section key={key} className="content-cal__week">
+                    <header className="content-cal__week-head">
+                      <h2>{weekLabel(key)}</h2>
+                      {weekCampaigns.map((c) => (
+                        <div key={c.id} className="content-cal__campaign">
+                          <span>
+                            {c.title}
+                            {c.keyword ? <em> · {c.keyword}</em> : null}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => onShift(c, -7)}
+                            title="Cała kampania tydzień wcześniej"
+                          >
+                            −7 dni
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => onShift(c, 7)}
+                            title="Cała kampania tydzień później"
+                          >
+                            +7 dni
+                          </button>
+                          <button type="button" onClick={() => onDeleteCampaign(c)}>
+                            Usuń
+                          </button>
+                          {c.notes.length ? (
+                            <details>
+                              <summary>Zanim opublikujesz ({c.notes.length})</summary>
+                              <ul>
+                                {c.notes.map((n) => (
+                                  <li key={n}>{n}</li>
+                                ))}
+                              </ul>
+                            </details>
+                          ) : null}
+                        </div>
+                      ))}
+                    </header>
+                    <div className="content-cal__items">
+                      {weekItems.map((item) => (
+                        <ContentItemCard
+                          key={item.id}
+                          item={item}
+                          campaign={campaignById.get(item.campaignId)}
+                          onChange={replace}
+                          onDeleted={() => remove(item.id)}
+                        />
+                      ))}
                     </div>
-                  ))}
-                </header>
-                <div className="content-cal__items">
-                  {weekItems.map((item) => (
-                    <ContentItemCard
-                      key={item.id}
-                      item={item}
-                      campaign={campaignById.get(item.campaignId)}
-                      onChange={replace}
-                      onDeleted={() => remove(item.id)}
-                    />
-                  ))}
-                </div>
-              </section>
-            );
-          })
-        )}
+                  </section>
+                );
+              })
+            )}
+          </div>
+        </div>
       </div>
     </AdminShell>
   );

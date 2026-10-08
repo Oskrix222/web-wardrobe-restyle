@@ -2,18 +2,22 @@ import { Copy } from "lucide-react";
 import { toast } from "sonner";
 
 import calendarSql from "../../../supabase/migrations/20261008090000_content_calendar.sql?raw";
+import settingsSql from "../../../supabase/migrations/20261008120000_content_settings.sql?raw";
+
+// Both parts in one paste; each is safe to run more than once.
+const SETUP_SQL = `${calendarSql}\n\n${settingsSql}`;
 
 /** True when Supabase says the calendar tables/functions don't exist yet (SQL not run). */
 export function isMissingSetup(error: unknown): boolean {
   const code = (error as { code?: string } | null)?.code;
-  return code === "PGRST205" || code === "PGRST202" || code === "42P01" || code === "42883";
+  return ["PGRST205", "PGRST204", "PGRST202", "42P01", "42703", "42883"].includes(code ?? "");
 }
 
 /** Shown instead of an endless "Wczytywanie…" until the calendar SQL has been run once. */
 export function SetupNotice() {
   const copySql = () =>
     navigator.clipboard
-      .writeText(calendarSql)
+      .writeText(SETUP_SQL)
       .then(() => toast.success("Skopiowano SQL — wklej go w Supabase."))
       .catch(() => toast.error("Nie udało się skopiować."));
 

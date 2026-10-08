@@ -77,6 +77,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
           <Link to="/admin/prawdy" activeProps={{ className: "is-active" }}>
             Prawdy
           </Link>
+          <Link to="/admin/odpowiedzi" activeProps={{ className: "is-active" }}>
+            Odpowiedzi
+          </Link>
           <Link to="/admin/polaczenia" activeProps={{ className: "is-active" }}>
             Połączenia
           </Link>

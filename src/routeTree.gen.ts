@@ -14,6 +14,7 @@ import { Route as PolitykaPrywatnosciRouteImport } from './routes/polityka-prywa
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminKalendarzRouteImport } from './routes/admin/kalendarz'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminOdpowiedziRouteImport } from './routes/admin/odpowiedzi'
 import { Route as AdminPolaczeniaRouteImport } from './routes/admin/polaczenia'
 import { Route as AdminPrawdyRouteImport } from './routes/admin/prawdy'
 import { Route as AdminStatystykiRouteImport } from './routes/admin/statystyki'
@@ -49,6 +50,11 @@ const AdminKalendarzRoute = AdminKalendarzRouteImport.update({
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminOdpowiedziRoute = AdminOdpowiedziRouteImport.update({
+  id: '/admin/odpowiedzi',
+  path: '/admin/odpowiedzi',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminPolaczeniaRoute = AdminPolaczeniaRouteImport.update({
@@ -112,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/polityka-prywatnosci': typeof PolitykaPrywatnosciRoute
   '/admin/kalendarz': typeof AdminKalendarzRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/odpowiedzi': typeof AdminOdpowiedziRoute
   '/admin/polaczenia': typeof AdminPolaczeniaRoute
   '/admin/prawdy': typeof AdminPrawdyRoute
   '/admin/statystyki': typeof AdminStatystykiRoute
@@ -130,6 +137,7 @@ export interface FileRoutesByTo {
   '/polityka-prywatnosci': typeof PolitykaPrywatnosciRoute
   '/admin/kalendarz': typeof AdminKalendarzRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/odpowiedzi': typeof AdminOdpowiedziRoute
   '/admin/polaczenia': typeof AdminPolaczeniaRoute
   '/admin/prawdy': typeof AdminPrawdyRoute
   '/admin/statystyki': typeof AdminStatystykiRoute
@@ -149,6 +157,7 @@ export interface FileRoutesById {
   '/polityka-prywatnosci': typeof PolitykaPrywatnosciRoute
   '/admin/kalendarz': typeof AdminKalendarzRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/odpowiedzi': typeof AdminOdpowiedziRoute
   '/admin/polaczenia': typeof AdminPolaczeniaRoute
   '/admin/prawdy': typeof AdminPrawdyRoute
   '/admin/statystyki': typeof AdminStatystykiRoute
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/polityka-prywatnosci'
     | '/admin/kalendarz'
     | '/admin/login'
+    | '/admin/odpowiedzi'
     | '/admin/polaczenia'
     | '/admin/prawdy'
     | '/admin/statystyki'
@@ -187,6 +197,7 @@ export interface FileRouteTypes {
     | '/polityka-prywatnosci'
     | '/admin/kalendarz'
     | '/admin/login'
+    | '/admin/odpowiedzi'
     | '/admin/polaczenia'
     | '/admin/prawdy'
     | '/admin/statystyki'
@@ -205,6 +216,7 @@ export interface FileRouteTypes {
     | '/polityka-prywatnosci'
     | '/admin/kalendarz'
     | '/admin/login'
+    | '/admin/odpowiedzi'
     | '/admin/polaczenia'
     | '/admin/prawdy'
     | '/admin/statystyki'
@@ -224,6 +236,7 @@ export interface RootRouteChildren {
   PolitykaPrywatnosciRoute: typeof PolitykaPrywatnosciRoute
   AdminKalendarzRoute: typeof AdminKalendarzRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminOdpowiedziRoute: typeof AdminOdpowiedziRoute
   AdminPolaczeniaRoute: typeof AdminPolaczeniaRoute
   AdminPrawdyRoute: typeof AdminPrawdyRoute
   AdminStatystykiRoute: typeof AdminStatystykiRoute
@@ -273,6 +286,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/odpowiedzi': {
+      id: '/admin/odpowiedzi'
+      path: '/admin/odpowiedzi'
+      fullPath: '/admin/odpowiedzi'
+      preLoaderRoute: typeof AdminOdpowiedziRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/polaczenia': {
@@ -360,6 +380,7 @@ const rootRouteChildren: RootRouteChildren = {
   PolitykaPrywatnosciRoute: PolitykaPrywatnosciRoute,
   AdminKalendarzRoute: AdminKalendarzRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminOdpowiedziRoute: AdminOdpowiedziRoute,
   AdminPolaczeniaRoute: AdminPolaczeniaRoute,
   AdminPrawdyRoute: AdminPrawdyRoute,
   AdminStatystykiRoute: AdminStatystykiRoute,
