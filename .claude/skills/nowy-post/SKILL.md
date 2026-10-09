@@ -143,7 +143,14 @@ No „najtańszy”, „gwarancja”, „100%”. Short sentences.
   meta description).
 - 900–1400 words. Allowed HTML: p, h2, h3, ul/ol/li, strong, em, blockquote, a. No tables,
   images or h1.
-- The topic is the post's topic; the main phrase is what people google about it.
+- The topic is the post's topic; the main phrase is what people google about it. Pick it from
+  `marketing/SEO-FRAZY.md` (Google Trends + autocomplete research: rising „jakie ubezpieczenie
+  na życie wybrać”, seasonal „ubezpieczenie dziecka” in August, „ubezpieczenie grupowe dla
+  małej firmy”…). If nothing there fits, check Google's suggestions for the topic
+  (`https://suggestqueries.google.com/complete/search?client=firefox&hl=pl&q=<fraza>`) — never
+  guess. Never target car insurance (OC/AC) or competitors' brand names.
+- Link once to the local page that fits (`/ubezpieczenia-jaworzno` or `/ubezpieczenia-katowice`,
+  anchor like „agent ubezpieczeniowy w Jaworznie”) and, when one exists, to a related post.
 - Structure: intro answering the search intent, main phrase in the first 100 words → H2s phrased
   like Google questions (at least 4 — the site builds the table of contents from them) →
   „na co uważać” list → „Ile to kosztuje?” without invented prices → H2 „Najczęstsze pytania”

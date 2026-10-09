@@ -3,12 +3,14 @@ import { Menu, X } from "lucide-react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Button } from "@/components/ui/Button";
 import { useActiveSection, SECTION_ORDER } from "@/hooks/useActiveSection";
+import { GOOGLE_BUSINESS } from "@/config/business";
 
 const navItems = [
   { label: "O nas", href: "#o-nas" },
   { label: "Oferta", href: "#oferta" },
   { label: "Dla firm", href: "#dla-firm" },
-  { label: "Opinie", href: "#opinie" },
+  // The reviews block is hidden until OSCare's own Google listing is live.
+  ...(GOOGLE_BUSINESS.live ? [{ label: "Opinie", href: "#opinie" }] : []),
   { label: "Kontakt", href: "#kontakt" },
 ];
 

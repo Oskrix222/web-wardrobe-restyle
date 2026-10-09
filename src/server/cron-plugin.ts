@@ -10,10 +10,15 @@ export default definePlugin(() => {
   (useNitroHooks() as unknown as Hooks).hook("cloudflare:scheduled", async () => {
     const token = crypto.randomUUID();
     (globalThis as { __oscareCronToken?: string }).__oscareCronToken = token;
-    const res = await serverFetch("https://cron.internal/api/content/cron", {
-      method: "POST",
-      headers: { "x-cron-token": token },
-    });
-    console.log(`[content-cron] ${res.status} ${await res.text()}`);
+    try {
+      const res = await serverFetch("https://cron.internal/api/content/cron", {
+        method: "POST",
+        headers: { "x-cron-token": token },
+      });
+      console.log(`[content-cron] ${res.status} ${await res.text()}`);
+    } finally {
+      // One run, one token: nothing valid stays in memory between runs.
+      delete (globalThis as { __oscareCronToken?: string }).__oscareCronToken;
+    }
   });
 });

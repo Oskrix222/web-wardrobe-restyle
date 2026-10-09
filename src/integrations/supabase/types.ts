@@ -104,6 +104,7 @@ export type Database = {
           message: string | null
           name: string
           phone: string
+          source: Json | null
         }
         Insert: {
           consent_at?: string
@@ -114,6 +115,7 @@ export type Database = {
           message?: string | null
           name: string
           phone: string
+          source?: Json | null
         }
         Update: {
           consent_at?: string
@@ -124,6 +126,7 @@ export type Database = {
           message?: string | null
           name?: string
           phone?: string
+          source?: Json | null
         }
         Relationships: []
       }
@@ -372,6 +375,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      submit_lead: {
+        Args: {
+          p_name: string
+          p_phone: string
+          p_email: string | null
+          p_insurance_type: string
+          p_message: string | null
+          p_source?: Json | null
+        }
+        Returns: string
+      }
       is_blog_admin: {
         Args: never
         Returns: boolean

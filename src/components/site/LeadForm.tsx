@@ -21,6 +21,8 @@ import { Box } from "@/components/ui/Box";
 import { Checkbox, Field, Input, Label, Textarea } from "@/components/ui/Field";
 import { submitLead, leadSchema, type LeadFormData } from "@/lib/leads.functions";
 import { trackLead } from "@/lib/analytics";
+import { currentAttribution } from "@/lib/attribution";
+import { CONTACT_PHONES, telHref } from "@/config/business";
 
 export const insuranceOptions = [
   { value: "life", label: "Życie i zdrowie", icon: Heart },
@@ -66,12 +68,18 @@ export function LeadForm({ preselected }: { preselected?: string | undefined }) 
 
   const onSubmit = async (data: LeadFormData) => {
     try {
-      await sendLead({ data });
+      await sendLead({ data: { ...data, source: currentAttribution() } });
       trackLead({ insurance_type: data.insuranceType });
       setSentName(data.name.split(" ")[0] ?? data.name);
       reset();
-    } catch {
-      toast.error("Nie udało się wysłać zgłoszenia. Spróbuj ponownie później.");
+    } catch (error) {
+      // The rate-limit message is written for visitors; anything else gets the generic one.
+      const message = error instanceof Error ? error.message : "";
+      toast.error(
+        message.includes("zgłoszeń")
+          ? message
+          : "Nie udało się wysłać zgłoszenia. Spróbuj ponownie później.",
+      );
     }
   };
 
@@ -92,14 +100,12 @@ export function LeadForm({ preselected }: { preselected?: string | undefined }) 
             dużo szybciej. Jeśli wolisz porozmawiać od razu, zadzwoń:
           </p>
           <div className="lead-form__calls">
-            <ButtonLink href="tel:+48539075385" variant="outline" size="lg" block>
-              <Phone className="btn__icon" aria-hidden="true" />
-              +48 539 075 385
-            </ButtonLink>
-            <ButtonLink href="tel:+48123846894" variant="outline" size="lg" block>
-              <Phone className="btn__icon" aria-hidden="true" />
-              +48 123 846 894
-            </ButtonLink>
+            {CONTACT_PHONES.map((c) => (
+              <ButtonLink key={c.phone} href={telHref(c.phone)} variant="outline" size="lg" block>
+                <Phone className="btn__icon" aria-hidden="true" />
+                {c.phone}
+              </ButtonLink>
+            ))}
           </div>
           <button type="button" className="lead-form__again" onClick={() => setSentName(null)}>
             Wyślij kolejne zgłoszenie
@@ -226,14 +232,12 @@ export function LeadForm({ preselected }: { preselected?: string | undefined }) 
           </div>
 
           <div className="lead-form__calls">
-            <ButtonLink href="tel:+48539075385" variant="outline" size="lg" block>
-              <Phone className="btn__icon" aria-hidden="true" />
-              +48 539 075 385
-            </ButtonLink>
-            <ButtonLink href="tel:+48123846894" variant="outline" size="lg" block>
-              <Phone className="btn__icon" aria-hidden="true" />
-              +48 123 846 894
-            </ButtonLink>
+            {CONTACT_PHONES.map((c) => (
+              <ButtonLink key={c.phone} href={telHref(c.phone)} variant="outline" size="lg" block>
+                <Phone className="btn__icon" aria-hidden="true" />
+                {c.phone}
+              </ButtonLink>
+            ))}
           </div>
         </form>
       )}

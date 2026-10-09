@@ -314,6 +314,17 @@ export type ConnectionStatus = {
   } | null;
 };
 
+/**
+ * Whether the 2026-10-09 security SQL has been run (it adds leads.source). Until then
+ * the contact form still works, just without rate limits and source tracking.
+ */
+export async function securityUpdateApplied(): Promise<boolean> {
+  const { error } = await supabase.from("leads").select("source").limit(1);
+  if (error?.code === "42703") return false;
+  if (error) throw error;
+  return true;
+}
+
 export async function getConnectionStatus(): Promise<ConnectionStatus> {
   const { data, error } = await supabase.rpc("content_connection_status");
   if (error) throw error;

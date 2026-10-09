@@ -15,6 +15,10 @@ import appCss from "../styles/main.scss?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CookieConsent } from "../components/site/CookieConsent";
 import { LiveChat } from "../components/site/LiveChat";
+import { captureAttribution } from "../lib/attribution";
+
+const GOOGLE_SITE_VERIFICATION = import.meta.env["VITE_GOOGLE_SITE_VERIFICATION"] as
+  string | undefined;
 
 function NotFoundComponent() {
   return (
@@ -71,10 +75,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "theme-color", content: "#f8f5ec" },
       { title: "OSCare Ubezpieczenia" },
-      { name: "description", content: "Doradztwo ubezpieczeniowe OSCare." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
+      { name: "description", content: "Agent ubezpieczeniowy OSCare — Jaworzno i Katowice." },
+      // Google Search Console ownership check — paste the code into .env (VITE_GOOGLE_SITE_VERIFICATION).
+      ...(GOOGLE_SITE_VERIFICATION
+        ? [{ name: "google-site-verification", content: GOOGLE_SITE_VERIFICATION }]
+        : []),
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -88,6 +95,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         crossOrigin: "anonymous" as const,
       })),
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "apple-touch-icon", href: "/imgs/apple-touch-icon.png" },
     ],
   }),
   shellComponent: RootShell,
@@ -113,6 +121,11 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  // Remember how this visit started (utm_* tags, referrer) for the contact form.
+  useEffect(() => {
+    captureAttribution(window.location.href, document.referrer);
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

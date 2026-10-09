@@ -28,5 +28,5 @@
 @use "sections/footer";
 @use "sections/legal";
 @use "sections/blog";
-@use "sections/admin";
-@use "sections/admin-content";
+@use "sections/location";
+// The admin panel's styles live in admin.scss and load only on /admin pages.

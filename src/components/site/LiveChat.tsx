@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { LoaderCircle, MessageCircle, Phone, X } from "lucide-react";
+import { PRIMARY_PHONE, telHref } from "@/config/business";
 
 declare global {
   interface Window {
@@ -280,9 +281,9 @@ export function LiveChat() {
             ponownie — albo skontaktuj się z nami od razu:
           </p>
           <div className="live-chat-fallback__actions">
-            <a href="tel:+48539075385" className="btn btn--primary btn--sm">
+            <a href={telHref(PRIMARY_PHONE)} className="btn btn--primary btn--sm">
               <Phone className="btn__icon" aria-hidden="true" />
-              539 075 385
+              {PRIMARY_PHONE.replace("+48 ", "")}
             </a>
             <a
               href="/#kontakt"

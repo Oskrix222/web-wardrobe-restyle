@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { useInView } from "@/hooks/useInView";
 import team640 from "@/assets/team-business-640.webp";
 import team1280 from "@/assets/team-business-1280.webp";
+import { CONTACT_PHONES, telHref } from "@/config/business";
 
 const perks = [
   { icon: Users, text: "Min. właściciel + 1 pracownik" },
@@ -55,14 +56,17 @@ export function GroupInsurance({ onPick }: { onPick: (value: string) => void }) 
             <Button className="group-insurance__cta" onClick={() => onPick("business")}>
               Zostaw kontakt
             </Button>
-            <ButtonLink href="tel:+48539075385" variant="outline" className="group-insurance__call">
-              <Phone className="btn__icon" aria-hidden="true" />
-              <span className="group-insurance__call-text">+48 539 075 385</span>
-            </ButtonLink>
-            <ButtonLink href="tel:+48123846894" variant="outline" className="group-insurance__call">
-              <Phone className="btn__icon" aria-hidden="true" />
-              <span className="group-insurance__call-text">+48 123 846 894</span>
-            </ButtonLink>
+            {CONTACT_PHONES.map((c) => (
+              <ButtonLink
+                key={c.phone}
+                href={telHref(c.phone)}
+                variant="outline"
+                className="group-insurance__call"
+              >
+                <Phone className="btn__icon" aria-hidden="true" />
+                <span className="group-insurance__call-text">{c.phone}</span>
+              </ButtonLink>
+            ))}
           </div>
         </div>
 

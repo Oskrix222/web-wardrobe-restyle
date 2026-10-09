@@ -7,24 +7,29 @@ import { Breadcrumbs } from "@/components/blog/Breadcrumbs";
 import { listPublishedPosts } from "@/lib/blog.functions";
 import { useInView } from "@/hooks/useInView";
 import { cn } from "@/lib/utils";
+import { breadcrumbJsonLd, seoHead, storagePreconnect } from "@/lib/seo";
 
-const title = "Blog — OSCare Ubezpieczenia";
+const title = "Blog o ubezpieczeniach na życie, zdrowie i dla firm | OSCare";
 const description =
-  "Porady o ubezpieczeniach na życie, majątek, podróże i dla firm od zespołu OSCare.";
+  "Poradniki OSCare: jakie ubezpieczenie na życie wybrać, ile kosztuje polisa, co obejmuje ubezpieczenie grupowe dla małej firmy i na co uważać w umowie.";
 
 export const Route = createFileRoute("/blog/")({
   // A failed fetch shouldn't take the whole page down — render a friendly message instead.
   loader: () => listPublishedPosts().catch(() => null),
-  head: () => ({
-    meta: [
-      { title },
-      { name: "description", content: description },
-      { property: "og:title", content: title },
-      { property: "og:description", content: description },
-      { property: "og:type", content: "website" },
-    ],
-    links: [{ rel: "canonical", href: "/blog" }],
-  }),
+  head: () => {
+    const head = seoHead({
+      title,
+      description,
+      path: "/blog",
+      jsonLd: [
+        breadcrumbJsonLd([
+          { name: "Strona główna", path: "/" },
+          { name: "Blog", path: "/blog" },
+        ]),
+      ],
+    });
+    return { ...head, links: [...head.links, ...storagePreconnect] };
+  },
   component: BlogIndex,
 });
 
@@ -66,7 +71,7 @@ function BlogIndex() {
               <p className="blog-index__empty">Pierwsze wpisy już wkrótce.</p>
             ) : (
               <>
-                <BlogCard post={featured} featured />
+                <BlogCard post={featured} featured priority />
                 {rest.length > 0 ? (
                   <div
                     ref={gridIn.ref}

@@ -14,50 +14,26 @@ import { getGoogleReviews } from "@/lib/google-reviews.functions";
 import { PageScrollNav } from "@/components/site/PageScrollNav";
 import { useReveal } from "@/hooks/useReveal";
 import { cn } from "@/lib/utils";
+import { GOOGLE_BUSINESS } from "@/config/business";
+import { organizationJsonLd, seoHead } from "@/lib/seo";
 
-const title = "OSCare Ubezpieczenia — na życie, majątek i dla firm";
+const title = "Ubezpieczenia na życie i zdrowie Jaworzno, Katowice | OSCare";
 const description =
-  "Doradztwo ubezpieczeniowe OSCare: polisy na życie i zdrowie, majątek, podróże, OC/AC oraz ubezpieczenia grupowe dla firm. Zostaw kontakt — oferta w 24h.";
+  "Agent ubezpieczeniowy z Jaworzna: ubezpieczenie na życie i zdrowie, mieszkania, turystyczne i grupowe dla firm. Jaworzno, Katowice lub online. Wycena w 24h.";
 
 export const Route = createFileRoute("/")({
   // Reviews are a nice-to-have: if the feed is down the block just shows a note.
-  loader: async () => ({ reviews: await getGoogleReviews().catch(() => null) }),
-  head: () => ({
-    meta: [
-      { title },
-      { name: "description", content: description },
-      { property: "og:title", content: title },
-      { property: "og:description", content: description },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "/" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: title },
-      { name: "twitter:description", content: description },
-    ],
-    links: [{ rel: "canonical", href: "/" }],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "InsuranceAgency",
-          name: "OSCare Ubezpieczenia",
-          description,
-          areaServed: "PL",
-          telephone: "+48123456789",
-          email: "kontakt@kamien.pl",
-          address: {
-            "@type": "PostalAddress",
-            streetAddress: "ul. Przykładowa 12",
-            postalCode: "00-000",
-            addressLocality: "Warszawa",
-            addressCountry: "PL",
-          },
-          openingHours: ["Mo-Fr 09:00-17:00", "Sa 10:00-14:00"],
-        }),
-      },
-    ],
+  // Until OSCare has its own Google listing (GOOGLE_BUSINESS.live) nothing is fetched.
+  loader: async () => ({
+    reviews: GOOGLE_BUSINESS.live ? await getGoogleReviews().catch(() => null) : null,
   }),
+  head: () =>
+    seoHead({
+      title,
+      description,
+      path: "/",
+      jsonLd: [organizationJsonLd()],
+    }),
   component: Index,
 });
 
@@ -91,7 +67,7 @@ function Index() {
 
         <section id="opinie" className="benefits section section--panel">
           <div ref={benefitsReveal.ref} className={cn("benefits__grid", benefitsReveal.className)}>
-            <GoogleProfile feed={reviews} />
+            {GOOGLE_BUSINESS.live ? <GoogleProfile feed={reviews} /> : null}
 
             <div className="benefits__contact">
               {/* Desktop only: photo + stats beside the form; phones get just the form. */}

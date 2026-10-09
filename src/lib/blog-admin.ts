@@ -161,7 +161,10 @@ export async function listDailyStats(sinceDay: string): Promise<DailyStat[]> {
 }
 
 /** Uploads an image to the public blog-images bucket and returns its public URL. */
-export async function uploadBlogImage(file: File): Promise<string> {
+export async function uploadBlogImage(original: File): Promise<string> {
+  // Max 1600 px wide, WebP — covers load fast for visitors (src/lib/image-optimize.ts).
+  const { optimizeImage } = await import("@/lib/image-optimize");
+  const file = await optimizeImage(original);
   // Size + storage + monthly transfer limits (usage-guard.server.ts).
   const { reserveFileUpload } = await import("@/lib/content.functions");
   await reserveFileUpload({ data: { kind: "image", size: file.size } });
@@ -170,6 +173,7 @@ export async function uploadBlogImage(file: File): Promise<string> {
 
   const { error } = await supabase.storage.from("blog-images").upload(path, file, {
     cacheControl: "31536000",
+    ...(file.type ? { contentType: file.type } : {}),
     upsert: false,
   });
 

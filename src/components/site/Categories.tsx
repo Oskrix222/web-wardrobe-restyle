@@ -40,6 +40,7 @@ import travel600 from "@/assets/category-travel-600.webp";
 import travel1200 from "@/assets/category-travel-1200.webp";
 import business600 from "@/assets/category-business-600.webp";
 import business1200 from "@/assets/category-business-1200.webp";
+import { CONTACT_PHONES, telHref } from "@/config/business";
 
 /** Detail-panel photo in two widths; the browser picks the smaller one on phones. */
 const photo = (small: string, large: string) => ({
@@ -224,22 +225,17 @@ export function Categories({ onPick }: { onPick: (value: string) => void }) {
                   >
                     Zostaw kontakt
                   </Button>
-                  <ButtonLink
-                    href="tel:+48539075385"
-                    variant="outline"
-                    className="category-detail__call"
-                  >
-                    <Phone className="btn__icon" aria-hidden="true" />
-                    +48 539 075 385
-                  </ButtonLink>
-                  <ButtonLink
-                    href="tel:+48123846894"
-                    variant="outline"
-                    className="category-detail__call"
-                  >
-                    <Phone className="btn__icon" aria-hidden="true" />
-                    +48 123 846 894
-                  </ButtonLink>
+                  {CONTACT_PHONES.map((c) => (
+                    <ButtonLink
+                      key={c.phone}
+                      href={telHref(c.phone)}
+                      variant="outline"
+                      className="category-detail__call"
+                    >
+                      <Phone className="btn__icon" aria-hidden="true" />
+                      {c.phone}
+                    </ButtonLink>
+                  ))}
                 </div>
               </div>
 
@@ -292,20 +288,15 @@ export function Categories({ onPick }: { onPick: (value: string) => void }) {
                     Zostaw kontakt
                   </Button>
                   <div className="categories__calls">
-                    <div className="categories__call">
-                      <ButtonLink href="tel:+48539075385" variant="outline" size="sm">
-                        <Phone className="btn__icon" aria-hidden="true" />
-                        +48 539 075 385
-                      </ButtonLink>
-                      <span className="categories__call-name">Oskar Kubowicz</span>
-                    </div>
-                    <div className="categories__call">
-                      <ButtonLink href="tel:+48123846894" variant="outline" size="sm">
-                        <Phone className="btn__icon" aria-hidden="true" />
-                        +48 123 846 894
-                      </ButtonLink>
-                      <span className="categories__call-name">Izumi Sato</span>
-                    </div>
+                    {CONTACT_PHONES.map((c) => (
+                      <div key={c.phone} className="categories__call">
+                        <ButtonLink href={telHref(c.phone)} variant="outline" size="sm">
+                          <Phone className="btn__icon" aria-hidden="true" />
+                          {c.phone}
+                        </ButtonLink>
+                        <span className="categories__call-name">{c.fullName}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </Box>

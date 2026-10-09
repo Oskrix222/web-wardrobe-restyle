@@ -6,7 +6,12 @@ import { toast } from "sonner";
 
 import { AdminShell } from "@/components/admin/AdminShell";
 import { isMissingSetup, SetupNotice } from "@/components/admin/SetupNotice";
-import { getConnectionStatus, type ConnectionStatus } from "@/lib/content-admin";
+import {
+  getConnectionStatus,
+  securityUpdateApplied,
+  type ConnectionStatus,
+} from "@/lib/content-admin";
+import securitySql from "../../../supabase/migrations/20261009090000_security_hardening.sql?raw";
 import {
   disconnectMeta,
   getMetaConnectUrl,
@@ -68,6 +73,7 @@ function AdminConnections() {
   const fetchSetup = useServerFn(getServerSetup);
   const fetchUsage = useServerFn(getUsage);
   const [usage, setUsage] = useState<Usage | null>(null);
+  const [securityOk, setSecurityOk] = useState<boolean | null>(null);
   const fetchConnectUrl = useServerFn(getMetaConnectUrl);
   const disconnect = useServerFn(disconnectMeta);
   const [status, setStatus] = useState<ConnectionStatus | null>(null);
@@ -92,7 +98,16 @@ function AdminConnections() {
     fetchUsage()
       .then(setUsage)
       .catch(() => setUsage(null));
+    securityUpdateApplied()
+      .then(setSecurityOk)
+      .catch(() => setSecurityOk(null));
   };
+
+  const copySecuritySql = () =>
+    navigator.clipboard
+      .writeText(securitySql)
+      .then(() => toast.success("Skopiowano SQL — wklej go w Supabase → SQL Editor → Run."))
+      .catch(() => toast.error("Nie udało się skopiować."));
   useEffect(load, []);
 
   // Result of the Facebook login (see /api/meta/callback).
@@ -255,6 +270,28 @@ function AdminConnections() {
               <code>R2_SECRET_ACCESS_KEY</code>. Claude przeprowadzi Cię przez to krok po kroku.
             </Check>
           </ul>
+        </section>
+
+        <section className="content-connections__card">
+          <h2>Bezpieczeństwo bazy</h2>
+          <p>
+            Formularz kontaktowy zapisuje zgłoszenia przez bezpieczną funkcję z limitem (bot nie
+            zaleje bazy) i zapamiętuje, skąd przyszedł klient — np. z komentarza na Instagramie albo
+            z konkretnego wpisu na blogu. Widać to potem w Zgłoszeniach.
+          </p>
+          <ul className="content-connections__checks">
+            <Check ok={securityOk === true}>
+              {securityOk === true
+                ? "Aktualizacja bazy z 9 października jest wgrana."
+                : "Wgraj aktualizację: Kopiuj SQL → supabase.com → SQL Editor → New query → wklej → Run. Jeśli zapyta o „destructive operation”, kliknij Run this query — nic nie zostanie skasowane."}
+            </Check>
+          </ul>
+          {securityOk === true ? null : (
+            <button type="button" className="btn btn--primary btn--md" onClick={copySecuritySql}>
+              <Copy className="btn__icon" aria-hidden="true" />
+              Kopiuj SQL
+            </button>
+          )}
         </section>
 
         <section className="content-connections__card">

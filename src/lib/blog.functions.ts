@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import { supabase } from "@/integrations/supabase/client";
 import { CONTACT_PHONES, telHref } from "@/config/business";
 import {
   readingMinutes,
@@ -21,16 +20,23 @@ export type BlogPostSummary = {
 };
 
 export type BlogPost = BlogPostSummary & {
+  updatedAt: string | null;
   contentHtml: string;
   /** The post's <h2> sections, in order — the table of contents at the top of the post. */
   headings: PostHeading[];
 };
 
+// The Supabase client is loaded inside the handlers (server only), so supabase-js
+// stays out of the bundle every visitor downloads.
+const db = async () => (await import("@/integrations/supabase/client")).supabase;
+
 /** Published posts, newest first — used by the /blog listing and "Czytaj także". */
 export const listPublishedPosts = createServerFn({ method: "GET" }).handler(
   async (): Promise<BlogPostSummary[]> => {
     // content_html is only read to work out reading time — it never leaves the server.
-    const { data, error } = await supabase
+    const { data, error } = await (
+      await db()
+    )
       .from("blog_posts")
       .select("slug, title, excerpt, content_html, cover_image_url, author, published_at")
       .eq("status", "published")
@@ -64,9 +70,13 @@ ${CONTACT_PHONES.map((c) => `<a class="blog-cta-inline__phone" href="${telHref(c
 export const getPublishedPostBySlug = createServerFn({ method: "GET" })
   .validator((slug: unknown) => z.string().min(1).parse(slug))
   .handler(async ({ data: slug }): Promise<BlogPost | null> => {
-    const { data, error } = await supabase
+    const { data, error } = await (
+      await db()
+    )
       .from("blog_posts")
-      .select("slug, title, excerpt, content_html, cover_image_url, author, published_at")
+      .select(
+        "slug, title, excerpt, content_html, cover_image_url, author, published_at, updated_at",
+      )
       .eq("status", "published")
       .eq("slug", slug)
       .maybeSingle();
@@ -84,6 +94,7 @@ export const getPublishedPostBySlug = createServerFn({ method: "GET" })
       coverImageUrl: data.cover_image_url,
       author: data.author,
       publishedAt: data.published_at,
+      updatedAt: data.updated_at,
       readingMinutes: readingMinutes(data.content_html),
     };
   });
@@ -92,7 +103,7 @@ export const getPublishedPostBySlug = createServerFn({ method: "GET" })
 export const incrementPostView = createServerFn({ method: "POST" })
   .validator((slug: unknown) => z.string().min(1).parse(slug))
   .handler(async ({ data: slug }) => {
-    await supabase.rpc("increment_blog_post_view", { post_slug: slug });
+    await (await db()).rpc("increment_blog_post_view", { post_slug: slug });
     return null;
   });
 
@@ -100,6 +111,6 @@ export const incrementPostView = createServerFn({ method: "POST" })
 export const incrementPostContactClick = createServerFn({ method: "POST" })
   .validator((slug: unknown) => z.string().min(1).parse(slug))
   .handler(async ({ data: slug }) => {
-    await supabase.rpc("increment_blog_post_contact_click", { post_slug: slug });
+    await (await db()).rpc("increment_blog_post_contact_click", { post_slug: slug });
     return null;
   });

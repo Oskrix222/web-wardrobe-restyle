@@ -851,3 +851,10 @@
     }
   }
 }
+
+// Where the lead came from (utm tags / blog post) — small, under the message.
+.admin-leads__source {
+  margin-top: $space-2;
+  font-size: $text-xs;
+  color: var(--muted-foreground);
+}

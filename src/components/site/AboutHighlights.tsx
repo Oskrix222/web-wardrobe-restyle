@@ -3,12 +3,13 @@ import { HeartHandshake, Banknote, Clock, Phone, Sparkles, Shield } from "lucide
 import { Box, IconCircle } from "@/components/ui/Box";
 import { useInView } from "@/hooks/useInView";
 import { cn } from "@/lib/utils";
+import { STATS } from "@/config/business";
 import family640 from "@/assets/about-family-640.webp";
 import family1280 from "@/assets/about-family-1280.webp";
 
 const stats = [
-  { value: "+150", label: "zadowolonych klientów", icon: HeartHandshake },
-  { value: "+78", label: "Zrealizowanych wypłat", icon: Banknote },
+  { value: STATS.clients, label: "zadowolonych klientów", icon: HeartHandshake },
+  { value: STATS.payouts, label: "Zrealizowanych wypłat", icon: Banknote },
   { value: "24h", label: "Na przygotowanie oferty", icon: Clock },
   { value: "100%", label: "Kontaktu w 24h", icon: Phone },
   { value: "100%", label: "Świeże oferty", icon: Sparkles },

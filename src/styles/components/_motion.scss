@@ -79,9 +79,10 @@ $ease-out-soft: cubic-bezier(0.22, 0.8, 0.24, 1);
   &__line {
     display: block;
     overflow: hidden;
-    // Room for Polish diacritics so the mask never clips Ś / Ę.
-    padding-block: 0.06em;
-    margin-block: -0.06em;
+    // Room for Polish diacritics so the mask never clips them: Anton's accents
+    // (Ó, Ś, Ć) rise ~0.15em above the tight 0.95 line, ogoneks (Ę, Ą) hang below.
+    padding-block: 0.2em 0.16em;
+    margin-block: -0.2em -0.16em;
 
     > span {
       display: inline-block;

@@ -9,6 +9,7 @@ import advisor400 from "@/assets/advisor-400.webp";
 import advisor640 from "@/assets/advisor-640.webp";
 import team640 from "@/assets/team-business-640.webp";
 import team1280 from "@/assets/team-business-1280.webp";
+import { CONTACT_PHONES, telHref } from "@/config/business";
 
 export function About({ onContact }: { onContact: () => void }) {
   const reveal = useReveal<HTMLDivElement>();
@@ -72,14 +73,14 @@ export function About({ onContact }: { onContact: () => void }) {
           </div>
 
           <div className="about__actions">
-            <ButtonLink href="tel:+48539075385" variant="outline">
+            <ButtonLink href={telHref(CONTACT_PHONES[0].phone)} variant="outline">
               <Phone className="btn__icon" aria-hidden="true" />
-              +48 539 075 385
+              {CONTACT_PHONES[0].phone}
             </ButtonLink>
             <Button onClick={onContact}>Zostaw kontakt</Button>
-            <ButtonLink href="tel:+48123846894" variant="outline">
+            <ButtonLink href={telHref(CONTACT_PHONES[1].phone)} variant="outline">
               <Phone className="btn__icon" aria-hidden="true" />
-              +48 123 846 894
+              {CONTACT_PHONES[1].phone}
             </ButtonLink>
           </div>
         </Box>

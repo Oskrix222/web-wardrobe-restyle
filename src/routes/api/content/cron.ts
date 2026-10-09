@@ -5,6 +5,8 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/api/content/cron")({
   server: {
     handlers: {
+      // Without this the URL would render the site's page shell with a 200.
+      GET: () => new Response("Not found", { status: 404 }),
       POST: async ({ request }) => {
         const token = (globalThis as { __oscareCronToken?: string }).__oscareCronToken;
         if (!token || request.headers.get("x-cron-token") !== token) {

@@ -1,0 +1,4 @@
+// Styles for the admin panel (/admin/*) only — loaded by AdminStyles
+// (src/components/admin/AdminStyles.tsx), so visitors never download them.
+@use "sections/admin";
+@use "sections/admin-content";

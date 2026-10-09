@@ -27,6 +27,7 @@ CREATE TABLE storage.objects (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(), bucket_id text REFERENCES storage.buckets (id), name text
 );
 ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+GRANT SELECT, INSERT, UPDATE, DELETE ON storage.objects TO anon, authenticated;
 GRANT USAGE ON SCHEMA public, auth, storage TO anon, authenticated, service_role;
 GRANT EXECUTE ON FUNCTION auth.jwt() TO anon, authenticated;
 `;
@@ -179,4 +180,78 @@ test("data rules: valid categories/kinds only, one item per slot, one reply per 
     [id],
   );
   assert.equal(left.rows[0].n, 0);
+});
+
+test("visitors can only add leads through submit_lead(), which validates and keeps the source", async () => {
+  // The old direct insert is closed (anyone with the public key could write anything).
+  await assert.rejects(
+    as(
+      "anon",
+      null,
+      "INSERT INTO leads (name, phone, insurance_type) VALUES ('Bot', '000000000', 'x')",
+    ),
+    /permission denied/,
+  );
+
+  const submit = (name, phone, type, source = null, email = null) =>
+    as("anon", null, "SELECT submit_lead($1, $2, $3, $4, $5, $6) AS id", [
+      name,
+      phone,
+      email,
+      type,
+      null,
+      source,
+    ]);
+
+  const ok = await submit("Jan Kowalski", "+48 600 100 200", "life", {
+    utm_source: "instagram",
+    post: "rak",
+    evil: "<script>",
+  });
+  assert.match(ok.rows[0].id, /^[0-9a-f-]{36}$/);
+  const saved = await pg.query("SELECT name, phone, source FROM leads WHERE id = $1", [
+    ok.rows[0].id,
+  ]);
+  assert.deepEqual(saved.rows[0].source, { utm_source: "instagram", post: "rak" });
+
+  await assert.rejects(submit("Jan", "zadzwon prosze", "life"), /invalid phone/);
+  await assert.rejects(submit("Jan", "600100200", "car"), /invalid insurance type/);
+  await assert.rejects(submit("http://spam.example", "600100200", "life"), /invalid name/);
+  await assert.rejects(submit("Jan", "600100200", "life", null, "jan@"), /invalid email/);
+
+  // Visitors still can't read anything back (Supabase: no rows; this stub: no grant).
+  const visible = await as("anon", null, "SELECT count(*)::int AS n FROM leads").catch((e) => e);
+  if (visible instanceof Error) assert.match(visible.message, /permission denied/);
+  else assert.equal(visible.rows[0].n, 0);
+});
+
+test("one phone number can't flood the lead list", async () => {
+  const send = () =>
+    as("anon", null, "SELECT submit_lead('Anna Nowak', '+48 700 200 300', NULL, 'home', NULL)");
+  await send();
+  await send();
+  await send();
+  await assert.rejects(send(), /too many requests/);
+  // Another person is not affected.
+  await as("anon", null, "SELECT submit_lead('Ewa Lis', '+48 700 999 999', NULL, 'travel', NULL)");
+});
+
+test("blog images load by URL but only admins can list the bucket", async () => {
+  await pg.exec(
+    "INSERT INTO storage.objects (bucket_id, name) VALUES ('blog-images', 'draft-cover.jpg')",
+  );
+  const asAnon = await as(
+    "anon",
+    null,
+    "SELECT count(*)::int AS n FROM storage.objects WHERE bucket_id = 'blog-images'",
+  );
+  assert.equal(asAnon.rows[0].n, 0, "visitors can't enumerate files (drafts' images)");
+  const asAdmin = await as(
+    "authenticated",
+    "kubowiczoskar@gmail.com",
+    "SELECT count(*)::int AS n FROM storage.objects WHERE bucket_id = 'blog-images'",
+  );
+  assert.equal(asAdmin.rows[0].n, 1);
+  const bucket = await pg.query("SELECT public FROM storage.buckets WHERE id = 'blog-images'");
+  assert.equal(bucket.rows[0].public, true, "the bucket stays public, so images still load");
 });

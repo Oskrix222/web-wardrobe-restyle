@@ -2,6 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { useReveal } from "@/hooks/useReveal";
 import { cn } from "@/lib/utils";
 import { resetConsent, trackingConfigured } from "@/lib/analytics";
+import { BUSINESS, CONTACT_PHONES, telHref } from "@/config/business";
+import { LOCATIONS } from "@/config/locations";
 
 export function Footer() {
   const reveal = useReveal<HTMLDivElement>();
@@ -22,43 +24,58 @@ export function Footer() {
             <p className="site-footer__heading">Oferta</p>
             <ul className="site-footer__list">
               <li>
-                <a href="#oferta">Życie i zdrowie</a>
+                <a href="/#oferta">Życie i zdrowie</a>
               </li>
               <li>
-                <a href="#oferta">Majątek</a>
+                <a href="/#oferta">Majątek</a>
               </li>
               <li>
-                <a href="#oferta">Wakacje</a>
+                <a href="/#oferta">Wakacje</a>
               </li>
               <li>
-                <a href="#dla-firm">Ubezpieczenia grupowe</a>
+                <a href="/#dla-firm">Ubezpieczenia grupowe</a>
+              </li>
+              {LOCATIONS.map((location) => (
+                <li key={location.slug}>
+                  <Link to={location.path}>Ubezpieczenia {location.city}</Link>
+                </li>
+              ))}
+              <li>
+                <Link to="/blog">Blog i poradniki</Link>
               </li>
             </ul>
           </nav>
           <div>
             <p className="site-footer__heading">Kontakt</p>
             <ul className="site-footer__list">
-              <li>ul. Starowiejska 43</li>
-              <li>43-603, Jaworzno</li>
-              <li>NIP: 6322037383</li>
-              <li>Numer agenta: 11115498/A</li>
-
+              <li>{BUSINESS.street}</li>
               <li>
-                <a href="mailto:kontakt@kamien.pl">kontakt@kamien.pl</a>
+                {BUSINESS.postalCode} {BUSINESS.city}
               </li>
-              <li>
-                <a href="tel:+48539075385">+48 539 075 385</a>
-              </li>
-              <li>
-                <a href="tel:+48123456789">+48 123 456 789</a>
-              </li>
+              <li>NIP: {BUSINESS.nip}</li>
+              <li>Numer agenta: {BUSINESS.agentNumber}</li>
+              {BUSINESS.email ? (
+                <li>
+                  <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>
+                </li>
+              ) : null}
+              {CONTACT_PHONES.map((c) => (
+                <li key={c.phone}>
+                  <a href={telHref(c.phone)}>
+                    {c.phone} <span className="site-footer__muted">({c.name})</span>
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
           <div>
             <p className="site-footer__heading">Godziny</p>
             <ul className="site-footer__list">
-              <li>Pon–Pt: 9:00–20:00</li>
-              <li>Sob: 10:00–14:00</li>
+              {BUSINESS.hours.map((h) => (
+                <li key={h.label}>
+                  {h.label}: {h.time}
+                </li>
+              ))}
             </ul>
           </div>
         </div>

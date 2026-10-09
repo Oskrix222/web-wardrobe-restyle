@@ -15,9 +15,11 @@ import {
   incrementPostContactClick,
 } from "@/lib/blog.functions";
 import { trackEvent } from "@/lib/analytics";
+import { notePostRead } from "@/lib/attribution";
 import { CONTACT_PHONES, telHref } from "@/config/business";
 import { useInView } from "@/hooks/useInView";
 import { cn } from "@/lib/utils";
+import { articleJsonLd, breadcrumbJsonLd, seoHead, storagePreconnect } from "@/lib/seo";
 
 export const Route = createFileRoute("/blog/$slug")({
   loader: async ({ params }) => {
@@ -33,20 +35,30 @@ export const Route = createFileRoute("/blog/$slug")({
     if (!loaderData) return {};
     const { post } = loaderData;
     const description = post.excerpt ?? "Wpis na blogu OSCare Ubezpieczenia.";
-    return {
+    const head = seoHead({
+      title: `${post.title} | Blog OSCare`,
+      description,
+      path: `/blog/${post.slug}`,
+      image: post.coverImageUrl,
+      type: "article",
       meta: [
-        { title: `${post.title} — Blog OSCare` },
-        { name: "description", content: description },
-        { property: "og:title", content: post.title },
-        { property: "og:description", content: description },
-        { property: "og:type", content: "article" },
         ...(post.publishedAt
           ? [{ property: "article:published_time", content: post.publishedAt }]
           : []),
-        ...(post.coverImageUrl ? [{ property: "og:image", content: post.coverImageUrl }] : []),
+        ...(post.updatedAt ? [{ property: "article:modified_time", content: post.updatedAt }] : []),
+        ...(post.author ? [{ property: "article:author", content: post.author }] : []),
       ],
-      links: [{ rel: "canonical", href: `/blog/${post.slug}` }],
-    };
+      jsonLd: [
+        articleJsonLd(post),
+        breadcrumbJsonLd([
+          { name: "Strona główna", path: "/" },
+          { name: "Blog", path: "/blog" },
+          { name: post.title, path: `/blog/${post.slug}` },
+        ]),
+      ],
+    });
+    // The cover comes from Supabase Storage: open the connection early (LCP image).
+    return { ...head, links: [...head.links, ...storagePreconnect] };
   },
   component: BlogPost,
 });
@@ -62,6 +74,7 @@ function BlogPost() {
   useEffect(() => {
     if (trackedSlug.current === post.slug) return;
     trackedSlug.current = post.slug;
+    notePostRead(post.slug);
     void incrementPostView({ data: post.slug });
     trackEvent("blog_post_view", { post_slug: post.slug, post_title: post.title });
   }, [post.slug, post.title]);
@@ -93,7 +106,15 @@ function BlogPost() {
             </div>
 
             {post.coverImageUrl ? (
-              <img src={post.coverImageUrl} alt="" className="blog-post__cover" />
+              <img
+                src={post.coverImageUrl}
+                alt={post.title}
+                className="blog-post__cover"
+                width={1200}
+                height={630}
+                fetchPriority="high"
+                decoding="async"
+              />
             ) : null}
 
             <PostToc headings={post.headings} />

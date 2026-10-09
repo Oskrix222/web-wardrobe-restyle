@@ -20,3 +20,13 @@ export async function resolve(specifier, context, next) {
   }
   return next(specifier, context);
 }
+
+// Vite replaces import.meta.env at build time; under Node it doesn't exist. Point it at
+// process.env so modules like src/lib/seo.ts can be imported (tests set VITE_* there).
+export async function load(url, context, next) {
+  const result = await next(url, context);
+  if (!url.startsWith(SRC.href) || result.source == null) return result;
+  const source = String(result.source);
+  if (!source.includes("import.meta.env")) return result;
+  return { ...result, source: source.replaceAll("import.meta.env", "process.env") };
+}

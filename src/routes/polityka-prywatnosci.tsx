@@ -1,17 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
+import { BUSINESS, CONTACT_PHONES, telHref } from "@/config/business";
+import { seoHead } from "@/lib/seo";
+
 const title = "Polityka prywatności — OSCare Ubezpieczenia";
 const description =
   "Informacje o przetwarzaniu danych osobowych zbieranych przez formularz kontaktowy OSCare.";
 
 export const Route = createFileRoute("/polityka-prywatnosci")({
-  head: () => ({
-    meta: [
-      { title },
-      { name: "description", content: description },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
+  // Legal page: reachable, but not something to rank in Google.
+  head: () => seoHead({ title, description, path: "/polityka-prywatnosci", noindex: true }),
   component: PrivacyPolicy,
 });
 
@@ -37,7 +35,7 @@ function PrivacyPolicy() {
         <div className="container legal">
           <span className="eyebrow">Dokument prawny</span>
           <h1 className="section-heading">POLITYKA PRYWATNOŚCI</h1>
-          <p className="legal__updated">Ostatnia aktualizacja: 3 października 2026 r.</p>
+          <p className="legal__updated">Ostatnia aktualizacja: 9 października 2026 r.</p>
 
           <p className="legal__note">
             Pola oznaczone <mark>na żółto</mark> to miejsca, które musicie uzupełnić własnymi danymi
@@ -71,9 +69,20 @@ function PrivacyPolicy() {
             </ul>
             <p>
               We wszystkich sprawach dotyczących ochrony danych osobowych możesz skontaktować się z
-              nami pod adresem e-mail <a href="mailto:kontakt@kamien.pl">kontakt@kamien.pl</a> lub
-              telefonicznie: <a href="tel:+48539075385">+48 539 075 385</a> (Oskar Kubowicz),{" "}
-              <a href="tel:+48123846894">+48 123 846 894</a> (Izumi Sato).
+              nami{" "}
+              {BUSINESS.email ? (
+                <>
+                  pod adresem e-mail <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>,{" "}
+                </>
+              ) : null}
+              telefonicznie:{" "}
+              {CONTACT_PHONES.map((c, i) => (
+                <span key={c.phone}>
+                  {i > 0 ? ", " : ""}
+                  <a href={telHref(c.phone)}>{c.phone}</a> ({c.fullName})
+                </span>
+              ))}{" "}
+              lub listownie: {BUSINESS.street}, {BUSINESS.postalCode} {BUSINESS.city}.
             </p>
 
             <h2>2. Jakie dane zbieramy</h2>
@@ -84,7 +93,12 @@ function PrivacyPolicy() {
               <li>adres e-mail (opcjonalnie, jeśli go podasz),</li>
               <li>wybrany rodzaj ubezpieczenia,</li>
               <li>treść wiadomości (opcjonalnie),</li>
-              <li>datę i godzinę wyrażenia zgody na przetwarzanie danych.</li>
+              <li>datę i godzinę wyrażenia zgody na przetwarzanie danych,</li>
+              <li>
+                informację, skąd trafiłeś do formularza (np. link z naszego posta na Instagramie,
+                strona albo artykuł na blogu) — zapisujemy ją razem ze zgłoszeniem, bez plików
+                cookies, żeby wiedzieć, które treści naprawdę pomagają.
+              </li>
             </ul>
 
             <h2>3. Cel i podstawa prawna przetwarzania</h2>
@@ -159,8 +173,16 @@ function PrivacyPolicy() {
               </li>
             </ul>
             <p>
-              Aby skorzystać z powyższych praw, napisz na{" "}
-              <a href="mailto:kontakt@kamien.pl">kontakt@kamien.pl</a>.
+              Aby skorzystać z powyższych praw,{" "}
+              {BUSINESS.email ? (
+                <>
+                  napisz na <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>, zadzwoń
+                </>
+              ) : (
+                "zadzwoń"
+              )}{" "}
+              pod jeden z numerów podanych w punkcie 1 albo wyślij list na adres {BUSINESS.street},{" "}
+              {BUSINESS.postalCode} {BUSINESS.city}.
             </p>
 
             <h2>8. Pliki cookies</h2>

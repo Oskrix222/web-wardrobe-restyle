@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { insuranceOptions } from "@/components/site/LeadForm";
 import { deleteLead, listLeads, type AdminLead } from "@/lib/leads-admin";
+import { describeSource } from "@/lib/attribution";
 
 const dateTime = new Intl.DateTimeFormat("pl-PL", {
   dateStyle: "medium",
@@ -84,6 +85,9 @@ function AdminLeads() {
                   ) : null}
                 </div>
                 {lead.message ? <p className="admin-leads__message">{lead.message}</p> : null}
+                {describeSource(lead.source) ? (
+                  <p className="admin-leads__source">Skąd: {describeSource(lead.source)}</p>
+                ) : null}
                 <button
                   type="button"
                   className="admin-leads__delete"

@@ -29,9 +29,12 @@ export function PostMeta({ post, className }: { post: BlogPostSummary; className
 export function BlogCard({
   post,
   featured = false,
+  priority = false,
 }: {
   post: BlogPostSummary;
   featured?: boolean;
+  /** The first tile on the page: its image is the LCP element, so load it right away. */
+  priority?: boolean;
 }) {
   return (
     <Link
@@ -42,7 +45,16 @@ export function BlogCard({
       <article className="blog-card__box">
         <div className="blog-card__media">
           {post.coverImageUrl ? (
-            <img src={post.coverImageUrl} alt="" className="blog-card__image" loading="lazy" />
+            <img
+              src={post.coverImageUrl}
+              alt=""
+              className="blog-card__image"
+              width={1200}
+              height={750}
+              loading={priority ? "eager" : "lazy"}
+              fetchPriority={priority ? "high" : "auto"}
+              decoding="async"
+            />
           ) : (
             <div className="blog-card__placeholder" aria-hidden="true">
               <Newspaper />

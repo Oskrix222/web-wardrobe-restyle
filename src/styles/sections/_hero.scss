@@ -58,6 +58,16 @@
     color: var(--terracotta);
   }
 
+  // Small label inside the <h1> that says what the page is about
+  // ("Agent ubezpieczeniowy · Jaworzno i Katowice"); the slogan follows it.
+  &__kicker {
+    @include eyebrow;
+    display: block;
+    margin-bottom: $space-4;
+    line-height: $leading-normal;
+    letter-spacing: $tracking-wide;
+  }
+
   &__text {
     margin-top: $space-6;
     max-width: 28rem;

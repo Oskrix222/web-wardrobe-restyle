@@ -5,11 +5,12 @@ import { CountUp } from "@/components/ui/CountUp";
 import hero640 from "@/assets/hero-family-640.webp";
 import hero960 from "@/assets/hero-family-960.webp";
 import hero1280 from "@/assets/hero-family-1280.webp";
+import { STATS } from "@/config/business";
 
 const stats: [string, string][] = [
-  ["+25", "zadowolonych klientów"],
+  [STATS.clients, "zadowolonych klientów"],
   ["24h", "czas odpowiedzi"],
-  ["2005", "od tego roku w branży"],
+  [STATS.sinceYear, "od tego roku w branży"],
 ];
 
 export function Hero({
@@ -28,15 +29,20 @@ export function Hero({
 
           <div className="hero__center">
             <h1 className="hero__title">
+              {/* What the page is about, for people and for Google — the slogan follows. */}
+              <span className="hero__kicker">
+                Agent ubezpieczeniowy · Jaworzno i Katowice
+                <span className="sr-only"> — </span>
+              </span>
               <span className="hero__line">
                 <span>SPOKÓJ,</span>
-              </span>
+              </span>{" "}
               <span className="hero__line">
                 <span className="hero__accent">KTÓREGO</span>
-              </span>
+              </span>{" "}
               <span className="hero__line">
                 <span>NIE DA SIĘ</span>
-              </span>
+              </span>{" "}
               <span className="hero__line">
                 <span>WYCENIĆ</span>
               </span>

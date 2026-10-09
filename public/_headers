@@ -1,0 +1,9 @@
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+/fonts/*
+  Cache-Control: public, max-age=2592000
+/imgs/*
+  Cache-Control: public, max-age=604800
+/*.svg
+  Cache-Control: public, max-age=604800

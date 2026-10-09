@@ -10,8 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as NajnowszyRouteImport } from './routes/najnowszy'
 import { Route as PolitykaPrywatnosciRouteImport } from './routes/polityka-prywatnosci'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as UbezpieczeniaJaworznoRouteImport } from './routes/ubezpieczenia-jaworzno'
+import { Route as UbezpieczeniaKatowiceRouteImport } from './routes/ubezpieczenia-katowice'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminKalendarzRouteImport } from './routes/admin/kalendarz'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
@@ -33,6 +38,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NajnowszyRoute = NajnowszyRouteImport.update({
   id: '/najnowszy',
   path: '/najnowszy',
@@ -43,45 +53,65 @@ const PolitykaPrywatnosciRoute = PolitykaPrywatnosciRouteImport.update({
   path: '/polityka-prywatnosci',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
   getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UbezpieczeniaJaworznoRoute = UbezpieczeniaJaworznoRouteImport.update({
+  id: '/ubezpieczenia-jaworzno',
+  path: '/ubezpieczenia-jaworzno',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UbezpieczeniaKatowiceRoute = UbezpieczeniaKatowiceRouteImport.update({
+  id: '/ubezpieczenia-katowice',
+  path: '/ubezpieczenia-katowice',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminKalendarzRoute = AdminKalendarzRouteImport.update({
-  id: '/admin/kalendarz',
-  path: '/admin/kalendarz',
-  getParentRoute: () => rootRouteImport,
+  id: '/kalendarz',
+  path: '/kalendarz',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
-  id: '/admin/login',
-  path: '/admin/login',
-  getParentRoute: () => rootRouteImport,
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminOdpowiedziRoute = AdminOdpowiedziRouteImport.update({
-  id: '/admin/odpowiedzi',
-  path: '/admin/odpowiedzi',
-  getParentRoute: () => rootRouteImport,
+  id: '/odpowiedzi',
+  path: '/odpowiedzi',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminPolaczeniaRoute = AdminPolaczeniaRouteImport.update({
-  id: '/admin/polaczenia',
-  path: '/admin/polaczenia',
-  getParentRoute: () => rootRouteImport,
+  id: '/polaczenia',
+  path: '/polaczenia',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminPrawdyRoute = AdminPrawdyRouteImport.update({
-  id: '/admin/prawdy',
-  path: '/admin/prawdy',
-  getParentRoute: () => rootRouteImport,
+  id: '/prawdy',
+  path: '/prawdy',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminStatystykiRoute = AdminStatystykiRouteImport.update({
-  id: '/admin/statystyki',
-  path: '/admin/statystyki',
-  getParentRoute: () => rootRouteImport,
+  id: '/statystyki',
+  path: '/statystyki',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminZgloszeniaRoute = AdminZgloszeniaRouteImport.update({
-  id: '/admin/zgloszenia',
-  path: '/admin/zgloszenia',
-  getParentRoute: () => rootRouteImport,
+  id: '/zgloszenia',
+  path: '/zgloszenia',
+  getParentRoute: () => AdminRoute,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/blog/',
@@ -94,19 +124,19 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminBlogIndexRoute = AdminBlogIndexRouteImport.update({
-  id: '/admin/blog/',
-  path: '/admin/blog/',
-  getParentRoute: () => rootRouteImport,
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminBlogIdRoute = AdminBlogIdRouteImport.update({
-  id: '/admin/blog/$id',
-  path: '/admin/blog/$id',
-  getParentRoute: () => rootRouteImport,
+  id: '/blog/$id',
+  path: '/blog/$id',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminBlogNewRoute = AdminBlogNewRouteImport.update({
-  id: '/admin/blog/new',
-  path: '/admin/blog/new',
-  getParentRoute: () => rootRouteImport,
+  id: '/blog/new',
+  path: '/blog/new',
+  getParentRoute: () => AdminRoute,
 } as any)
 const ApiContentCronRoute = ApiContentCronRouteImport.update({
   id: '/api/content/cron',
@@ -121,8 +151,13 @@ const ApiMetaCallbackRoute = ApiMetaCallbackRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/najnowszy': typeof NajnowszyRoute
   '/polityka-prywatnosci': typeof PolitykaPrywatnosciRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/ubezpieczenia-jaworzno': typeof UbezpieczeniaJaworznoRoute
+  '/ubezpieczenia-katowice': typeof UbezpieczeniaKatowiceRoute
   '/admin/kalendarz': typeof AdminKalendarzRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/odpowiedzi': typeof AdminOdpowiedziRoute
@@ -143,6 +178,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/najnowszy': typeof NajnowszyRoute
   '/polityka-prywatnosci': typeof PolitykaPrywatnosciRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/ubezpieczenia-jaworzno': typeof UbezpieczeniaJaworznoRoute
+  '/ubezpieczenia-katowice': typeof UbezpieczeniaKatowiceRoute
   '/admin/kalendarz': typeof AdminKalendarzRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/odpowiedzi': typeof AdminOdpowiedziRoute
@@ -162,8 +201,13 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/najnowszy': typeof NajnowszyRoute
   '/polityka-prywatnosci': typeof PolitykaPrywatnosciRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/ubezpieczenia-jaworzno': typeof UbezpieczeniaJaworznoRoute
+  '/ubezpieczenia-katowice': typeof UbezpieczeniaKatowiceRoute
   '/admin/kalendarz': typeof AdminKalendarzRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/odpowiedzi': typeof AdminOdpowiedziRoute
@@ -184,8 +228,13 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/najnowszy'
     | '/polityka-prywatnosci'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/ubezpieczenia-jaworzno'
+    | '/ubezpieczenia-katowice'
     | '/admin/kalendarz'
     | '/admin/login'
     | '/admin/odpowiedzi'
@@ -206,6 +255,10 @@ export interface FileRouteTypes {
     | '/'
     | '/najnowszy'
     | '/polityka-prywatnosci'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/ubezpieczenia-jaworzno'
+    | '/ubezpieczenia-katowice'
     | '/admin/kalendarz'
     | '/admin/login'
     | '/admin/odpowiedzi'
@@ -224,8 +277,13 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/najnowszy'
     | '/polityka-prywatnosci'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/ubezpieczenia-jaworzno'
+    | '/ubezpieczenia-katowice'
     | '/admin/kalendarz'
     | '/admin/login'
     | '/admin/odpowiedzi'
@@ -245,23 +303,17 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   NajnowszyRoute: typeof NajnowszyRoute
   PolitykaPrywatnosciRoute: typeof PolitykaPrywatnosciRoute
-  AdminKalendarzRoute: typeof AdminKalendarzRoute
-  AdminLoginRoute: typeof AdminLoginRoute
-  AdminOdpowiedziRoute: typeof AdminOdpowiedziRoute
-  AdminPolaczeniaRoute: typeof AdminPolaczeniaRoute
-  AdminPrawdyRoute: typeof AdminPrawdyRoute
-  AdminStatystykiRoute: typeof AdminStatystykiRoute
-  AdminZgloszeniaRoute: typeof AdminZgloszeniaRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  UbezpieczeniaJaworznoRoute: typeof UbezpieczeniaJaworznoRoute
+  UbezpieczeniaKatowiceRoute: typeof UbezpieczeniaKatowiceRoute
   BlogSlugRoute: typeof BlogSlugRoute
-  AdminIndexRoute: typeof AdminIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
-  AdminBlogIdRoute: typeof AdminBlogIdRoute
-  AdminBlogNewRoute: typeof AdminBlogNewRoute
   ApiContentCronRoute: typeof ApiContentCronRoute
   ApiMetaCallbackRoute: typeof ApiMetaCallbackRoute
-  AdminBlogIndexRoute: typeof AdminBlogIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -271,6 +323,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/najnowszy': {
@@ -287,61 +346,89 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PolitykaPrywatnosciRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ubezpieczenia-jaworzno': {
+      id: '/ubezpieczenia-jaworzno'
+      path: '/ubezpieczenia-jaworzno'
+      fullPath: '/ubezpieczenia-jaworzno'
+      preLoaderRoute: typeof UbezpieczeniaJaworznoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ubezpieczenia-katowice': {
+      id: '/ubezpieczenia-katowice'
+      path: '/ubezpieczenia-katowice'
+      fullPath: '/ubezpieczenia-katowice'
+      preLoaderRoute: typeof UbezpieczeniaKatowiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/': {
       id: '/admin/'
-      path: '/admin'
+      path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/kalendarz': {
       id: '/admin/kalendarz'
-      path: '/admin/kalendarz'
+      path: '/kalendarz'
       fullPath: '/admin/kalendarz'
       preLoaderRoute: typeof AdminKalendarzRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/login': {
       id: '/admin/login'
-      path: '/admin/login'
+      path: '/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/odpowiedzi': {
       id: '/admin/odpowiedzi'
-      path: '/admin/odpowiedzi'
+      path: '/odpowiedzi'
       fullPath: '/admin/odpowiedzi'
       preLoaderRoute: typeof AdminOdpowiedziRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/polaczenia': {
       id: '/admin/polaczenia'
-      path: '/admin/polaczenia'
+      path: '/polaczenia'
       fullPath: '/admin/polaczenia'
       preLoaderRoute: typeof AdminPolaczeniaRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/prawdy': {
       id: '/admin/prawdy'
-      path: '/admin/prawdy'
+      path: '/prawdy'
       fullPath: '/admin/prawdy'
       preLoaderRoute: typeof AdminPrawdyRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/statystyki': {
       id: '/admin/statystyki'
-      path: '/admin/statystyki'
+      path: '/statystyki'
       fullPath: '/admin/statystyki'
       preLoaderRoute: typeof AdminStatystykiRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/zgloszenia': {
       id: '/admin/zgloszenia'
-      path: '/admin/zgloszenia'
+      path: '/zgloszenia'
       fullPath: '/admin/zgloszenia'
       preLoaderRoute: typeof AdminZgloszeniaRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/blog/': {
       id: '/blog/'
@@ -359,24 +446,24 @@ declare module '@tanstack/react-router' {
     }
     '/admin/blog/': {
       id: '/admin/blog/'
-      path: '/admin/blog'
+      path: '/blog'
       fullPath: '/admin/blog/'
       preLoaderRoute: typeof AdminBlogIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/blog/$id': {
       id: '/admin/blog/$id'
-      path: '/admin/blog/$id'
+      path: '/blog/$id'
       fullPath: '/admin/blog/$id'
       preLoaderRoute: typeof AdminBlogIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/blog/new': {
       id: '/admin/blog/new'
-      path: '/admin/blog/new'
+      path: '/blog/new'
       fullPath: '/admin/blog/new'
       preLoaderRoute: typeof AdminBlogNewRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/api/content/cron': {
       id: '/api/content/cron'
@@ -395,10 +482,21 @@ declare module '@tanstack/react-router' {
   }
 }
 
-const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  NajnowszyRoute: NajnowszyRoute,
-  PolitykaPrywatnosciRoute: PolitykaPrywatnosciRoute,
+interface AdminRouteChildren {
+  AdminKalendarzRoute: typeof AdminKalendarzRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminOdpowiedziRoute: typeof AdminOdpowiedziRoute
+  AdminPolaczeniaRoute: typeof AdminPolaczeniaRoute
+  AdminPrawdyRoute: typeof AdminPrawdyRoute
+  AdminStatystykiRoute: typeof AdminStatystykiRoute
+  AdminZgloszeniaRoute: typeof AdminZgloszeniaRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminBlogIdRoute: typeof AdminBlogIdRoute
+  AdminBlogNewRoute: typeof AdminBlogNewRoute
+  AdminBlogIndexRoute: typeof AdminBlogIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
   AdminKalendarzRoute: AdminKalendarzRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminOdpowiedziRoute: AdminOdpowiedziRoute,
@@ -406,14 +504,27 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPrawdyRoute: AdminPrawdyRoute,
   AdminStatystykiRoute: AdminStatystykiRoute,
   AdminZgloszeniaRoute: AdminZgloszeniaRoute,
-  BlogSlugRoute: BlogSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
-  BlogIndexRoute: BlogIndexRoute,
   AdminBlogIdRoute: AdminBlogIdRoute,
   AdminBlogNewRoute: AdminBlogNewRoute,
+  AdminBlogIndexRoute: AdminBlogIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
+  NajnowszyRoute: NajnowszyRoute,
+  PolitykaPrywatnosciRoute: PolitykaPrywatnosciRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  UbezpieczeniaJaworznoRoute: UbezpieczeniaJaworznoRoute,
+  UbezpieczeniaKatowiceRoute: UbezpieczeniaKatowiceRoute,
+  BlogSlugRoute: BlogSlugRoute,
+  BlogIndexRoute: BlogIndexRoute,
   ApiContentCronRoute: ApiContentCronRoute,
   ApiMetaCallbackRoute: ApiMetaCallbackRoute,
-  AdminBlogIndexRoute: AdminBlogIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
