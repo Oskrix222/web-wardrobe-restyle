@@ -35,19 +35,7 @@ function PrivacyPolicy() {
         <div className="container legal">
           <span className="eyebrow">Dokument prawny</span>
           <h1 className="section-heading">POLITYKA PRYWATNOŚCI</h1>
-          <p className="legal__updated">Ostatnia aktualizacja: 9 października 2026 r.</p>
-
-          <p className="legal__note">
-            Pola oznaczone <mark>na żółto</mark> to miejsca, które musicie uzupełnić własnymi danymi
-            (NIP działalności Izumi Sato oraz dokładny okres przechowywania danych) zanim dokument
-            zacznie obowiązywać. Ponieważ OSCare to dwie odrębne, współpracujące ze sobą
-            jednoosobowe działalności gospodarcze korzystające ze wspólnego formularza, prawnie
-            jesteście <strong>współadministratorami danych</strong> w rozumieniu art. 26 RODO.
-            Przepis ten wymaga pisemnego porozumienia między Wami określającego, kto odpowiada za
-            jakie obowiązki (np. kto odpowiada na wnioski osób, których dane dotyczą). Ten dokument
-            nie zastępuje takiego porozumienia — zalecamy skonsultowanie całości z prawnikiem lub
-            specjalistą RODO przed uruchomieniem formularza na produkcji.
-          </p>
+          <p className="legal__updated">Ostatnia aktualizacja: 10 października 2026 r.</p>
 
           <article>
             <h2>1. Administratorzy danych</h2>
@@ -62,9 +50,9 @@ function PrivacyPolicy() {
                 NIP: 6322037383, ul. Starowiejska 43, 43-603 Jaworzno,
               </li>
               <li>
-                <strong>Izumi Sato</strong>, prowadząca jednoosobową działalność gospodarczą, NIP:{" "}
-                <mark>uzupełnić NIP działalności Izumi Sato</mark>, ul. Starowiejska 43, 43-603
-                Jaworzno.
+                <strong>Izumi Sato</strong>, prowadząca jednoosobową działalność gospodarczą,
+                {BUSINESS.partnerNip ? ` NIP: ${BUSINESS.partnerNip},` : ""} ul. Starowiejska 43,
+                43-603 Jaworzno.
               </li>
             </ul>
             <p>
@@ -142,9 +130,9 @@ function PrivacyPolicy() {
               Dane przechowujemy przez czas niezbędny do obsługi Twojego zgłoszenia, a jeśli dojdzie
               do zawarcia umowy ubezpieczenia — przez okres wymagany przepisami prawa (w tym
               podatkowymi) oraz do czasu przedawnienia ewentualnych roszczeń. Jeżeli zgłoszenie nie
-              zakończy się zawarciem umowy, dane usuwamy nie później niż{" "}
-              <mark>uzupełnić: np. po 12 miesiącach od ostatniego kontaktu</mark> — w każdej chwili
-              możesz też wcześniej cofnąć zgodę, o czym mowa w pkt 7.
+              zakończy się zawarciem umowy, dane usuwamy nie później niż po 12 miesiącach od
+              ostatniego kontaktu — w każdej chwili możesz też wcześniej cofnąć zgodę, o czym mowa w
+              pkt 7.
             </p>
 
             <h2>6. Dobrowolność podania danych</h2>
@@ -211,6 +199,36 @@ function PrivacyPolicy() {
             <p>
               Nie podejmujemy wobec Ciebie decyzji w sposób zautomatyzowany, w tym nie stosujemy
               profilowania w rozumieniu RODO.
+            </p>
+
+            <h2 id="instagram-facebook">10. Instagram i Facebook</h2>
+            <p>
+              Prowadzimy profil OSCare na Instagramie i stronę na Facebooku. Publikujemy na nich
+              posty przez własną aplikację podłączoną do oficjalnego API firmy Meta Platforms
+              Ireland Ltd. Gdy skomentujesz nasz post lub rolkę słowem z wpisu (np. „RAK”), ta
+              aplikacja:
+            </p>
+            <ul>
+              <li>
+                odczytuje komentarz pod naszym postem: jego treść, identyfikator oraz Twoją nazwę
+                użytkownika lub imię i nazwisko z profilu,
+              </li>
+              <li>
+                wysyła Ci jedną prywatną wiadomość z informacją, o którą prosisz (np. link do
+                poradnika na blogu), i może krótko odpowiedzieć pod komentarzem,
+              </li>
+              <li>
+                zapisuje, że odpowiedź została wysłana (identyfikator komentarza, nazwa użytkownika,
+                treść komentarza, data), żeby nie pisać do Ciebie drugi raz.
+              </li>
+            </ul>
+            <p>
+              Podstawą jest nasz prawnie uzasadniony interes, czyli odpowiedź na Twoją prośbę
+              wyrażoną w komentarzu (art. 6 ust. 1 lit. f RODO). Zapis usuwamy automatycznie po 90
+              dniach. Nie używamy tych danych do reklam, nie łączymy ich z innymi danymi i nie
+              przekazujemy nikomu poza firmą Meta, przez której serwery przechodzi wiadomość. Dalsza
+              rozmowa w wiadomościach prywatnych odbywa się już między ludźmi. Jak usunąć te dane,
+              opisujemy na stronie <Link to="/usuwanie-danych">Usuwanie danych</Link>.
             </p>
           </article>
         </div>

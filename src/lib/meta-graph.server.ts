@@ -394,13 +394,26 @@ export async function fbComment(acc: MetaAccount, objectId: string, message: str
   ).id;
 }
 
-export type SocialComment = { id: string; text: string; author: string; authorId?: string };
+export type SocialComment = {
+  id: string;
+  text: string;
+  author: string;
+  authorId?: string;
+  /** ISO time the comment was written. */
+  createdAt?: string;
+};
 
 export async function igListComments(acc: MetaAccount, mediaId: string): Promise<SocialComment[]> {
   const res = await graph<{
-    data: { id: string; text?: string; username?: string; from?: { id: string } }[];
+    data: {
+      id: string;
+      text?: string;
+      username?: string;
+      from?: { id: string };
+      timestamp?: string;
+    }[];
   }>(`${mediaId}/comments`, {
-    fields: "id,text,username,from",
+    fields: "id,text,username,from,timestamp",
     limit: "50",
     access_token: acc.pageToken,
   });
@@ -409,14 +422,20 @@ export async function igListComments(acc: MetaAccount, mediaId: string): Promise
     text: c.text ?? "",
     author: c.username ?? "",
     ...(c.from?.id ? { authorId: c.from.id } : {}),
+    ...(c.timestamp ? { createdAt: c.timestamp } : {}),
   }));
 }
 
 export async function fbListComments(acc: MetaAccount, objectId: string): Promise<SocialComment[]> {
   const res = await graph<{
-    data: { id: string; message?: string; from?: { id: string; name: string } }[];
+    data: {
+      id: string;
+      message?: string;
+      from?: { id: string; name: string };
+      created_time?: string;
+    }[];
   }>(`${objectId}/comments`, {
-    fields: "id,message,from",
+    fields: "id,message,from,created_time",
     limit: "50",
     filter: "stream",
     access_token: acc.pageToken,
@@ -426,6 +445,7 @@ export async function fbListComments(acc: MetaAccount, objectId: string): Promis
     text: c.message ?? "",
     author: c.from?.name ?? "",
     ...(c.from?.id ? { authorId: c.from.id } : {}),
+    ...(c.created_time ? { createdAt: new Date(c.created_time).toISOString() } : {}),
   }));
 }
 

@@ -17,6 +17,7 @@ import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as UbezpieczeniaJaworznoRouteImport } from './routes/ubezpieczenia-jaworzno'
 import { Route as UbezpieczeniaKatowiceRouteImport } from './routes/ubezpieczenia-katowice'
+import { Route as UsuwanieDanychRouteImport } from './routes/usuwanie-danych'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminKalendarzRouteImport } from './routes/admin/kalendarz'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
@@ -72,6 +73,11 @@ const UbezpieczeniaJaworznoRoute = UbezpieczeniaJaworznoRouteImport.update({
 const UbezpieczeniaKatowiceRoute = UbezpieczeniaKatowiceRouteImport.update({
   id: '/ubezpieczenia-katowice',
   path: '/ubezpieczenia-katowice',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsuwanieDanychRoute = UsuwanieDanychRouteImport.update({
+  id: '/usuwanie-danych',
+  path: '/usuwanie-danych',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -164,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ubezpieczenia-jaworzno': typeof UbezpieczeniaJaworznoRoute
   '/ubezpieczenia-katowice': typeof UbezpieczeniaKatowiceRoute
+  '/usuwanie-danych': typeof UsuwanieDanychRoute
   '/admin/kalendarz': typeof AdminKalendarzRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/odpowiedzi': typeof AdminOdpowiedziRoute
@@ -189,6 +196,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ubezpieczenia-jaworzno': typeof UbezpieczeniaJaworznoRoute
   '/ubezpieczenia-katowice': typeof UbezpieczeniaKatowiceRoute
+  '/usuwanie-danych': typeof UsuwanieDanychRoute
   '/admin/kalendarz': typeof AdminKalendarzRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/odpowiedzi': typeof AdminOdpowiedziRoute
@@ -216,6 +224,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/ubezpieczenia-jaworzno': typeof UbezpieczeniaJaworznoRoute
   '/ubezpieczenia-katowice': typeof UbezpieczeniaKatowiceRoute
+  '/usuwanie-danych': typeof UsuwanieDanychRoute
   '/admin/kalendarz': typeof AdminKalendarzRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/odpowiedzi': typeof AdminOdpowiedziRoute
@@ -244,6 +253,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/ubezpieczenia-jaworzno'
     | '/ubezpieczenia-katowice'
+    | '/usuwanie-danych'
     | '/admin/kalendarz'
     | '/admin/login'
     | '/admin/odpowiedzi'
@@ -269,6 +279,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/ubezpieczenia-jaworzno'
     | '/ubezpieczenia-katowice'
+    | '/usuwanie-danych'
     | '/admin/kalendarz'
     | '/admin/login'
     | '/admin/odpowiedzi'
@@ -295,6 +306,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/ubezpieczenia-jaworzno'
     | '/ubezpieczenia-katowice'
+    | '/usuwanie-danych'
     | '/admin/kalendarz'
     | '/admin/login'
     | '/admin/odpowiedzi'
@@ -322,6 +334,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   UbezpieczeniaJaworznoRoute: typeof UbezpieczeniaJaworznoRoute
   UbezpieczeniaKatowiceRoute: typeof UbezpieczeniaKatowiceRoute
+  UsuwanieDanychRoute: typeof UsuwanieDanychRoute
   BlogSlugRoute: typeof BlogSlugRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ApiContentCronRoute: typeof ApiContentCronRoute
@@ -384,6 +397,13 @@ declare module '@tanstack/react-router' {
       path: '/ubezpieczenia-katowice'
       fullPath: '/ubezpieczenia-katowice'
       preLoaderRoute: typeof UbezpieczeniaKatowiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/usuwanie-danych': {
+      id: '/usuwanie-danych'
+      path: '/usuwanie-danych'
+      fullPath: '/usuwanie-danych'
+      preLoaderRoute: typeof UsuwanieDanychRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -542,6 +562,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   UbezpieczeniaJaworznoRoute: UbezpieczeniaJaworznoRoute,
   UbezpieczeniaKatowiceRoute: UbezpieczeniaKatowiceRoute,
+  UsuwanieDanychRoute: UsuwanieDanychRoute,
   BlogSlugRoute: BlogSlugRoute,
   BlogIndexRoute: BlogIndexRoute,
   ApiContentCronRoute: ApiContentCronRoute,

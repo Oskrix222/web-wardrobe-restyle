@@ -12,6 +12,8 @@ export const BUSINESS = {
   city: "Jaworzno",
   region: "śląskie",
   nip: "6322037383",
+  /** Izumi Sato's NIP (co-controller in the privacy policy). null leaves it out. */
+  partnerNip: null as string | null,
   agentNumber: "11115498/A",
   /** Opening hours as shown in the footer, and in schema.org format for Google. */
   hours: [

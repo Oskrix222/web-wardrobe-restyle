@@ -48,9 +48,24 @@ type PublishState = {
 type AutoReplyChannel = { enabled: boolean; message: string; publicReply: string };
 
 const MAX_ATTEMPTS = 4;
-// Keyword replies per cron run (every 10 min), sent a few seconds apart: a burst of
-// identical DMs is what Instagram's spam filters look for.
-const MAX_REPLIES_PER_RUN = 15;
+/**
+ * Keyword replies are paced like a person answering by hand: a burst of identical DMs is
+ * what Instagram's spam filters look for. Every value is a [min, max] range picked at
+ * random each time (~10% spread), never below the minimum.
+ */
+export const replyPacing = {
+  /** A comment is answered no sooner than this after it was written. */
+  minCommentAgeMs: [30_000, 33_000] as [number, number],
+  /** Pause between two people. */
+  gapMs: [30_000, 33_000] as [number, number],
+  /** Pause between the private message and the public answer to the same person. */
+  dmToPublicMs: [5_000, 10_000] as [number, number],
+  /** At most this many people per rolling 10 minutes (4 or 5, never more than 5). */
+  perWindow: [4, 5] as [number, number],
+  windowMs: 10 * 60_000,
+};
+const between = ([min, max]: [number, number]) => min + Math.random() * (max - min);
+const SEVEN_DAYS = 7 * 86_400_000;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export type PublisherReport = {
@@ -399,6 +414,14 @@ async function answerKeywordComments(db: AdminClient, acc: MetaAccount, report: 
       items.map((i) => i.id),
     );
   const seen = new Set((handled ?? []).map((h) => h.comment_id));
+
+  // Replies already sent in the last 10 minutes count toward this window's limit.
+  const { count: recent } = await db
+    .from("content_replies")
+    .select("comment_id", { count: "exact", head: true })
+    .eq("status", "sent")
+    .gte("created_at", new Date(Date.now() - replyPacing.windowMs).toISOString());
+  let budget = Math.round(between(replyPacing.perWindow)) - (recent ?? 0);
   let sent = 0;
 
   for (const item of items) {
@@ -414,19 +437,25 @@ async function answerKeywordComments(db: AdminClient, acc: MetaAccount, report: 
         platform === "instagram" ? igListComments(acc, objectId) : fbListComments(acc, objectId)
       ).catch(() => []);
       for (const c of comments) {
-        if (sent >= MAX_REPLIES_PER_RUN) return; // the rest waits for the next run
+        if (budget <= 0) return; // the rest waits for the next run
         const own =
           c.authorId === acc.igUserId || c.authorId === acc.pageId || c.author === acc.igUsername;
         if (seen.has(c.id) || own || !mentionsKeyword(c.text, keyword)) continue;
+        // Too fresh: answered on a later run. Older than 7 days: Meta no longer allows it.
+        const age = c.createdAt ? Date.now() - Date.parse(c.createdAt) : Infinity;
+        if (age < between(replyPacing.minCommentAgeMs)) continue;
+        if (c.createdAt && age > SEVEN_DAYS) continue;
         seen.add(c.id);
         const values = { imie: c.author, slowo: keyword, link };
         let error: string | null = null;
         try {
-          if (sent > 0) await sleep(2000 + Math.random() * 3000);
+          if (sent > 0) await sleep(between(replyPacing.gapMs));
           sent++;
+          budget--;
           await sendPrivateReply(acc, platform, c.id, fill(settings.message, values));
           const publicReply = pickVariant(settings.publicReply);
           if (publicReply) {
+            await sleep(between(replyPacing.dmToPublicMs));
             await replyUnderComment(acc, platform, c.id, fill(publicReply, values));
           }
           report.replies++;
@@ -473,6 +502,11 @@ export async function runPublisher({ itemId }: { itemId?: string } = {}): Promis
         }),
       );
     }
+    // Privacy policy promise: reply records (username + comment) are kept for 90 days.
+    await db
+      .from("content_replies")
+      .delete()
+      .lt("created_at", new Date(Date.now() - 90 * 86_400_000).toISOString());
     // Heartbeat for Panel → Połączenia ("automat ostatnio działał…").
     await db.from("content_integrations").upsert({
       provider: "cron",

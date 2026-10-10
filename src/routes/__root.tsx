@@ -19,6 +19,8 @@ import { captureAttribution } from "../lib/attribution";
 
 const GOOGLE_SITE_VERIFICATION = import.meta.env["VITE_GOOGLE_SITE_VERIFICATION"] as
   string | undefined;
+const META_DOMAIN_VERIFICATION = import.meta.env["VITE_META_DOMAIN_VERIFICATION"] as
+  string | undefined;
 
 function NotFoundComponent() {
   return (
@@ -81,6 +83,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       // Google Search Console ownership check — paste the code into .env (VITE_GOOGLE_SITE_VERIFICATION).
       ...(GOOGLE_SITE_VERIFICATION
         ? [{ name: "google-site-verification", content: GOOGLE_SITE_VERIFICATION }]
+        : []),
+      // Meta Business Manager domain verification (VITE_META_DOMAIN_VERIFICATION in .env).
+      ...(META_DOMAIN_VERIFICATION
+        ? [{ name: "facebook-domain-verification", content: META_DOMAIN_VERIFICATION }]
         : []),
     ],
     links: [
