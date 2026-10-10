@@ -48,21 +48,10 @@ type PublishState = {
 type AutoReplyChannel = { enabled: boolean; message: string; publicReply: string };
 
 const MAX_ATTEMPTS = 4;
-/**
- * Keyword replies are paced like a person answering by hand: a burst of identical DMs is
- * what Instagram's spam filters look for. Every value is a [min, max] range picked at
- * random each time (~10% spread), never below the minimum.
- */
+/** Keyword replies per cron run (every 10 min), sent a few seconds apart. Ranges in ms. */
 export const replyPacing = {
-  /** A comment is answered no sooner than this after it was written. */
-  minCommentAgeMs: [30_000, 33_000] as [number, number],
-  /** Pause between two people. */
-  gapMs: [30_000, 33_000] as [number, number],
-  /** Pause between the private message and the public answer to the same person. */
-  dmToPublicMs: [5_000, 10_000] as [number, number],
-  /** At most this many people per rolling 10 minutes (4 or 5, never more than 5). */
-  perWindow: [4, 5] as [number, number],
-  windowMs: 10 * 60_000,
+  perRun: 15,
+  gapMs: [2_000, 5_000] as [number, number],
 };
 const between = ([min, max]: [number, number]) => min + Math.random() * (max - min);
 const SEVEN_DAYS = 7 * 86_400_000;
@@ -415,13 +404,7 @@ async function answerKeywordComments(db: AdminClient, acc: MetaAccount, report: 
     );
   const seen = new Set((handled ?? []).map((h) => h.comment_id));
 
-  // Replies already sent in the last 10 minutes count toward this window's limit.
-  const { count: recent } = await db
-    .from("content_replies")
-    .select("comment_id", { count: "exact", head: true })
-    .eq("status", "sent")
-    .gte("created_at", new Date(Date.now() - replyPacing.windowMs).toISOString());
-  let budget = Math.round(between(replyPacing.perWindow)) - (recent ?? 0);
+  let budget = replyPacing.perRun;
   let sent = 0;
 
   for (const item of items) {
@@ -441,10 +424,8 @@ async function answerKeywordComments(db: AdminClient, acc: MetaAccount, report: 
         const own =
           c.authorId === acc.igUserId || c.authorId === acc.pageId || c.author === acc.igUsername;
         if (seen.has(c.id) || own || !mentionsKeyword(c.text, keyword)) continue;
-        // Too fresh: answered on a later run. Older than 7 days: Meta no longer allows it.
-        const age = c.createdAt ? Date.now() - Date.parse(c.createdAt) : Infinity;
-        if (age < between(replyPacing.minCommentAgeMs)) continue;
-        if (c.createdAt && age > SEVEN_DAYS) continue;
+        // Older than 7 days: Meta no longer allows a private reply.
+        if (c.createdAt && Date.now() - Date.parse(c.createdAt) > SEVEN_DAYS) continue;
         seen.add(c.id);
         const values = { imie: c.author, slowo: keyword, link };
         let error: string | null = null;
@@ -455,7 +436,6 @@ async function answerKeywordComments(db: AdminClient, acc: MetaAccount, report: 
           await sendPrivateReply(acc, platform, c.id, fill(settings.message, values));
           const publicReply = pickVariant(settings.publicReply);
           if (publicReply) {
-            await sleep(between(replyPacing.dmToPublicMs));
             await replyUnderComment(acc, platform, c.id, fill(publicReply, values));
           }
           report.replies++;

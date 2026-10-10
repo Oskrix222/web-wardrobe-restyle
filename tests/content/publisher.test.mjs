@@ -27,8 +27,8 @@ Object.assign(process.env, {
   R2_SECRET_ACCESS_KEY: "SK",
 });
 const { runPublisher, replyPacing } = await import("@/lib/content-publisher.server");
-// Real pauses are 30+ s; the tests only check the order and the limits.
-Object.assign(replyPacing, { minCommentAgeMs: [0, 0], gapMs: [0, 0], dmToPublicMs: [0, 0] });
+// Real pauses are a few seconds; the tests only check the order and the limits.
+Object.assign(replyPacing, { gapMs: [0, 0] });
 
 const minutes = (m) => new Date(Date.now() + m * 60_000).toISOString();
 const BLOG_LINK = "https://oscare.example/blog/rak?utm_source=instagram&utm_content=post-comment";
@@ -417,7 +417,7 @@ test("downloads from Supabase count toward the monthly limit; at the limit publi
   assert.equal(meta.graph("POST", "feed").length, 0, "nothing posted on Facebook");
 });
 
-test("keyword replies: at most 5 people per 10 minutes, fresh comments wait", async () => {
+test("keyword replies: at most 15 people per run, comments older than 7 days are skipped", async () => {
   db = createFakeSupabase(
     week({
       content_settings: [
@@ -432,15 +432,14 @@ test("keyword replies: at most 5 people per 10 minutes, fresh comments wait", as
     }),
   );
   await runPublisher();
-  const old = new Date(Date.now() - 5 * 60_000).toISOString();
+  const now = new Date().toISOString();
   meta.comments[byId("post").publish_state.instagram.id] = [
-    ...Array.from({ length: 8 }, (_, i) => ({
+    ...Array.from({ length: 20 }, (_, i) => ({
       id: `c${i}`,
       text: "RAK",
       username: `u${i}`,
-      timestamp: old,
+      timestamp: now,
     })),
-    { id: "fresh", text: "RAK", username: "nowa", timestamp: new Date().toISOString() },
     {
       id: "expired",
       text: "RAK",
@@ -448,23 +447,12 @@ test("keyword replies: at most 5 people per 10 minutes, fresh comments wait", as
       timestamp: new Date(Date.now() - 8 * 86_400_000).toISOString(),
     },
   ];
-  const saved = { ...replyPacing };
-  Object.assign(replyPacing, { minCommentAgeMs: [30_000, 33_000] });
-  try {
-    await runPublisher();
-    const first = meta.graph("POST", "messages").length;
-    assert.ok(first >= 4 && first <= 5, `4–5 people in the first window, got ${first}`);
-    await runPublisher();
-    assert.ok(
-      meta.graph("POST", "messages").length <= 5,
-      "a second run in the same 10 minutes never goes above 5 people",
-    );
-    const answered = meta
-      .graph("POST", "messages")
-      .map((m) => JSON.parse(m.params.recipient).comment_id);
-    assert.ok(!answered.includes("fresh"), "a comment younger than 30 s waits");
-    assert.ok(!answered.includes("expired"), "older than 7 days: Meta doesn't allow a reply");
-  } finally {
-    Object.assign(replyPacing, saved);
-  }
+  await runPublisher();
+  assert.equal(meta.graph("POST", "messages").length, 15, "15 in the first run");
+  await runPublisher();
+  assert.equal(meta.graph("POST", "messages").length, 20, "the rest in the next run");
+  const answered = meta
+    .graph("POST", "messages")
+    .map((m) => JSON.parse(m.params.recipient).comment_id);
+  assert.ok(!answered.includes("expired"), "older than 7 days: Meta doesn't allow a reply");
 });

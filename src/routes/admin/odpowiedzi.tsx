@@ -90,12 +90,10 @@ function AdminReplies() {
           <code>{"{slowo}"}</code> (słowo klucz), <code>{"{link}"}</code> (link do wpisu na blogu).
         </p>
         <p className="content-replies__hint">
-          <b>Bezpiecznie dla konta:</b> automat odpisuje jak człowiek. Najwcześniej 30–33 s po
-          komentarzu, najwyżej 4–5 osobom na 10 minut, z przerwą 30–33 s między osobami. Pozostali
-          dostaną odpowiedź w kolejnych 10 minutach. Odpowiedź pod komentarzem wpisz w kilku
-          wersjach, każdą w osobnej linii, a automat losuje jedną. Nie wstawiaj linków w odpowiedzi
-          publicznej, link jest w wiadomości prywatnej. Zanim Meta zatwierdzi aplikację (App
-          Review), wiadomości dojdą tylko do osób dodanych do aplikacji w Meta for Developers.
+          Automat odpowiada do 15 osobom na 10 minut, z kilkusekundowymi przerwami. Odpowiedź pod
+          komentarzem możesz wpisać w kilku wersjach, każdą w osobnej linii, a automat losuje jedną.
+          Zanim Meta zatwierdzi aplikację (App Review), wiadomości dojdą tylko do osób dodanych do
+          aplikacji w Meta for Developers.
         </p>
 
         {missingSetup ? <SetupNotice /> : null}

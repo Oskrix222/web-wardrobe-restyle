@@ -91,7 +91,7 @@ albo nagrany osobno i doklejony):
    zgód.
 2. **Ustawienia automatu.** Pokaż treść wiadomości i włączone przełączniki.
 3. **Komentarz.** Na koncie testera skomentuj najnowszy post: `RAK`.
-4. **Odpowiedź.** Automat odpisuje po 30 s – 10 min. Wytnij czekanie. Pokaż na koncie testera
+4. **Odpowiedź.** Automat odpisuje w ciągu 10 min. Wytnij czekanie. Pokaż na koncie testera
    wiadomość prywatną od OSCare i odpowiedź pod komentarzem, a w panelu wpis w „Ostatnich
    odpowiedziach” ze statusem „wysłano”.
 5. **Publikacja.** Panel → Treści → Kalendarz → przy zatwierdzonym poście „Opublikuj teraz”, a potem
@@ -119,8 +119,7 @@ What the app does:
    person ONE private reply (Instagram/Messenger private replies API) with the link they asked for,
    and optionally a short public reply under the comment. It never messages anyone who did not
    comment, never sends a second message, and replies only within 7 days of the comment.
-   Replies are paced like a human: at least 30 seconds after the comment, max 5 people per
-   10 minutes, 30+ seconds apart. Any further conversation is handled manually by our staff.
+   Any further conversation is handled manually by our staff.
 
 Comments are read every 10 minutes, so a reply arrives within about 10 minutes.
 Privacy policy: https://oscare.kubowiczoskar.workers.dev/polityka-prywatnosci
