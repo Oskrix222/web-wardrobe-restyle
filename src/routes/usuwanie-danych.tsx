@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { BUSINESS, CONTACT_PHONES, telHref } from "@/config/business";
+import { BUSINESS, PRIMARY_PHONE, telHref } from "@/config/business";
 import { seoHead } from "@/lib/seo";
 
 const title = "Usuwanie danych — OSCare Ubezpieczenia";
@@ -14,7 +14,8 @@ export const Route = createFileRoute("/usuwanie-danych")({
 });
 
 function DataDeletion() {
-  const contact = CONTACT_PHONES.map((c) => c.phone).join(", ");
+  // Only the main number: this page is what Meta's reviewers check.
+  const contact = PRIMARY_PHONE;
   return (
     <div className="legal-page">
       <header className="legal-page__header">
@@ -72,14 +73,7 @@ function DataDeletion() {
             </p>
             <p>
               Administratorzy: {BUSINESS.name}, {BUSINESS.street}, {BUSINESS.postalCode}{" "}
-              {BUSINESS.city}. Telefon:{" "}
-              {CONTACT_PHONES.map((c, i) => (
-                <span key={c.phone}>
-                  {i > 0 ? ", " : ""}
-                  <a href={telHref(c.phone)}>{c.phone}</a>
-                </span>
-              ))}
-              .
+              {BUSINESS.city}. Telefon: <a href={telHref(PRIMARY_PHONE)}>{PRIMARY_PHONE}</a>.
             </p>
 
             <h2 id="english" lang="en">
