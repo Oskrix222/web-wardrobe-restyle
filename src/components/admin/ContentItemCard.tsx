@@ -15,6 +15,12 @@ import {
   type ContentItem,
   type ContentKind,
 } from "@/lib/content-admin";
+import {
+  countHashtags,
+  facebookCaption,
+  IG_CAPTION_LIMIT,
+  MAX_HASHTAGS,
+} from "@/lib/caption-rules";
 import { publishItemNow } from "@/lib/content.functions";
 
 const KIND_LABEL: Record<ContentKind, string> = {
@@ -39,8 +45,6 @@ const CHANNELS: Record<ContentKind, { value: ContentChannel; label: string }[]> 
     { value: "facebook", label: "Facebook" },
   ],
 };
-
-const IG_CAPTION_LIMIT = 2200;
 
 const weekday = new Intl.DateTimeFormat("pl-PL", { weekday: "long", timeZone: "Europe/Warsaw" });
 const dayMonth = new Intl.DateTimeFormat("pl-PL", {
@@ -158,7 +162,8 @@ export function ContentItemCard({
   const images = item.media.filter((m) => m.type === "image");
   const captionDirty = caption !== item.caption || firstComment !== item.firstComment;
   const whenDirty = when !== toLocalInput(item.scheduledAt);
-  const hashtags = (caption.match(/#[\p{L}\p{N}_]+/gu) ?? []).length;
+  const hashtags = countHashtags(caption);
+  const fbCaption = item.captionFacebook || facebookCaption(caption, campaign?.keyword);
 
   const run = async (label: string, action: () => Promise<void>) => {
     setBusy(label);
@@ -359,7 +364,7 @@ export function ContentItemCard({
           ) : (
             <>
               <label className="content-item__label">
-                Opis (ten sam na Instagram i Facebook)
+                Opis
                 <textarea
                   value={caption}
                   onChange={(e) => setCaption(e.target.value)}
@@ -369,13 +374,27 @@ export function ContentItemCard({
               </label>
               <p
                 className={
-                  caption.length > IG_CAPTION_LIMIT || hashtags > 30
+                  caption.length > IG_CAPTION_LIMIT || hashtags > MAX_HASHTAGS
                     ? "content-item__count is-over"
                     : "content-item__count"
                 }
               >
-                {caption.length} / {IG_CAPTION_LIMIT} znaków · {hashtags} / 30 hasztagów
+                {caption.length} / {IG_CAPTION_LIMIT} znaków · {hashtags} / {MAX_HASHTAGS} hasztagów
+                {hashtags > MAX_HASHTAGS
+                  ? " — Instagram dopuszcza 5, nadmiarowe usunę przy publikacji"
+                  : ""}
               </p>
+              {item.channels.includes("facebook") && fbCaption !== caption ? (
+                <details className="content-item__fb">
+                  <summary>Wersja na Facebooka (bez prośby o komentarz)</summary>
+                  <p className="content-item__hint">
+                    Facebook obcina zasięg postom, które proszą o komentarz („Napisz{" "}
+                    {campaign?.keyword ?? "SŁOWO"}”). Tam zamiast tego zdania idzie zaproszenie do
+                    wiadomości.
+                  </p>
+                  <p className="content-item__excerpt">{fbCaption}</p>
+                </details>
+              ) : null}
               <label className="content-item__label">
                 Pierwszy komentarz (link do wpisu — dodaje się sam zaraz po publikacji)
                 <textarea
@@ -477,6 +496,18 @@ export function ContentItemCard({
                   </label>
                 ))}
               </fieldset>
+            ) : null}
+
+            {item.kind !== "blog" ? (
+              <label className="content-item__ai">
+                <input
+                  type="checkbox"
+                  checked={item.details.ai === true}
+                  onChange={() => save({ details: { ...item.details, ai: !item.details.ai } })}
+                />
+                Zrobione z AI
+                <small>oznaczy post etykietą „Informacje o AI” na Instagramie</small>
+              </label>
             ) : null}
 
             <div className="content-item__actions">

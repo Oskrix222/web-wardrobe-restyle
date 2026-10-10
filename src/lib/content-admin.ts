@@ -18,6 +18,8 @@ export type ReelScene = { time: string; shot: string; say?: string; text?: strin
 
 export type ContentDetails = {
   alt?: string;
+  /** Graphics/video made with AI — published with Instagram's "AI info" label. */
+  ai?: boolean;
   dm?: string;
   google?: string;
   links?: { label: string; url: string }[];

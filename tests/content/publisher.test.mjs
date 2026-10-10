@@ -150,9 +150,13 @@ test("publishes an approved week: blog on the site, posts/stories/reels on Insta
   assert.ok(containers.some((p) => p.media_type === "STORIES"));
   assert.equal(containers.filter((p) => p.media_type === "REELS").length, 2);
 
-  // Facebook: same caption on the photo post, story, reel ≤ 90 s, video > 90 s.
+  // Facebook: the same caption, but "comment RAK" (engagement bait there) becomes an
+  // invitation to write; photo post, story, reel ≤ 90 s, video > 90 s.
   const feed = meta.graph("POST", "feed")[0].params;
-  assert.equal(feed.message, byId("post").caption);
+  assert.equal(
+    feed.message,
+    "Opis post. Chcesz ofertę? Napisz do nas wiadomość albo zadzwoń: +48 539 075 385.",
+  );
   assert.equal(Object.keys(feed).filter((k) => k.startsWith("attached_media")).length, 2);
   assert.equal(meta.graph("POST", "photo_stories").length, 1);
   assert.equal(meta.graph("POST", "videos").length, 1, "95 s reel goes to Facebook as a video");

@@ -21,6 +21,7 @@ import {
   sendPrivateReply,
   type MetaAccount,
 } from "@/lib/meta-graph.server";
+import { facebookCaption, limitHashtags } from "@/lib/caption-rules";
 import { r2Delete } from "@/lib/r2.server";
 import { createAdminClient, type AdminClient } from "@/lib/supabase-admin.server";
 import { countTransfer, LimitError } from "@/lib/usage-guard.server";
@@ -47,6 +48,9 @@ type PublishState = {
 type AutoReplyChannel = { enabled: boolean; message: string; publicReply: string };
 
 const MAX_ATTEMPTS = 4;
+// Keyword replies per cron run (every 10 min), sent a few seconds apart: a burst of
+// identical DMs is what Instagram's spam filters look for.
+const MAX_REPLIES_PER_RUN = 15;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export type PublisherReport = {
@@ -110,30 +114,36 @@ const imagesOf = (item: ItemRow) =>
   (item.media as Media[]).filter((m) => m.type === "image").map((m) => m.url);
 const videoOf = (item: ItemRow) => (item.media as Media[]).find((m) => m.type === "video");
 
+type ItemDetails = { alt?: string; ai?: boolean };
+
 async function publishInstagram(acc: MetaAccount, item: ItemRow, state: ChannelState) {
   const images = imagesOf(item);
-  const details = (item.details ?? {}) as { alt?: string };
+  const details = (item.details ?? {}) as ItemDetails;
+  const caption = limitHashtags(item.caption);
+  // "AI info" label for AI-made graphics/video — unlabeled AI people cost reach.
+  const ai = details.ai === true;
 
   if (!state.containerId) {
     if (item.kind === "reel") {
       const video = videoOf(item);
       if (!video) throw new Error("Brak wgranej rolki (wideo).");
-      state.containerId = await igCreateReel(acc, video.url, item.caption);
+      state.containerId = await igCreateReel(acc, video.url, caption, ai);
     } else if (item.kind === "story") {
       if (!images[0]) throw new Error("Brak grafiki story.");
-      state.containerId = await igCreateImage(acc, { imageUrl: images[0], story: true });
+      state.containerId = await igCreateImage(acc, { imageUrl: images[0], story: true, ai });
     } else if (images.length > 1) {
       const children: string[] = [];
       for (const url of images.slice(0, 10)) {
         children.push(await igCreateImage(acc, { imageUrl: url, carouselItem: true }));
       }
-      state.containerId = await igCreateCarousel(acc, children, item.caption);
+      state.containerId = await igCreateCarousel(acc, children, caption, ai);
     } else {
       if (!images[0]) throw new Error("Brak grafiki posta.");
       state.containerId = await igCreateImage(acc, {
         imageUrl: images[0],
-        caption: item.caption,
+        caption,
         altText: details.alt,
+        ai,
       });
     }
   }
@@ -154,9 +164,15 @@ async function publishInstagram(acc: MetaAccount, item: ItemRow, state: ChannelS
   state.done = true;
 }
 
-async function publishFacebook(acc: MetaAccount, item: ItemRow, state: ChannelState) {
-  // Same content as on Instagram, unless a separate Facebook caption was written.
-  const caption = item.caption_facebook || item.caption;
+async function publishFacebook(
+  acc: MetaAccount,
+  item: ItemRow,
+  state: ChannelState,
+  keyword: string | null,
+) {
+  // Same content as on Instagram (minus "comment KEYWORD", which Facebook demotes),
+  // unless a separate Facebook caption was written.
+  const caption = item.caption_facebook || facebookCaption(item.caption, keyword);
   if (item.kind === "post") {
     const images = imagesOf(item);
     if (!images.length) throw new Error("Brak grafiki posta.");
@@ -207,6 +223,15 @@ async function publishBlog(db: AdminClient, item: ItemRow): Promise<string> {
     .single();
   if (error) throw error;
   return `/blog/${data.slug}`;
+}
+
+async function campaignKeyword(db: AdminClient, item: ItemRow): Promise<string | null> {
+  const { data } = await db
+    .from("content_campaigns")
+    .select("keyword")
+    .eq("id", item.campaign_id)
+    .maybeSingle();
+  return data?.keyword ?? null;
 }
 
 /** Big reel files live in R2 only until the networks have them. */
@@ -291,7 +316,9 @@ async function processItem(
       const channelState = (state[channel] ??= {});
       if (!channelState.done) {
         if (channel === "instagram") await publishInstagram(acc, item, channelState);
-        if (channel === "facebook") await publishFacebook(acc, item, channelState);
+        if (channel === "facebook") {
+          await publishFacebook(acc, item, channelState, await campaignKeyword(db, item));
+        }
       }
       if (channelState.done) await addFirstComment(acc, item, channel, channelState);
     }
@@ -332,6 +359,15 @@ function mentionsKeyword(comment: string, keyword: string) {
 const fill = (template: string, values: Record<string, string>) =>
   template.replace(/\{(imie|slowo|link)\}/g, (_, key: string) => values[key] ?? "").trim();
 
+/** Each line of the public reply is a variant — the same sentence under every comment looks like a bot. */
+const pickVariant = (template: string) => {
+  const variants = template
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
+  return variants[Math.floor(Math.random() * variants.length)] ?? "";
+};
+
 /** Answers comments containing the campaign keyword on posts/reels from the last 7 days. */
 async function answerKeywordComments(db: AdminClient, acc: MetaAccount, report: PublisherReport) {
   const { data: setting } = await db
@@ -363,6 +399,7 @@ async function answerKeywordComments(db: AdminClient, acc: MetaAccount, report: 
       items.map((i) => i.id),
     );
   const seen = new Set((handled ?? []).map((h) => h.comment_id));
+  let sent = 0;
 
   for (const item of items) {
     const keyword = keywordOf.get(item.campaign_id);
@@ -377,6 +414,7 @@ async function answerKeywordComments(db: AdminClient, acc: MetaAccount, report: 
         platform === "instagram" ? igListComments(acc, objectId) : fbListComments(acc, objectId)
       ).catch(() => []);
       for (const c of comments) {
+        if (sent >= MAX_REPLIES_PER_RUN) return; // the rest waits for the next run
         const own =
           c.authorId === acc.igUserId || c.authorId === acc.pageId || c.author === acc.igUsername;
         if (seen.has(c.id) || own || !mentionsKeyword(c.text, keyword)) continue;
@@ -384,9 +422,12 @@ async function answerKeywordComments(db: AdminClient, acc: MetaAccount, report: 
         const values = { imie: c.author, slowo: keyword, link };
         let error: string | null = null;
         try {
+          if (sent > 0) await sleep(2000 + Math.random() * 3000);
+          sent++;
           await sendPrivateReply(acc, platform, c.id, fill(settings.message, values));
-          if (settings.publicReply.trim()) {
-            await replyUnderComment(acc, platform, c.id, fill(settings.publicReply, values));
+          const publicReply = pickVariant(settings.publicReply);
+          if (publicReply) {
+            await replyUnderComment(acc, platform, c.id, fill(publicReply, values));
           }
           report.replies++;
         } catch (e) {

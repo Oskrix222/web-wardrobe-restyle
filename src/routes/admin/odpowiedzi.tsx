@@ -89,6 +89,14 @@ function AdminReplies() {
           tylko raz. W tekstach możesz użyć: <code>{"{imie}"}</code> (imię lub nazwa konta),{" "}
           <code>{"{slowo}"}</code> (słowo klucz), <code>{"{link}"}</code> (link do wpisu na blogu).
         </p>
+        <p className="content-replies__hint">
+          <b>Bezpiecznie dla konta:</b> automat odpowiada co najwyżej 15 osobom na 10 minut, z
+          kilkusekundowymi przerwami. Odpowiedź pod komentarzem wpisz w kilku wersjach, każdą w
+          osobnej linii, a automat losuje jedną. Ten sam tekst pod każdym komentarzem wygląda jak
+          bot. Nie wstawiaj linków w odpowiedzi publicznej, link jest w wiadomości prywatnej. Zanim
+          Meta zatwierdzi aplikację (App Review, dostęp „Advanced”), wiadomości dojdą tylko do osób
+          dodanych do aplikacji w Meta for Developers.
+        </p>
 
         {missingSetup ? <SetupNotice /> : null}
 
@@ -117,9 +125,9 @@ function AdminReplies() {
                     />
                   </label>
                   <label>
-                    Odpowiedź pod komentarzem (widoczna dla wszystkich)
+                    Odpowiedź pod komentarzem (widoczna dla wszystkich, jedna wersja na linię)
                     <textarea
-                      rows={2}
+                      rows={4}
                       value={settings[key].publicReply}
                       placeholder="Puste = bez odpowiedzi pod komentarzem"
                       onChange={(e) => change(key, { publicReply: e.target.value })}

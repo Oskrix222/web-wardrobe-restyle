@@ -162,7 +162,7 @@ Oskar, OSCare`,
       length: "25–30 s",
       hook: "„Ubezpieczenie a psycholog? Brzmi dziwnie, ale posłuchaj.” Napis: POLISA A PSYCHOLOG?",
       cover: "Psycholog w ramach polisy? TAK",
-      audio: "Twój głos + cichy, spokojny podkład z biblioteki Instagrama",
+      audio: "Twój głos + cichy, spokojny podkład z Meta Sound Collection (wmiksuj przed wgraniem)",
       scenes: [
         { time: "0–2 s", shot: "Zbliżenie, patrzysz w kamerę", say: "Ubezpieczenie a psycholog? Brzmi dziwnie, ale posłuchaj.", text: "POLISA A PSYCHOLOG? 🤔" },
         { time: "2–8 s", shot: "Plan średni, gest „stop”", say: "Wiele polis na życie i ubezpieczeń zdrowotnych ma dziś pakiety ze wsparciem psychologicznym.", text: "MIT: polisa nie pomoże" },
@@ -204,7 +204,7 @@ Napisz „WSPARCIE”, a sprawdzimy, co już masz.
       length: "30–35 s",
       hook: "„Kupujesz polisę z psychologiem? Zadaj te 3 pytania.” Napis: 3 PYTANIA PRZED ZAKUPEM",
       cover: "3 pytania przed zakupem",
-      audio: "Twój głos + cichy podkład z biblioteki Instagrama",
+      audio: "Twój głos + cichy podkład z Meta Sound Collection (wmiksuj przed wgraniem)",
       scenes: [
         { time: "0–3 s", shot: "Zbliżenie, unosisz trzy palce", say: "Kupujesz polisę z dostępem do psychologa? Zadaj te trzy pytania.", text: "3 PYTANIA PRZED ZAKUPEM" },
         { time: "3–12 s", shot: "Jeden palec", say: "Pierwsze: ile konsultacji dostaję w roku? I czy osobno u psychologa i u psychiatry?", text: "1. Ile sesji w roku?" },

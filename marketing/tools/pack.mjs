@@ -44,7 +44,8 @@ export const fillLink = (text, href) => (text ?? "").replaceAll("{link}", href).
 export function captionsFor(brand, spec) {
   const { link } = campaignLinks(brand, spec);
   const c = spec.captions ?? {};
-  const hashtags = (spec.hashtags ?? []).join(" ");
+  // Instagram allows 5 hashtags per post; extra ones would be cut at publishing anyway.
+  const hashtags = (spec.hashtags ?? []).slice(0, 5).join(" ");
   return {
     instagram: [fillLink(c.instagram, link.bio), hashtags].filter(Boolean).join("\n\n"),
     facebook: fillLink(c.facebook, link.facebook) || `${fillLink(c.instagram, link.facebook)}\n\n👉 ${link.facebook}`,

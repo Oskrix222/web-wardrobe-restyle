@@ -215,12 +215,15 @@ export async function igCreateImage(
     altText?: string | undefined;
     carouselItem?: boolean;
     story?: boolean;
+    /** Adds Instagram's "AI info" label. Never on carousel items — only the carousel itself. */
+    ai?: boolean;
   },
 ): Promise<string> {
   const params: Record<string, string> = { image_url: opts.imageUrl, access_token: acc.pageToken };
   if (opts.caption) params["caption"] = opts.caption;
   if (opts.carouselItem) params["is_carousel_item"] = "true";
   if (opts.story) params["media_type"] = "STORIES";
+  if (opts.ai && !opts.carouselItem) params["is_ai_generated"] = "true";
   if (opts.altText && !opts.story) params["alt_text"] = opts.altText;
   try {
     return (await graph<Created>(`${acc.igUserId}/media`, params, "POST")).id;
@@ -234,7 +237,14 @@ export async function igCreateImage(
   }
 }
 
-export async function igCreateCarousel(acc: MetaAccount, children: string[], caption: string) {
+const aiParam = (ai: boolean): Record<string, string> => (ai ? { is_ai_generated: "true" } : {});
+
+export async function igCreateCarousel(
+  acc: MetaAccount,
+  children: string[],
+  caption: string,
+  ai = false,
+) {
   return (
     await graph<Created>(
       `${acc.igUserId}/media`,
@@ -242,6 +252,7 @@ export async function igCreateCarousel(acc: MetaAccount, children: string[], cap
         media_type: "CAROUSEL",
         children: children.join(","),
         caption,
+        ...aiParam(ai),
         access_token: acc.pageToken,
       },
       "POST",
@@ -249,7 +260,12 @@ export async function igCreateCarousel(acc: MetaAccount, children: string[], cap
   ).id;
 }
 
-export async function igCreateReel(acc: MetaAccount, videoUrl: string, caption: string) {
+export async function igCreateReel(
+  acc: MetaAccount,
+  videoUrl: string,
+  caption: string,
+  ai = false,
+) {
   return (
     await graph<Created>(
       `${acc.igUserId}/media`,
@@ -258,6 +274,7 @@ export async function igCreateReel(acc: MetaAccount, videoUrl: string, caption: 
         video_url: videoUrl,
         caption,
         share_to_feed: "true",
+        ...aiParam(ai),
         access_token: acc.pageToken,
       },
       "POST",

@@ -702,6 +702,41 @@
     }
   }
 
+  &__ai {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-1 $space-2;
+    cursor: pointer;
+
+    input {
+      accent-color: var(--terracotta);
+    }
+
+    small {
+      color: var(--muted-foreground);
+      font-size: $text-xs;
+    }
+  }
+
+  &__fb {
+    display: grid;
+    gap: $space-2;
+    padding: $space-3;
+    border: 1px solid var(--border);
+    border-radius: $radius-md;
+
+    summary {
+      cursor: pointer;
+      font-size: $text-sm;
+      font-weight: $weight-semibold;
+    }
+
+    .content-item__excerpt {
+      white-space: pre-line;
+    }
+  }
+
   &__actions {
     display: flex;
     align-items: center;

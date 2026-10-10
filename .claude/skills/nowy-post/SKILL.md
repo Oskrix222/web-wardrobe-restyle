@@ -68,7 +68,7 @@ Talk to the user in plain Polish. Never ask them to run commands.
 | `carousel` | 3 × `{ title, text }`; the CTA slide is added automatically (`carouselCta` to override). |
 | `story` | `{ label, text }`. |
 | `captions` | `instagram`, `alt`, `facebook` (with `{link}`), `google`, optional `linkedin` (B2B only). |
-| `hashtags`, `dm` | 3–5 hashtags; DM reply with `{link}`. |
+| `hashtags`, `dm` | 3–5 hashtags (never more than 5); DM reply with `{link}`. |
 | `blog` | `title`, `excerpt`, `keyword`, `keywords`, `html` (`slug` only to override). |
 | `reels` | Exactly 3 × `{ title, format, length, hook, cover, audio, scenes: [{ time, shot, say, text }], tips, caption }`. |
 | `plan`, `notes` | Dated steps (shown in paczka.html); things to check before publishing (shown in the panel). |
@@ -171,6 +171,16 @@ Each: hook within 2 s (spoken + on-screen), scenes of 2–10 s, last scene says 
 cover text ≤ 5 words, audio suggestion, filming tip, caption ≤ 300 characters with the same
 keyword CTA + 3 hashtags. Reels go to Instagram and Facebook; Facebook Reels max 90 s, so
 keep scripts ≤ 90 s.
+
+Platform rules (ban/reach safety, checked 2026-10):
+- Max 5 hashtags anywhere (Instagram's limit; the publisher drops extras).
+- Facebook demotes "comment X" asks (engagement bait). The publisher swaps the keyword sentence
+  for "Napisz do nas wiadomość…" on Facebook automatically; don't add other "like/share/tag" asks.
+- Audio: the reel is uploaded as a file, so Instagram-library music can't be attached. Suggest the
+  user's own voice or a track from Meta Sound Collection (free for business accounts) mixed in
+  the editor. Never popular songs: business accounts get muted/blocked.
+- If graphics or video show AI-made people, tell the user to tick "Zrobione z AI" in the panel
+  (Instagram "AI info" label); unlabeled AI people lose recommendations.
 
 ### Plan
 Blog first (all links point to it) → reel 1 → post/carousel + story + Facebook + Google on the
