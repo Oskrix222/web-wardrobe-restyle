@@ -107,16 +107,39 @@
     color: var(--muted-foreground);
   }
 
+  // One week = one card. Closed: a summary row with chips. Open: the full item cards.
   &__week {
-    margin-top: $space-10;
+    margin-top: $space-4;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: $radius-xl;
+    scroll-margin-top: $space-4;
+
+    &.is-open {
+      padding-bottom: $space-4;
+      border-color: color-mix(in oklch, var(--terracotta) 35%, var(--border));
+    }
   }
 
   &__week-head {
     display: flex;
     flex-direction: column;
-    gap: $space-2;
-    padding-bottom: $space-3;
-    border-bottom: 1px solid var(--border);
+    gap: $space-3;
+    padding: $space-4 $space-5;
+  }
+
+  &__week-toggle {
+    position: relative;
+    display: grid;
+    gap: $space-1;
+    width: 100%;
+    padding: 0 $space-8 0 0;
+    border: none;
+    background: none;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
 
     h2 {
       font-family: $font-display;
@@ -125,16 +148,128 @@
       text-transform: uppercase;
       letter-spacing: 0.02em;
     }
+
+    &:focus-visible {
+      @include focus-ring;
+      border-radius: $radius-md;
+    }
+  }
+
+  &__week-when {
+    font-family: $font-mono;
+    font-size: $text-xs;
+    text-transform: uppercase;
+    letter-spacing: $tracking-wide;
+    color: var(--terracotta);
+  }
+
+  &__week-topic {
+    font-size: $text-sm;
+    font-weight: $weight-semibold;
+  }
+
+  &__week-progress {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-2 $space-3;
+    margin-top: $space-1;
+    font-size: $text-xs;
+    color: var(--muted-foreground);
+  }
+
+  &__week-bar {
+    width: 6rem;
+    height: 0.4rem;
+    border-radius: $radius-full;
+    background-color: var(--secondary);
+    overflow: hidden;
+
+    span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background-color: oklch(0.62 0.12 150);
+    }
+  }
+
+  &__week-chevron {
+    position: absolute;
+    top: 0.25rem;
+    right: 0;
+    width: 1.4rem;
+    height: 1.4rem;
+    color: var(--muted-foreground);
+  }
+
+  // Closed week: one chip per item with its status colour.
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-2;
+
+    li {
+      display: grid;
+      gap: 0.1rem;
+      min-width: 6.5rem;
+      padding: $space-2 $space-3;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--border);
+      border-radius: 0 $radius-md $radius-md 0;
+      font-size: $text-xs;
+      background-color: var(--background);
+
+      b {
+        font-weight: $weight-semibold;
+      }
+
+      span {
+        color: var(--muted-foreground);
+      }
+
+      em {
+        font-style: normal;
+        color: var(--muted-foreground);
+      }
+
+      &.is-todo {
+        border-left-color: var(--terracotta);
+
+        em {
+          color: var(--terracotta-strong);
+        }
+      }
+
+      &.is-ok,
+      &.is-done {
+        border-left-color: oklch(0.62 0.12 150);
+      }
+
+      &.is-busy {
+        border-left-color: oklch(0.62 0.1 240);
+      }
+
+      &.is-error {
+        border-left-color: var(--destructive);
+
+        em {
+          color: var(--destructive);
+        }
+      }
+    }
   }
 
   &__campaign {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: $space-2;
+    justify-content: space-between;
+    gap: $space-2 $space-4;
+    padding-top: $space-3;
+    border-top: 1px solid var(--border);
     font-size: $text-sm;
 
-    span {
+    > span {
       font-weight: $weight-semibold;
     }
 
@@ -144,44 +279,65 @@
       font-size: $text-xs;
       color: var(--terracotta);
     }
+  }
+
+  &__campaign-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-2;
 
     button {
-      padding: 0.15rem 0.6rem;
+      display: inline-flex;
+      align-items: center;
+      gap: $space-1;
+      padding: 0.3rem 0.7rem;
       border: 1px solid var(--border);
       border-radius: $radius-full;
       background-color: var(--card);
       font-size: $text-xs;
       cursor: pointer;
 
+      svg {
+        width: 0.85rem;
+        height: 0.85rem;
+      }
+
       &:hover {
         border-color: var(--terracotta);
         color: var(--terracotta);
       }
-    }
 
-    details {
-      flex-basis: 100%;
-      font-size: $text-xs;
-      color: var(--muted-foreground);
-
-      summary {
-        cursor: pointer;
-        color: var(--terracotta);
-      }
-
-      ul {
-        margin: $space-2 0 0;
-        padding-left: $space-5;
-        list-style: disc;
+      &.is-danger:hover {
+        border-color: var(--destructive);
+        color: var(--destructive);
       }
     }
   }
 
+  &__notes {
+    flex-basis: 100%;
+    font-size: $text-xs;
+    color: var(--muted-foreground);
+
+    summary {
+      cursor: pointer;
+      color: var(--terracotta);
+      font-weight: $weight-semibold;
+    }
+
+    ul {
+      margin: $space-2 0 0;
+      padding-left: $space-5;
+      list-style: disc;
+      line-height: $leading-relaxed;
+    }
+  }
+
   &__items {
-    margin-top: $space-4;
     display: flex;
     flex-direction: column;
     gap: $space-4;
+    padding: 0 $space-4;
   }
 }
 
@@ -1032,6 +1188,85 @@
 
 .content-cal__main > .content-cal__week:first-child {
   margin-top: 0;
+}
+
+// Sidebar: list of weeks with progress — click to open and jump to one.
+.cal-weeks {
+  margin-top: $space-3;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+
+  button {
+    display: grid;
+    gap: 0.2rem;
+    width: 100%;
+    padding: $space-2 $space-3;
+    border: 1px solid var(--border);
+    border-radius: $radius-lg;
+    background: none;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--terracotta);
+    }
+
+    &.is-open {
+      border-color: var(--terracotta);
+      background-color: var(--terracotta-tint);
+    }
+  }
+
+  &__when {
+    font-family: $font-mono;
+    font-size: $text-xs;
+    color: var(--muted-foreground);
+  }
+
+  &__topic {
+    font-size: $text-sm;
+    font-weight: $weight-semibold;
+    line-height: $leading-snug;
+  }
+
+  &__bar {
+    height: 0.3rem;
+    border-radius: $radius-full;
+    background-color: var(--secondary);
+    overflow: hidden;
+
+    span {
+      display: block;
+      height: 100%;
+      background-color: oklch(0.62 0.12 150);
+    }
+  }
+
+  &__todo {
+    font-size: $text-xs;
+    color: var(--terracotta-strong);
+
+    &.is-done {
+      color: oklch(0.5 0.12 150);
+    }
+
+    &.is-error {
+      color: var(--destructive);
+    }
+  }
+}
+
+.cal-side__plan-link {
+  font-size: $text-xs;
+  color: var(--muted-foreground);
+
+  a {
+    color: var(--terracotta);
+    font-weight: $weight-semibold;
+  }
 }
 
 .cal-side {

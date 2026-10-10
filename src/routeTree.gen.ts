@@ -21,6 +21,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminKalendarzRouteImport } from './routes/admin/kalendarz'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminOdpowiedziRouteImport } from './routes/admin/odpowiedzi'
+import { Route as AdminPlanRouteImport } from './routes/admin/plan'
 import { Route as AdminPolaczeniaRouteImport } from './routes/admin/polaczenia'
 import { Route as AdminPrawdyRouteImport } from './routes/admin/prawdy'
 import { Route as AdminStatystykiRouteImport } from './routes/admin/statystyki'
@@ -93,6 +94,11 @@ const AdminOdpowiedziRoute = AdminOdpowiedziRouteImport.update({
   path: '/odpowiedzi',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPlanRoute = AdminPlanRouteImport.update({
+  id: '/plan',
+  path: '/plan',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminPolaczeniaRoute = AdminPolaczeniaRouteImport.update({
   id: '/polaczenia',
   path: '/polaczenia',
@@ -161,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/admin/kalendarz': typeof AdminKalendarzRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/odpowiedzi': typeof AdminOdpowiedziRoute
+  '/admin/plan': typeof AdminPlanRoute
   '/admin/polaczenia': typeof AdminPolaczeniaRoute
   '/admin/prawdy': typeof AdminPrawdyRoute
   '/admin/statystyki': typeof AdminStatystykiRoute
@@ -185,6 +192,7 @@ export interface FileRoutesByTo {
   '/admin/kalendarz': typeof AdminKalendarzRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/odpowiedzi': typeof AdminOdpowiedziRoute
+  '/admin/plan': typeof AdminPlanRoute
   '/admin/polaczenia': typeof AdminPolaczeniaRoute
   '/admin/prawdy': typeof AdminPrawdyRoute
   '/admin/statystyki': typeof AdminStatystykiRoute
@@ -211,6 +219,7 @@ export interface FileRoutesById {
   '/admin/kalendarz': typeof AdminKalendarzRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/odpowiedzi': typeof AdminOdpowiedziRoute
+  '/admin/plan': typeof AdminPlanRoute
   '/admin/polaczenia': typeof AdminPolaczeniaRoute
   '/admin/prawdy': typeof AdminPrawdyRoute
   '/admin/statystyki': typeof AdminStatystykiRoute
@@ -238,6 +247,7 @@ export interface FileRouteTypes {
     | '/admin/kalendarz'
     | '/admin/login'
     | '/admin/odpowiedzi'
+    | '/admin/plan'
     | '/admin/polaczenia'
     | '/admin/prawdy'
     | '/admin/statystyki'
@@ -262,6 +272,7 @@ export interface FileRouteTypes {
     | '/admin/kalendarz'
     | '/admin/login'
     | '/admin/odpowiedzi'
+    | '/admin/plan'
     | '/admin/polaczenia'
     | '/admin/prawdy'
     | '/admin/statystyki'
@@ -287,6 +298,7 @@ export interface FileRouteTypes {
     | '/admin/kalendarz'
     | '/admin/login'
     | '/admin/odpowiedzi'
+    | '/admin/plan'
     | '/admin/polaczenia'
     | '/admin/prawdy'
     | '/admin/statystyki'
@@ -402,6 +414,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOdpowiedziRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/plan': {
+      id: '/admin/plan'
+      path: '/plan'
+      fullPath: '/admin/plan'
+      preLoaderRoute: typeof AdminPlanRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/polaczenia': {
       id: '/admin/polaczenia'
       path: '/polaczenia'
@@ -486,6 +505,7 @@ interface AdminRouteChildren {
   AdminKalendarzRoute: typeof AdminKalendarzRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminOdpowiedziRoute: typeof AdminOdpowiedziRoute
+  AdminPlanRoute: typeof AdminPlanRoute
   AdminPolaczeniaRoute: typeof AdminPolaczeniaRoute
   AdminPrawdyRoute: typeof AdminPrawdyRoute
   AdminStatystykiRoute: typeof AdminStatystykiRoute
@@ -500,6 +520,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminKalendarzRoute: AdminKalendarzRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminOdpowiedziRoute: AdminOdpowiedziRoute,
+  AdminPlanRoute: AdminPlanRoute,
   AdminPolaczeniaRoute: AdminPolaczeniaRoute,
   AdminPrawdyRoute: AdminPrawdyRoute,
   AdminStatystykiRoute: AdminStatystykiRoute,

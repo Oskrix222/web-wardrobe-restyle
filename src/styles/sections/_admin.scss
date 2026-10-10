@@ -49,10 +49,9 @@
   &__bar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     flex-wrap: wrap;
-    gap: $space-4;
-    padding: $space-4 $space-6;
+    gap: $space-3 $space-6;
+    padding: $space-3 $space-6;
     background-color: var(--card);
     border-bottom: 1px solid var(--border);
   }
@@ -63,31 +62,108 @@
     color: var(--foreground);
   }
 
-  &__nav {
+  // Level 1: the four sections.
+  &__sections {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-1;
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      gap: $space-2;
+      padding: $space-2 $space-3;
+      border-radius: $radius-lg;
+      font-size: $text-sm;
+      font-weight: $weight-medium;
+      color: var(--muted-foreground);
+
+      svg {
+        width: 1.05rem;
+        height: 1.05rem;
+      }
+
+      &:hover {
+        color: var(--foreground);
+        background-color: var(--secondary);
+      }
+
+      &.is-active {
+        color: var(--terracotta-strong);
+        background-color: var(--terracotta-tint);
+        font-weight: $weight-semibold;
+      }
+    }
+  }
+
+  &__tools {
+    margin-left: auto;
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
-    gap: $space-2 $space-5;
+    gap: $space-4;
     font-size: $text-sm;
 
     a,
     button {
-      color: var(--muted-foreground);
-      font-family: inherit;
-      background: none;
-      border: none;
-      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: $space-1;
       padding: 0;
+      border: none;
+      background: none;
+      font-family: inherit;
+      font-size: inherit;
+      color: var(--muted-foreground);
+      cursor: pointer;
 
-      &:hover,
-      &.is-active {
+      &:hover {
         color: var(--terracotta);
       }
+    }
+
+    svg {
+      width: 0.95rem;
+      height: 0.95rem;
+    }
+  }
+
+  // Level 2: pages of the current section, as tabs under the bar.
+  &__pages {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: $space-1 $space-5;
+    padding: 0 $space-6;
+    background-color: var(--card);
+    border-bottom: 1px solid var(--border);
+    font-size: $text-sm;
+
+    a {
+      padding: $space-3 0;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      color: var(--muted-foreground);
+
+      &:hover {
+        color: var(--foreground);
+      }
 
       &.is-active {
+        color: var(--foreground);
         font-weight: $weight-semibold;
+        border-bottom-color: var(--terracotta);
       }
     }
+  }
+
+  &__pages-label {
+    font-family: $font-mono;
+    font-size: $text-xs;
+    text-transform: uppercase;
+    letter-spacing: $tracking-wide;
+    color: var(--muted-foreground);
+    padding-right: $space-2;
+    border-right: 1px solid var(--border);
   }
 
   &__content {
@@ -857,4 +933,24 @@
   margin-top: $space-2;
   font-size: $text-xs;
   color: var(--muted-foreground);
+}
+
+// -------------------- SETTINGS PAGES ---------------------------
+.admin-settings {
+  max-width: 36rem;
+
+  h1 {
+    @include heading($text-2xl, $text-2xl);
+  }
+
+  &__hint {
+    margin-top: $space-2;
+    font-size: $text-sm;
+    line-height: $leading-relaxed;
+    color: var(--muted-foreground);
+  }
+
+  &__box {
+    margin-top: $space-6;
+  }
 }

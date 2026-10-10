@@ -11,7 +11,7 @@ export default {
   /** e.g. "@oscare.ubezpieczenia" — shown in captions when set. */
   instagram: "",
   /** e.g. "Warszawa" — local hashtags and local SEO phrases when set. */
-  city: "",
+  city: "Jaworzno",
   /** Byline for blog posts (a real person ranks better than a brand). */
   author: "Oskar Kubowicz",
   brandHashtag: "#OSCare",

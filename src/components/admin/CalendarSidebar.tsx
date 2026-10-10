@@ -164,7 +164,7 @@ function SlotEditor({
 }
 
 /** Default days/hours for every new week, plus the blog authors (they alternate weekly). */
-export function WeekPlanBox() {
+export function WeekPlanBox({ heading = true }: { heading?: boolean } = {}) {
   const [plan, setPlan] = useState<WeekPlan | null>(null);
   const [authors, setAuthors] = useState<Author[]>([]);
   const [dirty, setDirty] = useState(false);
@@ -201,11 +201,17 @@ export function WeekPlanBox() {
 
   return (
     <section className="cal-side__box">
-      <h2>Plan tygodnia</h2>
-      <p className="cal-side__hint">
-        Domyślne dni i godziny dla każdego nowego tygodnia. Pojedynczą pozycję przestawisz w jej
-        karcie.
-      </p>
+      {heading ? (
+        <>
+          <h2>Plan tygodnia</h2>
+          <p className="cal-side__hint">
+            Domyślne dni i godziny dla każdego nowego tygodnia. Pojedynczą pozycję przestawisz w jej
+            karcie.
+          </p>
+        </>
+      ) : (
+        <h3 style={{ marginTop: 0 }}>Dni i godziny</h3>
+      )}
       <div className="slot-list">
         <SlotEditor
           label="Wpis na blogu"
