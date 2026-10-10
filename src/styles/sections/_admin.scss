@@ -139,8 +139,16 @@
     font-size: $text-sm;
 
     a {
+      display: inline-flex;
+      align-items: center;
+      gap: $space-2;
       padding: $space-3 0;
       border-bottom: 2px solid transparent;
+
+      svg {
+        width: 0.95rem;
+        height: 0.95rem;
+      }
       margin-bottom: -1px;
       color: var(--muted-foreground);
 

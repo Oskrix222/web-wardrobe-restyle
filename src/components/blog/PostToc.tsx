@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 
 import type { PostHeading } from "@/lib/blog-format";
 
-// The site header is fixed and 70 px tall; a heading counts as "being read" once it passes this line.
+// The site header is fixed and 70 px tall; with the pinned bar the text is readable below this line.
 const HEADER = 70;
 const READ_LINE = 120;
 
@@ -37,15 +37,30 @@ export function PostToc({ headings }: { headings: PostHeading[] }) {
     let frame = 0;
     const update = () => {
       frame = 0;
-      let current = -1;
-      elements.forEach((el, i) => {
-        if (el.getBoundingClientRect().top <= READ_LINE) current = i;
+      // The visible reading area: below the fixed header and the pinned bar.
+      const viewTop = READ_LINE;
+      const viewBottom = window.innerHeight;
+      const contentBox = content.getBoundingClientRect();
+      // Section i runs from its heading to the next one (-1 = intro before the first heading).
+      const bounds = (i: number) => ({
+        start: elements[i]?.getBoundingClientRect().top ?? contentBox.top,
+        end: elements[i + 1]?.getBoundingClientRect().top ?? contentBox.bottom,
       });
-      // How far into the current section the reader is (0–1).
-      const start = (elements[current] ?? content).getBoundingClientRect().top;
-      const next = elements[current + 1];
-      const end = next ? next.getBoundingClientRect().top : content.getBoundingClientRect().bottom;
-      const ratio = Math.min(1, Math.max(0, (READ_LINE - start) / Math.max(1, end - start)));
+      // The section the reader sees the most of on screen wins.
+      let current = -1;
+      let best = -Infinity;
+      for (let i = -1; i < elements.length; i++) {
+        const { start, end } = bounds(i);
+        const seen = Math.min(end, viewBottom) - Math.max(start, viewTop);
+        if (seen > best) {
+          best = seen;
+          current = i;
+        }
+      }
+      // How far through that section the middle of the screen is (0–1).
+      const { start, end } = bounds(current);
+      const middle = (viewTop + viewBottom) / 2;
+      const ratio = Math.min(1, Math.max(0, (middle - start) / Math.max(1, end - start)));
       const tocGone = (navRef.current?.getBoundingClientRect().bottom ?? 0) < HEADER;
       const contentLeft = content.getBoundingClientRect().bottom > READ_LINE;
       setProgress({

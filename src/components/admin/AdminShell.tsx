@@ -1,11 +1,20 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, Navigate, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
+  CalendarClock,
   CalendarDays,
   ChartColumn,
   ExternalLink,
+  FileText,
+  Inbox,
   LogOut,
+  MessageSquareReply,
+  Newspaper,
+  Plug,
   Settings,
+  ShieldCheck,
+  SquarePen,
+  TrendingUp,
   UsersRound,
   type LucideIcon,
 } from "lucide-react";
@@ -26,52 +35,53 @@ type AdminPage = {
     | "/admin/plan"
     | "/admin/polaczenia";
   label: string;
+  icon: LucideIcon;
   /** Other paths that belong to this page (e.g. editing a post belongs to "Wpisy"). */
   match?: (path: string) => boolean;
 };
 type AdminSection = { label: string; icon: LucideIcon; pages: AdminPage[] };
 
 // Two levels: the sections in the top bar, their pages in the row under it.
-// Everyday work lives in "Treści" and "Klienci"; one-off setup in "Ustawienia".
+// Everyday work lives in "Treści" and "Klienci"; everything set up once and
+// left alone (rules, automations, connections) lives in "Ustawienia".
 const SECTIONS: AdminSection[] = [
   {
     label: "Treści",
-    icon: CalendarDays,
+    icon: Newspaper,
     pages: [
-      { to: "/admin/kalendarz", label: "Kalendarz" },
+      { to: "/admin/kalendarz", label: "Kalendarz", icon: CalendarDays },
       {
         to: "/admin/blog",
         label: "Wpisy na blogu",
+        icon: FileText,
         match: (p) => p.startsWith("/admin/blog") && p !== "/admin/blog/new",
       },
-      { to: "/admin/blog/new", label: "Nowy wpis" },
-      { to: "/admin/prawdy", label: "Prawdy" },
+      { to: "/admin/blog/new", label: "Nowy wpis", icon: SquarePen },
     ],
   },
   {
     label: "Klienci",
     icon: UsersRound,
-    pages: [
-      { to: "/admin/zgloszenia", label: "Zgłoszenia" },
-      { to: "/admin/odpowiedzi", label: "Automat odpowiedzi" },
-    ],
+    pages: [{ to: "/admin/zgloszenia", label: "Zgłoszenia", icon: Inbox }],
   },
   {
     label: "Wyniki",
-    icon: ChartColumn,
-    pages: [{ to: "/admin/statystyki", label: "Statystyki bloga" }],
+    icon: TrendingUp,
+    pages: [{ to: "/admin/statystyki", label: "Statystyki bloga", icon: ChartColumn }],
   },
   {
     label: "Ustawienia",
     icon: Settings,
     pages: [
-      { to: "/admin/plan", label: "Plan tygodnia" },
-      { to: "/admin/polaczenia", label: "Połączenia" },
+      { to: "/admin/plan", label: "Plan tygodnia", icon: CalendarClock },
+      { to: "/admin/prawdy", label: "Prawdy", icon: ShieldCheck },
+      { to: "/admin/odpowiedzi", label: "Automat odpowiedzi", icon: MessageSquareReply },
+      { to: "/admin/polaczenia", label: "Połączenia", icon: Plug },
     ],
   },
 ];
 
-const isPageActive = (page: AdminPage, path: string) =>
+const isPageActive = (page: Pick<AdminPage, "to" | "match">, path: string) =>
   page.match ? page.match(path) : path === page.to || path === `${page.to}/`;
 
 /** Gates admin pages behind a Supabase session; shows the shared top bar once logged in. */
@@ -152,16 +162,17 @@ export function AdminShell({ children }: { children: ReactNode }) {
           </button>
         </div>
       </header>
-      {section && section.pages.length > 1 ? (
+      {section ? (
         <nav className="admin-shell__pages" aria-label={`${section.label}: podstrony`}>
           <span className="admin-shell__pages-label">{section.label}</span>
-          {section.pages.map((page) => (
+          {section.pages.map(({ icon: PageIcon, ...page }) => (
             <Link
               key={page.to}
               to={page.to}
               className={isPageActive(page, path) ? "is-active" : undefined}
               aria-current={isPageActive(page, path) ? "page" : undefined}
             >
+              <PageIcon aria-hidden="true" />
               {page.label}
             </Link>
           ))}
