@@ -12,8 +12,10 @@ import { Box, IconCircle } from "@/components/ui/Box";
 import { useReveal } from "@/hooks/useReveal";
 import { cn } from "@/lib/utils";
 import { useInView } from "@/hooks/useInView";
-import team640 from "@/assets/team-business-640.webp";
-import team1280 from "@/assets/team-business-1280.webp";
+import team640 from "@/assets/group-team-640.webp";
+import team960 from "@/assets/group-team-960.webp";
+import team1280 from "@/assets/group-team-1280.webp";
+import team1920 from "@/assets/group-team-1920.webp";
 import { CONTACT_PHONES, telHref } from "@/config/business";
 
 const perks = [
@@ -72,12 +74,13 @@ export function GroupInsurance({ onPick }: { onPick: (value: string) => void }) 
 
         <img
           src={team1280}
-          srcSet={`${team640} 640w, ${team1280} 1280w`}
+          srcSet={`${team640} 640w, ${team960} 960w, ${team1280} 1280w, ${team1920} 1920w`}
           sizes="(min-width: 1024px) 45vw, 100vw"
-          alt="Zespół małej firmy objęty ubezpieczeniem grupowym"
+          alt="Czteroosobowy zespół małej kawiarni — firma objęta ubezpieczeniem grupowym"
           className="group-insurance__image"
+          style={{ objectPosition: "center 35%" }}
           width={1280}
-          height={1024}
+          height={854}
           loading="lazy"
           decoding="async"
         />

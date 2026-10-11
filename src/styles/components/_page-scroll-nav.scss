@@ -2,13 +2,14 @@
 
 // One fixed pair for the whole page (not per-section) — guarantees exactly
 // one up and one down button on screen at any time, each with a steady gap
-// from its edge of the viewport.
+// from its edge of the viewport. Both stay in the page and fade + slide in
+// and out ("is-visible"); the up arrow slides down from the menu, the down
+// arrow rises from the bottom edge.
 .page-scroll-nav {
   // Phones scroll with a thumb anyway; the arrows only crowd the chat button.
   display: none;
   position: fixed;
   left: 50%;
-  transform: translateX(-50%);
   z-index: 40;
   place-items: center;
   width: 2.25rem;
@@ -17,8 +18,15 @@
   background-color: var(--card);
   border: 1px solid var(--border);
   color: var(--terracotta);
-  box-shadow: $shadow-sm;
+  box-shadow: $shadow-card;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(-50%, var(--hide-shift, 0)) scale(0.85);
   transition:
+    opacity 0.3s ease,
+    transform 0.35s cubic-bezier(0.22, 0.8, 0.24, 1),
+    visibility 0s linear 0.35s,
     background-color $transition-base,
     color $transition-base,
     border-color $transition-base;
@@ -26,6 +34,20 @@
   svg {
     width: 1rem;
     height: 1rem;
+  }
+
+  &.is-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translate(-50%, 0) scale(1);
+    transition:
+      opacity 0.3s ease,
+      transform 0.35s cubic-bezier(0.22, 0.8, 0.24, 1),
+      visibility 0s linear 0s,
+      background-color $transition-base,
+      color $transition-base,
+      border-color $transition-base;
   }
 
   &:hover {
@@ -39,10 +61,22 @@
   }
 
   &--top {
+    --hide-shift: -10px;
     top: calc(#{$header-height} + #{$space-4});
   }
 
   &--bottom {
+    --hide-shift: 10px;
     bottom: $space-6;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transform: translate(-50%, 0);
+    transition: opacity 0.2s ease;
+
+    &.is-visible {
+      transform: translate(-50%, 0);
+      transition: opacity 0.2s ease;
+    }
   }
 }

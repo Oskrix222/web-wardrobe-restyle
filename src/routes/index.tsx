@@ -19,10 +19,22 @@ import { GOOGLE_BUSINESS } from "@/config/business";
 import { faqJsonLd, organizationJsonLd, seoHead } from "@/lib/seo";
 import { FAQ } from "@/config/faq";
 import { KEY_STATS } from "@/config/stats";
+import contact640 from "@/assets/contact-signing-640.webp";
+import contact960 from "@/assets/contact-signing-960.webp";
+import contact1280 from "@/assets/contact-signing-1280.webp";
+import contact1920 from "@/assets/contact-signing-1920.webp";
 
 const title = "Ubezpieczenia na życie i zdrowie Jaworzno, Katowice | OSCare";
 const description =
   "Agent ubezpieczeniowy z Jaworzna: ubezpieczenie na życie i zdrowie, mieszkania, turystyczne i grupowe dla firm. Jaworzno, Katowice lub online. Wycena w 24h.";
+
+// Beside the contact form: a couple signing their policy at home.
+const CONTACT_PHOTO = {
+  src: contact1280,
+  srcSet: `${contact640} 640w, ${contact960} 960w, ${contact1280} 1280w, ${contact1920} 1920w`,
+  alt: "Para podpisuje umowę ubezpieczenia przy stole w domu",
+  focus: "center 35%",
+};
 
 export const Route = createFileRoute("/")({
   // Reviews are a nice-to-have: if the feed is down the block just shows a note.
@@ -81,7 +93,11 @@ function Index() {
           <div ref={benefitsReveal.ref} className={cn("benefits__grid", benefitsReveal.className)}>
             <div className="benefits__contact">
               {/* Desktop only: photo + stats beside the form; phones get just the form. */}
-              <AboutHighlights className="benefits__highlights" stats={KEY_STATS} />
+              <AboutHighlights
+                className="benefits__highlights"
+                stats={KEY_STATS}
+                photo={CONTACT_PHOTO}
+              />
               <LeadForm preselected={preselected} />
             </div>
           </div>

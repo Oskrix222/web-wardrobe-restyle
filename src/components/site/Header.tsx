@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { useActiveSection, SECTION_ORDER } from "@/hooks/useActiveSection";
 
 const navItems = [
+  { label: "Strona główna", href: "#top" },
   { label: "O nas", href: "#o-nas" },
   { label: "Oferta", href: "#oferta" },
   { label: "Dla firm", href: "#dla-firm" },
@@ -81,7 +82,7 @@ export function Header({ onContact }: { onContact: () => void }) {
 
         <nav aria-label="Główna nawigacja" className="site-header__nav">
           {navItems.map((item) => {
-            const isActive = isHome && activeId === item.href.slice(1);
+            const isActive = isHome && (activeId ?? "top") === item.href.slice(1);
             return (
               <a
                 key={item.label}
@@ -123,7 +124,7 @@ export function Header({ onContact }: { onContact: () => void }) {
       <div className={open ? "site-header__mobile is-open" : "site-header__mobile"} inert={!open}>
         <nav className="site-header__mobile-nav" aria-label="Nawigacja mobilna">
           {navItems.map((item) => {
-            const isActive = isHome && activeId === item.href.slice(1);
+            const isActive = isHome && (activeId ?? "top") === item.href.slice(1);
             return (
               <a
                 key={item.label}
