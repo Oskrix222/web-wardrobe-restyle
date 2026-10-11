@@ -25,7 +25,6 @@
     flex-direction: column;
     justify-content: space-between;
     padding-block: $space-12;
-    
 
     @include lg {
       grid-column: span 5;
@@ -58,14 +57,9 @@
     color: var(--terracotta);
   }
 
-  // Small label inside the <h1> that says what the page is about
-  // ("Agent ubezpieczeniowy · Jaworzno i Katowice"); the slogan follows it.
-  &__kicker {
-    @include eyebrow;
-    display: block;
-    margin-bottom: $space-4;
-    line-height: $leading-normal;
-    letter-spacing: $tracking-wide;
+  // "Ubezpieczenia dla całej rodziny" sits a little lower, away from the header.
+  &__copy > .pill:first-child {
+    margin-top: 25px;
   }
 
   &__text {
@@ -175,5 +169,4 @@
     width: 100%;
     object-fit: cover;
   }
-
 }

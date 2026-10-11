@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { ArrowRight, Menu, X } from "lucide-react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Button } from "@/components/ui/Button";
 import { useActiveSection, SECTION_ORDER } from "@/hooks/useActiveSection";
-import { GOOGLE_BUSINESS } from "@/config/business";
 
 const navItems = [
   { label: "O nas", href: "#o-nas" },
   { label: "Oferta", href: "#oferta" },
   { label: "Dla firm", href: "#dla-firm" },
-  // The reviews block is hidden until OSCare's own Google listing is live.
-  ...(GOOGLE_BUSINESS.live ? [{ label: "Opinie", href: "#opinie" }] : []),
+  { label: "Opinie", href: "#opinie" },
+  { label: "FAQ", href: "#faq" },
   { label: "Kontakt", href: "#kontakt" },
 ];
 
@@ -103,6 +102,7 @@ export function Header({ onContact }: { onContact: () => void }) {
           </Link>
           <Button size="sm" className="site-header__cta" onClick={onContact}>
             Bezpłatna wycena
+            <ArrowRight className="btn__icon btn__arrow" aria-hidden="true" />
           </Button>
         </nav>
 
@@ -155,6 +155,7 @@ export function Header({ onContact }: { onContact: () => void }) {
             }}
           >
             Bezpłatna wycena
+            <ArrowRight className="btn__icon btn__arrow" aria-hidden="true" />
           </Button>
         </nav>
       </div>

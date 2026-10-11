@@ -18,7 +18,13 @@
   transition:
     background-color $transition-base,
     color $transition-base,
-    border-color $transition-base;
+    border-color $transition-base,
+    box-shadow $transition-base,
+    transform $transition-base;
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
 
   &:disabled {
     opacity: 0.6;
@@ -45,22 +51,36 @@
   }
 
   // ---- variants ----
+  // Main call to action: warm glow underneath, a light top edge, lifts on hover.
   &--primary {
     background-color: var(--terracotta);
+    background-image: linear-gradient(180deg, oklch(1 0 0 / 10%), oklch(1 0 0 / 0%));
     color: var(--on-accent);
+    box-shadow:
+      inset 0 1px 0 oklch(1 0 0 / 18%),
+      #{$shadow-accent};
 
     &:hover:not(:disabled) {
       background-color: var(--terracotta-strong);
+      transform: translateY(-1px);
+      box-shadow:
+        inset 0 1px 0 oklch(1 0 0 / 18%),
+        0 2px 2px oklch(0.4 0.12 45 / 25%),
+        0 14px 26px -10px oklch(0.55 0.14 45 / 70%);
     }
   }
 
   &--outline {
-    background-color: var(--background);
+    background-color: var(--card);
     border-color: var(--border);
     color: var(--foreground);
+    box-shadow: $shadow-sm;
 
     &:hover:not(:disabled) {
-      background-color: var(--secondary);
+      background-color: var(--card);
+      border-color: oklch(0.75 0.03 60);
+      transform: translateY(-1px);
+      box-shadow: $shadow-card;
     }
   }
 
@@ -88,5 +108,23 @@
     width: 1rem;
     height: 1rem;
     flex-shrink: 0;
+  }
+
+  // Arrow after the label ("Bezpłatna wycena →") nudges forward on hover.
+  .btn__arrow {
+    margin-right: -0.15rem;
+    transition: transform $transition-base;
+  }
+
+  &:hover:not(:disabled) .btn__arrow {
+    transform: translateX(3px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &,
+    .btn__arrow {
+      transition: none;
+      transform: none !important;
+    }
   }
 }

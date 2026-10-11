@@ -1,16 +1,15 @@
-import { Shield, Star } from "lucide-react";
+import { ArrowRight, Shield, Star } from "lucide-react";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Pill } from "@/components/ui/Box";
 import { CountUp } from "@/components/ui/CountUp";
 import hero640 from "@/assets/hero-family-640.webp";
 import hero960 from "@/assets/hero-family-960.webp";
 import hero1280 from "@/assets/hero-family-1280.webp";
-import { STATS } from "@/config/business";
 
 const stats: [string, string][] = [
-  [STATS.clients, "zadowolonych klientów"],
+  ["100%", "pozytywnych opinii"],
   ["24h", "czas odpowiedzi"],
-  [STATS.sinceYear, "od tego roku w branży"],
+  ["100%", "wsparcia od zakupu po wypłatę"],
 ];
 
 export function Hero({
@@ -29,11 +28,8 @@ export function Hero({
 
           <div className="hero__center">
             <h1 className="hero__title">
-              {/* What the page is about, for people and for Google — the slogan follows. */}
-              <span className="hero__kicker">
-                Agent ubezpieczeniowy · Jaworzno i Katowice
-                <span className="sr-only"> — </span>
-              </span>
+              {/* Not shown on screen; screen readers announce what the page is about before the slogan. */}
+              <span className="sr-only">Agent ubezpieczeniowy w Jaworznie i Katowicach — </span>
               <span className="hero__line">
                 <span>SPOKÓJ,</span>
               </span>{" "}
@@ -54,6 +50,7 @@ export function Hero({
             <div className="hero__actions">
               <Button size="lg" onClick={onContact}>
                 Bezpłatna wycena
+                <ArrowRight className="btn__icon btn__arrow" aria-hidden="true" />
               </Button>
               <ButtonLink href="#oferta" variant="outline" size="lg">
                 Zobacz ofertę

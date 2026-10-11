@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { useActiveSection, SECTION_ORDER } from "@/hooks/useActiveSection";
 
@@ -7,6 +8,7 @@ const SECTION_LABELS: Record<string, string> = {
   oferta: "sekcji Oferta",
   "dla-firm": "sekcji Dla firm",
   opinie: "sekcji Opinie",
+  faq: "sekcji FAQ",
   kontakt: "sekcji Kontakt",
 };
 
@@ -21,6 +23,18 @@ export function PageScrollNav() {
   const prevId = index > 0 ? SECTION_ORDER[index - 1] : null;
   const nextId = index >= 0 && index < SECTION_ORDER.length - 1 ? SECTION_ORDER[index + 1] : null;
 
+  // The down arrow would float over the dark footer — hide it once the footer shows.
+  const [footerVisible, setFooterVisible] = useState(false);
+  useEffect(() => {
+    const footer = document.querySelector(".site-footer");
+    if (!footer) return;
+    const observer = new IntersectionObserver(([entry]) =>
+      setFooterVisible(entry?.isIntersecting ?? false),
+    );
+    observer.observe(footer);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <>
       {prevId && (
@@ -32,7 +46,7 @@ export function PageScrollNav() {
           <ChevronUp aria-hidden="true" />
         </a>
       )}
-      {nextId && (
+      {nextId && !footerVisible && (
         <a
           href={`#${nextId}`}
           aria-label={`Przewiń do ${SECTION_LABELS[nextId]}`}

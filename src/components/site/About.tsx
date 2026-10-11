@@ -46,9 +46,8 @@ export function About({ onContact }: { onContact: () => void }) {
               />
               <figcaption className="about__caption">
                 <span className="about__caption-name">Oskar Kubowicz</span>
-                Agent ubezpieczeniowy ceniący sobie szczerą rozmowę oraz rzetelne wsparcie bez
-                naciągania na zbędne polisy. W branży ubezpieczeniowej od 2015 roku, w OSCare od
-                2022 roku.
+                Hej! Nazywam się Oskar Kubowicz. Cenię sobie szczerość i stawiam wszystkich na równi
+                — nie zaglądam do portfela. Badam potrzeby i przedstawiam rzeczowo ofertę od A do Z.
               </figcaption>
             </figure>
             <figure>

@@ -95,6 +95,7 @@
     object-fit: cover;
     border: 1px solid var(--border);
     border-radius: $radius-2xl;
+    box-shadow: $shadow-card;
 
     @include sm {
       height: 18rem;
@@ -118,6 +119,7 @@
     align-items: center;
     gap: $space-3;
     padding: $space-5;
+    box-shadow: $shadow-card;
 
     // Phones: icon on top, number and label below, so two fit side by side.
     @media (max-width: #{$screen-sm - 1px}) {

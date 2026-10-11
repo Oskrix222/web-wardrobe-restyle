@@ -34,7 +34,7 @@
   }
 
   &--shadow {
-    box-shadow: $shadow-sm;
+    box-shadow: $shadow-card;
   }
 }
 
@@ -47,6 +47,7 @@
   border: 1px solid var(--border);
   border-radius: $radius-full;
   background-color: var(--card);
+  box-shadow: $shadow-sm;
 
   &__icon {
     width: 1rem;
@@ -87,4 +88,3 @@
     @include icon-circle(2.5rem);
   }
 }
-

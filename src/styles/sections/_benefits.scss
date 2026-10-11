@@ -1,5 +1,12 @@
 @use "../brandbook" as *;
 
+// "Opinie": the Google block on its own section.
+.reviews__grid {
+  @include container;
+  position: relative;
+  z-index: 1;
+}
+
 .benefits {
   // Google block on top (full width), contact form centred below it.
   &__grid {
@@ -9,7 +16,6 @@
     display: flex;
     flex-direction: column;
     gap: $space-16;
-
   }
 
   // Form on its own (centred) on phones, tablets and small laptops; photo + stats beside it from 1280px.
@@ -143,7 +149,7 @@
   background-color: var(--card);
   border: 1px solid var(--border);
   border-radius: $radius-xl;
-  box-shadow: $shadow-sm;
+  box-shadow: $shadow-card;
   color: inherit;
   text-decoration: none;
   animation: review-in 0.5s cubic-bezier(0.22, 0.8, 0.24, 1);
@@ -156,7 +162,7 @@
   &:hover,
   &:focus-visible {
     border-color: var(--terracotta-line);
-    box-shadow: $shadow-md;
+    box-shadow: $shadow-card-hover;
     transform: translateY(-3px);
   }
 

@@ -103,6 +103,7 @@ $ease-out-soft: cubic-bezier(0.22, 0.8, 0.24, 1);
 
 // ---- Hover details ------------------------------------------------------------
 .box--interactive {
+  box-shadow: $shadow-card;
   transition:
     border-color $transition-base,
     transform 0.35s $ease-out-soft,
@@ -110,7 +111,7 @@ $ease-out-soft: cubic-bezier(0.22, 0.8, 0.24, 1);
 
   &:hover {
     transform: translateY(-3px);
-    box-shadow: $shadow-md;
+    box-shadow: $shadow-card-hover;
   }
 
   .icon-circle {
@@ -132,9 +133,9 @@ $ease-out-soft: cubic-bezier(0.22, 0.8, 0.24, 1);
       transform 0.25s $ease-out-soft,
       box-shadow 0.25s $ease-out-soft;
 
+    // Shadows come from _button.scss (warm glow on primary, card shadow on outline).
     &:hover:not(:disabled) {
       transform: translateY(-1px);
-      box-shadow: $shadow-sm;
     }
 
     &:active:not(:disabled) {
@@ -153,12 +154,7 @@ $ease-out-soft: cubic-bezier(0.22, 0.8, 0.24, 1);
       position: absolute;
       inset: 0;
       z-index: -1;
-      background: linear-gradient(
-        110deg,
-        transparent 30%,
-        oklch(1 0 0 / 18%) 50%,
-        transparent 70%
-      );
+      background: linear-gradient(110deg, transparent 30%, oklch(1 0 0 / 18%) 50%, transparent 70%);
       transform: translateX(-120%);
       transition: transform 0.75s $ease-out-soft;
       pointer-events: none;

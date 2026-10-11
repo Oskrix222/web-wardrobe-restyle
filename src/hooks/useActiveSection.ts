@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 /** Every anchorable section on the page, in actual page order. */
-export const SECTION_ORDER = ["top", "o-nas", "oferta", "dla-firm", "opinie", "kontakt"];
+export const SECTION_ORDER = ["top", "o-nas", "oferta", "dla-firm", "opinie", "faq", "kontakt"];
 
 /** Tracks which section currently sits just below the fixed header. */
 export function useActiveSection(ids: string[]) {

@@ -12,10 +12,12 @@ import { GoogleProfile } from "@/components/site/GoogleProfile";
 import { AboutHighlights } from "@/components/site/AboutHighlights";
 import { getGoogleReviews } from "@/lib/google-reviews.functions";
 import { PageScrollNav } from "@/components/site/PageScrollNav";
+import { Faq } from "@/components/site/Faq";
 import { useReveal } from "@/hooks/useReveal";
 import { cn } from "@/lib/utils";
 import { GOOGLE_BUSINESS } from "@/config/business";
-import { organizationJsonLd, seoHead } from "@/lib/seo";
+import { faqJsonLd, organizationJsonLd, seoHead } from "@/lib/seo";
+import { FAQ } from "@/config/faq";
 
 const title = "Ubezpieczenia na życie i zdrowie Jaworzno, Katowice | OSCare";
 const description =
@@ -32,7 +34,7 @@ export const Route = createFileRoute("/")({
       title,
       description,
       path: "/",
-      jsonLd: [organizationJsonLd()],
+      jsonLd: [organizationJsonLd(), faqJsonLd(FAQ)],
     }),
   component: Index,
 });
@@ -41,6 +43,7 @@ function Index() {
   const { reviews } = Route.useLoaderData();
   const [preselected, setPreselected] = useState<string>();
   const benefitsReveal = useReveal<HTMLDivElement>();
+  const reviewsReveal = useReveal<HTMLDivElement>();
 
   const goToForm = useCallback(() => {
     document.getElementById("kontakt")?.scrollIntoView({ behavior: "smooth" });
@@ -65,10 +68,16 @@ function Index() {
         <Categories onPick={pick} />
         <GroupInsurance onPick={pick} />
 
-        <section id="opinie" className="benefits section section--panel">
-          <div ref={benefitsReveal.ref} className={cn("benefits__grid", benefitsReveal.className)}>
-            {GOOGLE_BUSINESS.live ? <GoogleProfile feed={reviews} /> : null}
+        <section id="opinie" className="reviews section section--panel">
+          <div ref={reviewsReveal.ref} className={cn("reviews__grid", reviewsReveal.className)}>
+            <GoogleProfile feed={reviews} live={GOOGLE_BUSINESS.live} />
+          </div>
+        </section>
 
+        <Faq onContact={goToForm} />
+
+        <section className="benefits section section--panel">
+          <div ref={benefitsReveal.ref} className={cn("benefits__grid", benefitsReveal.className)}>
             <div className="benefits__contact">
               {/* Desktop only: photo + stats beside the form; phones get just the form. */}
               <AboutHighlights className="benefits__highlights" />

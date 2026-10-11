@@ -6,7 +6,14 @@ import { googleLinks } from "@/config/business";
 import type { GoogleReviewsFeed } from "@/lib/google-reviews.functions";
 
 /** "Sprawdź nas w Google": intro + rating on the left, rotating review tiles on the right. */
-export function GoogleProfile({ feed }: { feed: GoogleReviewsFeed | null }) {
+export function GoogleProfile({
+  feed,
+  live,
+}: {
+  feed: GoogleReviewsFeed | null;
+  /** false until OSCare's own Google listing is set (GOOGLE_BUSINESS.live): no links, no reviews. */
+  live: boolean;
+}) {
   const reviews = feed?.reviews ?? [];
   const rating = feed?.rating ?? null;
 
@@ -37,27 +44,31 @@ export function GoogleProfile({ feed }: { feed: GoogleReviewsFeed | null }) {
             </p>
           ) : null}
 
-          <div className="google-profile__actions">
-            <ButtonLink href={googleLinks.reviews} target="_blank" rel="noopener noreferrer">
-              <Star className="btn__icon" aria-hidden="true" />
-              Zobacz wszystkie opinie
-            </ButtonLink>
-            <ButtonLink
-              href={googleLinks.writeReview}
-              target="_blank"
-              rel="noopener noreferrer"
-              variant="outline"
-            >
-              <PenLine className="btn__icon" aria-hidden="true" />
-              Wystaw opinię
-            </ButtonLink>
-          </div>
+          {live ? (
+            <div className="google-profile__actions">
+              <ButtonLink href={googleLinks.reviews} target="_blank" rel="noopener noreferrer">
+                <Star className="btn__icon" aria-hidden="true" />
+                Zobacz wszystkie opinie
+              </ButtonLink>
+              <ButtonLink
+                href={googleLinks.writeReview}
+                target="_blank"
+                rel="noopener noreferrer"
+                variant="outline"
+              >
+                <PenLine className="btn__icon" aria-hidden="true" />
+                Wystaw opinię
+              </ButtonLink>
+            </div>
+          ) : null}
         </div>
 
-        {reviews.length > 0 ? (
+        {live && reviews.length > 0 ? (
           <ReviewsWall reviews={reviews} href={googleLinks.reviews} />
         ) : (
-          <div className="google-profile__empty">Opinie z Google pojawią się tu automatycznie.</div>
+          <div className="google-profile__empty">
+            Opinie z naszej wizytówki Google pojawią się tu automatycznie.
+          </div>
         )}
       </div>
     </div>

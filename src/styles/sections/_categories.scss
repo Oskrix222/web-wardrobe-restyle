@@ -221,6 +221,7 @@
     object-fit: cover;
     border: 1px solid var(--border);
     border-radius: $radius-2xl;
+    box-shadow: $shadow-card;
 
     @include sm {
       height: 20rem;

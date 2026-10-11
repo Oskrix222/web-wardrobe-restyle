@@ -95,6 +95,17 @@ $radius-full: 999px;
 
 $shadow-sm: 0 1px 2px 0 oklch(0.15 0.04 35 / 8%);
 $shadow-md: 0 8px 24px -12px oklch(0.15 0.04 35 / 18%);
+// Layered "depth" shadows: a crisp contact shadow plus a wide soft one.
+$shadow-card:
+  0 1px 2px oklch(0.15 0.04 35 / 5%),
+  0 14px 34px -18px oklch(0.15 0.04 35 / 22%);
+$shadow-card-hover:
+  0 2px 4px oklch(0.15 0.04 35 / 6%),
+  0 22px 44px -20px oklch(0.15 0.04 35 / 30%);
+// Warm glow under the main (terracotta) buttons.
+$shadow-accent:
+  0 1px 1px oklch(0.4 0.12 45 / 25%),
+  0 10px 22px -10px oklch(0.55 0.14 45 / 60%);
 
 // -------------------- MOTION ---------------------------------
 $transition-fast: 150ms ease;
