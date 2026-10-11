@@ -17,8 +17,8 @@ export const BUSINESS = {
   agentNumber: "11115498/A",
   /** Opening hours as shown in the footer, and in schema.org format for Google. */
   hours: [
-    { label: "Pon–Pt", time: "9:00–20:00", schema: "Mo-Fr 09:00-20:00" },
-    { label: "Sob", time: "10:00–14:00", schema: "Sa 10:00-14:00" },
+    { label: "Pon–Pt", time: "9:00–19:00", schema: "Mo-Fr 09:00-19:00" },
+    { label: "Sobota", time: "9:00–14:00", schema: "Sa 09:00-14:00" },
   ],
   /** Cities with their own landing page (/ubezpieczenia-<slug>). */
   areaServed: ["Jaworzno", "Katowice"],
@@ -34,9 +34,11 @@ export const BUSINESS = {
 // buttons; the blog and the "after sending" panel list all of them.
 // Izumi's number is a test value until the real one is known.
 // =============================================================
+// `knf`: the agent's number in the KNF register of insurance intermediaries
+// (null hides it until it's known).
 export const CONTACT_PHONES = [
-  { name: "Oskar", fullName: "Oskar Kubowicz", phone: "+48 539 075 385" },
-  { name: "Izumi", fullName: "Izumi Sato", phone: "+48 123 456 789" },
+  { name: "Oskar", fullName: "Oskar Kubowicz", phone: "+48 539 075 385", knf: "11115498/A" },
+  { name: "Izumi", fullName: "Izumi Sato", phone: "+48 123 456 789", knf: null },
 ] as const;
 
 export const PRIMARY_PHONE = CONTACT_PHONES[0].phone;

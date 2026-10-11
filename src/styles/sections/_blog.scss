@@ -437,7 +437,6 @@
       font-style: italic;
     }
 
-
     a {
       color: var(--terracotta);
       text-decoration: underline;
@@ -574,7 +573,7 @@
 // Pinned under the fixed site header once the table of contents scrolls away.
 .post-progress {
   position: fixed;
-  top: 70px; // .site-header height
+  top: $header-height;
   left: 0;
   right: 0;
   z-index: 45;

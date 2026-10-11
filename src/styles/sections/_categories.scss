@@ -124,48 +124,33 @@
 
   &__calls {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: $space-2;
-
-    .btn {
-      height: auto;
-      width: 100%;
-      align-items: center;
-      justify-content: center;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      padding-block: 0.5rem;
-      padding-inline: 0.25rem;
-      gap: 0.2rem;
-      font-size: calc(0.7rem + 0.5px);
-      letter-spacing: -0.02em;
-
-      .btn__icon {
-        width: 0.8rem;
-        height: 0.8rem;
-        flex-shrink: 0;
-      }
-    }
   }
 
-  &__call {
+  // "shared" layout: one pair of big call buttons under all the cards.
+  &__call-strip {
+    margin-top: $space-10;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.25rem;
-    min-width: 0;
+    gap: $space-4;
+    text-align: center;
   }
 
-  &__call-name {
-    font-size: 0.7rem;
+  &__call-strip-title {
     font-weight: $weight-bold;
-    text-align: center;
-    color: var(--terracotta);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
+    font-size: $text-lg;
+  }
+
+  &__call-strip-buttons {
+    display: grid;
+    gap: $space-3;
+    width: 100%;
+    max-width: 44rem;
+
+    @include sm {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 }
 
@@ -302,4 +287,8 @@
       flex-shrink: 0;
     }
   }
+}
+
+.categories__call-strip .agent-call {
+  text-align: left;
 }

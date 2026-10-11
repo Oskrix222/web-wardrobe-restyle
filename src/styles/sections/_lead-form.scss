@@ -1,7 +1,11 @@
 @use "../brandbook" as *;
 
 .lead-form {
-  scroll-margin-top: $space-24;
+  // Jumping to #kontakt centres the form below the menu (same gap above and
+  // below); a form taller than the screen starts just under the menu.
+  scroll-margin-top: calc(
+    #{$header-height} + max(#{$space-4}, (100dvh - #{$header-height} - var(--form-h, 100dvh)) / 2)
+  );
   padding: calc(#{$space-6} - 3px);
 
   @include sm {
@@ -20,10 +24,10 @@
   }
 
   &__form {
-    margin-top: calc(#{$space-8} - 8px);
+    margin-top: $space-6;
     display: flex;
     flex-direction: column;
-    gap: $space-5;
+    gap: $space-4;
   }
 
   &__divider {
@@ -136,5 +140,15 @@
 @media (prefers-reduced-motion: reduce) {
   .lead-form__thanks {
     animation: none;
+  }
+}
+
+// Two fields per row from tablets up (name + phone), stacked on phones.
+.field__row {
+  display: grid;
+  gap: $space-4;
+
+  @include sm {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

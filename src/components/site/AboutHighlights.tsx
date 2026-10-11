@@ -1,26 +1,21 @@
-import { HeartHandshake, Banknote, Clock, Phone, Sparkles, Shield } from "lucide-react";
-
 import { Box, IconCircle } from "@/components/ui/Box";
 import { useInView } from "@/hooks/useInView";
 import { cn } from "@/lib/utils";
-import { STATS } from "@/config/business";
+import { ABOUT_STATS, type Stat } from "@/config/stats";
 import family640 from "@/assets/about-family-640.webp";
 import family1280 from "@/assets/about-family-1280.webp";
 
-const stats = [
-  { value: STATS.clients, label: "zadowolonych klientów", icon: HeartHandshake },
-  { value: STATS.payouts, label: "Zrealizowanych wypłat", icon: Banknote },
-  { value: "24h", label: "Na przygotowanie oferty", icon: Clock },
-  { value: "100%", label: "Kontaktu w 24h", icon: Phone },
-  { value: "100%", label: "Świeże oferty", icon: Sparkles },
-  { value: "100%", label: "Ochrony w budżecie klienta", icon: Shield },
-];
-
 /**
- * Family photo + the six stat tiles. Shown in "O nas" and again beside the
- * contact form on large screens — edit the stats here and both update.
+ * Photo + stat tiles. "O nas" shows the six ABOUT_STATS; beside the contact
+ * form (large screens) it shows the hero's KEY_STATS.
  */
-export function AboutHighlights({ className }: { className?: string }) {
+export function AboutHighlights({
+  className,
+  stats = ABOUT_STATS,
+}: {
+  className?: string;
+  stats?: Stat[];
+}) {
   const imageIn = useInView<HTMLImageElement>();
   const statsIn = useInView();
 
@@ -39,7 +34,14 @@ export function AboutHighlights({ className }: { className?: string }) {
         loading="lazy"
         decoding="async"
       />
-      <div ref={statsIn.ref} className={cn("about__stats stagger", statsIn.inView && "is-in")}>
+      <div
+        ref={statsIn.ref}
+        className={cn(
+          "about__stats stagger",
+          stats.length === 3 && "about__stats--three",
+          statsIn.inView && "is-in",
+        )}
+      >
         {stats.map(({ value, label, icon }) => (
           <Box key={label} className="about__stat">
             <div>

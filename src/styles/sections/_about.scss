@@ -60,25 +60,23 @@
     color: var(--foreground);
   }
 
+  // Pyramid: "Zostaw kontakt" on top, the two phone numbers side by side below.
   &__actions {
     margin-top: $space-8;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    gap: $space-3;
+  }
+
+  &__phones {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: $space-3;
 
-    @include sm {
-      flex-direction: row;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-    }
-
-    // Never squeeze a button below its label; wrap to a new row instead.
     .btn {
       flex-shrink: 0;
-    }
-
-    .btn--outline {
       font-size: calc(#{$text-sm} + 0.5px);
     }
   }
@@ -110,6 +108,22 @@
 
     @include sm {
       gap: $space-4;
+    }
+  }
+
+  // Three tiles (beside the contact form): one row, icon above the number.
+  &__stats--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    .about__stat {
+      grid-template-columns: minmax(0, 1fr);
+      align-content: start;
+      gap: $space-2;
+      padding: $space-4;
+
+      > :last-child {
+        grid-row: 1;
+      }
     }
   }
 

@@ -1,4 +1,4 @@
-import { Phone } from "lucide-react";
+import { ArrowRight, Phone } from "lucide-react";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Box } from "@/components/ui/Box";
 import { AboutHighlights } from "@/components/site/AboutHighlights";
@@ -71,16 +71,20 @@ export function About({ onContact }: { onContact: () => void }) {
             </figure>
           </div>
 
+          {/* Pyramid: the main action on top, both phone numbers under it. */}
           <div className="about__actions">
-            <ButtonLink href={telHref(CONTACT_PHONES[0].phone)} variant="outline">
-              <Phone className="btn__icon" aria-hidden="true" />
-              {CONTACT_PHONES[0].phone}
-            </ButtonLink>
-            <Button onClick={onContact}>Zostaw kontakt</Button>
-            <ButtonLink href={telHref(CONTACT_PHONES[1].phone)} variant="outline">
-              <Phone className="btn__icon" aria-hidden="true" />
-              {CONTACT_PHONES[1].phone}
-            </ButtonLink>
+            <Button onClick={onContact} className="about__cta">
+              Zostaw kontakt
+              <ArrowRight className="btn__icon btn__arrow" aria-hidden="true" />
+            </Button>
+            <div className="about__phones">
+              {CONTACT_PHONES.map((c) => (
+                <ButtonLink key={c.phone} href={telHref(c.phone)} variant="outline">
+                  <Phone className="btn__icon" aria-hidden="true" />
+                  {c.phone}
+                </ButtonLink>
+              ))}
+            </div>
           </div>
         </Box>
 

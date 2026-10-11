@@ -83,6 +83,18 @@ export function LeadForm({ preselected }: { preselected?: string | undefined }) 
     }
   };
 
+  // Its own height as a CSS variable: lets "#kontakt" scroll the form to the
+  // middle of the screen, with the same gap above and below it.
+  useEffect(() => {
+    const el = document.getElementById("kontakt");
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(() =>
+      el.style.setProperty("--form-h", `${el.offsetHeight}px`),
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <Box id="kontakt" panel shadow className="lead-form">
       <span className="eyebrow">Formularz kontaktowy</span>
@@ -125,17 +137,17 @@ export function LeadForm({ preselected }: { preselected?: string | undefined }) 
             />
           </div>
 
-          <Field label="Imię *" htmlFor="name" error={errors.name?.message}>
-            <Input
-              id="name"
-              autoComplete="name"
-              placeholder="Jan Kowalski"
-              {...register("name")}
-              aria-invalid={errors.name ? "true" : "false"}
-            />
-          </Field>
-
+          {/* Name and phone side by side from tablets up: the form fits one screen. */}
           <div className="field__row">
+            <Field label="Imię *" htmlFor="name" error={errors.name?.message}>
+              <Input
+                id="name"
+                autoComplete="name"
+                placeholder="Jan Kowalski"
+                {...register("name")}
+                aria-invalid={errors.name ? "true" : "false"}
+              />
+            </Field>
             <Field label="Telefon *" htmlFor="phone" error={errors.phone?.message}>
               <Input
                 id="phone"

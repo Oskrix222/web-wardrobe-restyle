@@ -14,7 +14,9 @@ export function Footer() {
       <div className="container">
         <div ref={reveal.ref} className={cn("site-footer__grid", reveal.className)}>
           <div>
-            <p className="site-footer__brand">OSCare</p>
+            <Link to="/" className="site-footer__logo" aria-label="OSCare — strona główna">
+              <img src="/imgs/logo.webp" alt="OSCare" width={156} height={140} loading="lazy" />
+            </Link>
             <p className="site-footer__about">
               Doradztwo ubezpieczeniowe z ludzkim podejściem. Pomagamy wybrać ochronę, która ma
               sens.
@@ -47,29 +49,27 @@ export function Footer() {
           </nav>
           <div>
             <p className="site-footer__heading">Kontakt</p>
-            <ul className="site-footer__list">
-              <li>{BUSINESS.street}</li>
+            <ul className="site-footer__list site-footer__list--contact">
               <li>
-                {BUSINESS.postalCode} {BUSINESS.city}
+                {BUSINESS.street}, {BUSINESS.postalCode} {BUSINESS.city}
               </li>
               <li>NIP: {BUSINESS.nip}</li>
-              <li>Numer agenta: {BUSINESS.agentNumber}</li>
               {BUSINESS.email ? (
                 <li>
                   <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>
                 </li>
               ) : null}
               {CONTACT_PHONES.map((c) => (
-                <li key={c.phone}>
-                  <a href={telHref(c.phone)}>
-                    {c.phone} <span className="site-footer__muted">({c.name})</span>
-                  </a>
+                <li key={c.phone} className="site-footer__agent">
+                  <span className="site-footer__agent-name">{c.fullName}</span>
+                  <a href={telHref(c.phone)}>{c.phone}</a>
+                  {c.knf ? <span className="site-footer__muted">Nr KNF: {c.knf}</span> : null}
                 </li>
               ))}
             </ul>
           </div>
           <div>
-            <p className="site-footer__heading">Godziny</p>
+            <p className="site-footer__heading">Godziny otwarcia</p>
             <ul className="site-footer__list">
               {BUSINESS.hours.map((h) => (
                 <li key={h.label}>

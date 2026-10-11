@@ -3,8 +3,8 @@ import { createPortal } from "react-dom";
 
 import type { PostHeading } from "@/lib/blog-format";
 
-// The site header is fixed and 70 px tall; with the pinned bar the text is readable below this line.
-const HEADER = 70;
+// The site header is fixed and 60 px tall; with the pinned bar the text is readable below this line.
+const HEADER = 60;
 const READ_LINE = 120;
 
 type Progress = { active: number; fill: number; pinned: boolean };

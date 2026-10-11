@@ -2,17 +2,17 @@
 
 .site-header {
   position: fixed;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   inset-inline: 0;
   top: 0;
   z-index: 50;
-  
+
   background-color: color-mix(in oklch, var(--background) 90%, transparent);
   backdrop-filter: blur(12px);
   background-color: #f8f5ec;
-  height: 70px;
+  height: $header-height;
 
   &__bar {
     @include container;
@@ -21,7 +21,6 @@
     align-items: center;
     gap: $space-4;
     height: 100%;
-    
   }
 
   &__logo-btn {
@@ -42,9 +41,9 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    height: 70px;
+    height: $header-height;
     width: auto; // keep the logo's ratio despite the width/height attributes
-    padding: 7.5px;
+    padding: 6px;
   }
 
   &__nav {
@@ -132,7 +131,7 @@
     top: 100%;
     left: 0;
     right: 0;
-    max-height: calc(100dvh - 70px);
+    max-height: calc(100dvh - #{$header-height});
     overflow-y: auto;
     padding: $space-4;
     border-top: 1px solid var(--border-soft);

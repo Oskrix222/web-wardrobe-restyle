@@ -32,9 +32,18 @@
     }
   }
 
-  &__brand {
-    font-family: $font-display;
-    font-size: $text-2xl;
+  // The logo has a cream background, so it sits on a matching cream tile.
+  &__logo {
+    display: inline-flex;
+    padding: $space-2 $space-3;
+    border-radius: $radius-xl;
+    background-color: #f8f5ed;
+    box-shadow: 0 10px 24px -14px oklch(0 0 0 / 60%);
+
+    img {
+      width: auto;
+      height: 3.5rem;
+    }
   }
 
   &__about {
@@ -63,6 +72,23 @@
     a:hover {
       text-decoration: underline;
     }
+
+    // Contact column: 10% smaller than the other columns.
+    &--contact {
+      font-size: calc(#{$text-sm} * 0.9);
+    }
+  }
+
+  &__agent {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    margin-top: $space-1;
+  }
+
+  &__agent-name {
+    font-weight: $weight-semibold;
+    color: var(--background);
   }
 
   &__bottom {

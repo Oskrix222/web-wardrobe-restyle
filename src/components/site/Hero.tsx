@@ -2,15 +2,12 @@ import { ArrowRight, Shield, Star } from "lucide-react";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Pill } from "@/components/ui/Box";
 import { CountUp } from "@/components/ui/CountUp";
+import { KEY_STATS } from "@/config/stats";
 import hero640 from "@/assets/hero-family-640.webp";
 import hero960 from "@/assets/hero-family-960.webp";
 import hero1280 from "@/assets/hero-family-1280.webp";
-
-const stats: [string, string][] = [
-  ["100%", "pozytywnych opinii"],
-  ["24h", "czas odpowiedzi"],
-  ["100%", "wsparcia od zakupu po wypłatę"],
-];
+import hero1920 from "@/assets/hero-family-1920.webp";
+import hero2560 from "@/assets/hero-family-2560.webp";
 
 export function Hero({
   onContact,
@@ -70,7 +67,7 @@ export function Hero({
           </div>
 
           <dl className="hero__stats">
-            {stats.map(([value, label]) => (
+            {KEY_STATS.map(({ value, label }) => (
               <div key={label}>
                 <dt className="sr-only">{label}</dt>
                 <dd>
@@ -86,7 +83,7 @@ export function Hero({
           <div className="hero__image-frame">
             <img
               src={hero1280}
-              srcSet={`${hero640} 640w, ${hero960} 960w, ${hero1280} 1280w`}
+              srcSet={`${hero640} 640w, ${hero960} 960w, ${hero1280} 1280w, ${hero1920} 1920w, ${hero2560} 2560w`}
               sizes="(min-width: 1024px) 58vw, 100vw"
               alt="Rodzina w jasnym salonie — ubezpieczenia OSCare"
               className="hero__image"

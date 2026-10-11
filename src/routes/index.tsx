@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { GOOGLE_BUSINESS } from "@/config/business";
 import { faqJsonLd, organizationJsonLd, seoHead } from "@/lib/seo";
 import { FAQ } from "@/config/faq";
+import { KEY_STATS } from "@/config/stats";
 
 const title = "Ubezpieczenia na życie i zdrowie Jaworzno, Katowice | OSCare";
 const description =
@@ -80,7 +81,7 @@ function Index() {
           <div ref={benefitsReveal.ref} className={cn("benefits__grid", benefitsReveal.className)}>
             <div className="benefits__contact">
               {/* Desktop only: photo + stats beside the form; phones get just the form. */}
-              <AboutHighlights className="benefits__highlights" />
+              <AboutHighlights className="benefits__highlights" stats={KEY_STATS} />
               <LeadForm preselected={preselected} />
             </div>
           </div>

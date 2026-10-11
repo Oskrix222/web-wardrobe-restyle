@@ -29,6 +29,7 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import { Button, ButtonLink } from "@/components/ui/Button";
+import { AgentCall } from "@/components/site/AgentCall";
 import { Box, IconCircle } from "@/components/ui/Box";
 import { useInView } from "@/hooks/useInView";
 import { cn } from "@/lib/utils";
@@ -43,6 +44,14 @@ import business1200 from "@/assets/category-business-1200.webp";
 import { CONTACT_PHONES, telHref } from "@/config/business";
 
 /** Detail-panel photo in two widths; the browser picks the smaller one on phones. */
+/**
+ * Where the phone buttons go: "cards" = two call buttons in every offer card,
+ * "shared" = one pair of big call buttons under all the cards.
+ * Temporary: "?telefony=razem" in the address previews "shared" until Oskar picks one.
+ */
+type CallLayout = "cards" | "shared";
+const CALL_LAYOUT: CallLayout = "cards";
+
 const photo = (small: string, large: string) => ({
   src: large,
   srcSet: `${small} 600w, ${large} 1200w`,
@@ -153,6 +162,12 @@ export const categories = [
 ] as const;
 
 export function Categories({ onPick }: { onPick: (value: string) => void }) {
+  const [callLayout, setCallLayout] = useState<CallLayout>(CALL_LAYOUT);
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("telefony") === "razem") {
+      setCallLayout("shared");
+    }
+  }, []);
   const [activeValue, setActiveValue] = useState<string | null>(null);
   const activeCategory = categories.find((c) => c.value === activeValue);
   const detailRef = useRef<HTMLDivElement>(null);
@@ -287,22 +302,29 @@ export function Categories({ onPick }: { onPick: (value: string) => void }) {
                   <Button block onClick={() => onPick(value)}>
                     Zostaw kontakt
                   </Button>
-                  <div className="categories__calls">
-                    {CONTACT_PHONES.map((c) => (
-                      <div key={c.phone} className="categories__call">
-                        <ButtonLink href={telHref(c.phone)} variant="outline" size="sm">
-                          <Phone className="btn__icon" aria-hidden="true" />
-                          {c.phone}
-                        </ButtonLink>
-                        <span className="categories__call-name">{c.fullName}</span>
-                      </div>
-                    ))}
-                  </div>
+                  {callLayout === "cards" ? (
+                    <div className="categories__calls">
+                      {CONTACT_PHONES.map((c) => (
+                        <AgentCall key={c.phone} contact={c} />
+                      ))}
+                    </div>
+                  ) : null}
                 </div>
               </Box>
             ))}
           </div>
         )}
+
+        {callLayout === "shared" && !activeCategory ? (
+          <div className="categories__call-strip">
+            <p className="categories__call-strip-title">Wolisz porozmawiać? Zadzwoń do nas:</p>
+            <div className="categories__call-strip-buttons">
+              {CONTACT_PHONES.map((c) => (
+                <AgentCall key={c.phone} contact={c} size="lg" />
+              ))}
+            </div>
+          </div>
+        ) : null}
       </div>
     </section>
   );
