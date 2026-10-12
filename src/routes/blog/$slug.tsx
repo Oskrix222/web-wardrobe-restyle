@@ -131,6 +131,7 @@ function BlogPost() {
               <p>Masz pytania po lekturze? Porozmawiajmy.</p>
               <div className="blog-post__cta-actions">
                 <Button
+                  className="btn--contact"
                   onClick={() => {
                     onContactClick();
                     goToForm();

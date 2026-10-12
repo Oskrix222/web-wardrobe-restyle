@@ -61,7 +61,7 @@ export const listPublishedPosts = createServerFn({ method: "GET" }).handler(
 const CONTACT_BLOCK = `<aside class="blog-cta-inline" aria-label="Kontakt">
 <p class="blog-cta-inline__title">Nie wiesz, co wybrać? Sprawdzimy Twoją sytuację bezpłatnie.</p>
 <div class="blog-cta-inline__actions">
-<a class="btn btn--primary btn--md" href="/#kontakt" data-cta="form">Zostaw kontakt</a>
+<a class="btn btn--primary btn--md btn--contact" href="/#kontakt" data-cta="form">Zostaw kontakt</a>
 ${CONTACT_PHONES.map((c) => `<a class="blog-cta-inline__phone" href="${telHref(c.phone)}" data-cta="phone">${c.name}: ${c.phone}</a>`).join("\n")}
 </div>
 </aside>`;

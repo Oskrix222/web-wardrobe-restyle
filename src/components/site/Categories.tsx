@@ -235,7 +235,7 @@ export function Categories({ onPick }: { onPick: (value: string) => void }) {
 
                 <div className="category-detail__actions">
                   <Button
-                    className="category-detail__cta"
+                    className="category-detail__cta btn--contact"
                     onClick={() => handlePick(activeCategory.value)}
                   >
                     Zostaw kontakt
@@ -299,7 +299,7 @@ export function Categories({ onPick }: { onPick: (value: string) => void }) {
                 </ul>
 
                 <div className="categories__actions">
-                  <Button block onClick={() => onPick(value)}>
+                  <Button block className="btn--contact" onClick={() => onPick(value)}>
                     Zostaw kontakt
                   </Button>
                   {callLayout === "cards" ? (

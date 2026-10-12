@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { LoaderCircle, MessageCircle, Phone, X } from "lucide-react";
 import { PRIMARY_PHONE, telHref } from "@/config/business";
+import { cn } from "@/lib/utils";
 
 declare global {
   interface Window {
@@ -72,7 +73,11 @@ function openCrisp() {
 }
 
 const TEASER_KEY = "oscare-chat-teaser-dismissed";
-const TEASER_DELAY_MS = 3_000;
+/** Shown once per visit: after it hides by itself it doesn't come back on the next page. */
+const TEASER_SEEN_KEY = "oscare-chat-teaser-seen";
+const TEASER_DELAY_MS = 2_000;
+/** How long the bubble stays before it slides away by itself (paused on hover/focus). */
+const TEASER_VISIBLE_MS = 5_000;
 const TEASER_SNOOZE_MS = 7 * 24 * 60 * 60 * 1000;
 
 function teaserSnoozed(): boolean {
@@ -81,6 +86,22 @@ function teaserSnoozed(): boolean {
     return Boolean(at) && Date.now() - at < TEASER_SNOOZE_MS;
   } catch {
     return false;
+  }
+}
+
+function teaserSeenThisVisit(): boolean {
+  try {
+    return sessionStorage.getItem(TEASER_SEEN_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function markTeaserSeen() {
+  try {
+    sessionStorage.setItem(TEASER_SEEN_KEY, "1");
+  } catch {
+    // Private mode etc. — worst case it shows again on the next page.
   }
 }
 
@@ -99,32 +120,55 @@ const warsawClock = new Intl.DateTimeFormat("en-GB", {
   hourCycle: "h23",
 });
 
-/** Mon–Fri 9–20, Sat 10–14 (Warsaw) — the hours listed in the footer. */
+/** Mon–Fri 9–19, Sat 9–14 (Warsaw) — the hours listed in the footer. */
 function withinOfficeHours(now = new Date()): boolean {
   const parts = warsawClock.formatToParts(now);
   const day = parts.find((p) => p.type === "weekday")?.value;
   const hour = Number(parts.find((p) => p.type === "hour")?.value);
   if (day === "Sun") return false;
-  if (day === "Sat") return hour >= 10 && hour < 14;
-  return hour >= 9 && hour < 20;
+  if (day === "Sat") return hour >= 9 && hour < 14;
+  return hour >= 9 && hour < 19;
 }
 
-/** "Real people, we usually reply instantly" bubble above the launcher. */
+/**
+ * "Real people, we usually reply instantly" bubble above the launcher. It
+ * slides in, stays TEASER_VISIBLE_MS (a thin bar counts down; hovering or
+ * focusing it pauses the count) and then slides away by itself. The countdown
+ * is the bar's CSS animation, so pausing it pauses the timer too.
+ */
 function ChatTeaser({
   online,
   onOpen,
   onClose,
+  onTimeout,
 }: {
   online: boolean;
   onOpen: () => void;
   onClose: () => void;
+  onTimeout: () => void;
 }) {
+  const [leaving, setLeaving] = useState(false);
+  // Why it's leaving: the visitor closed it (snooze for a week) or time ran out.
+  const closedByVisitor = useRef(false);
+
   return (
-    <div className="chat-teaser" role="status">
+    <div
+      className={cn("chat-teaser", leaving && "is-leaving")}
+      role="status"
+      style={{ "--teaser-time": `${TEASER_VISIBLE_MS}ms` } as CSSProperties}
+      onAnimationEnd={(event) => {
+        if (!leaving || event.target !== event.currentTarget) return;
+        if (closedByVisitor.current) onClose();
+        else onTimeout();
+      }}
+    >
       <button
         type="button"
         className="chat-teaser__close"
-        onClick={onClose}
+        onClick={() => {
+          closedByVisitor.current = true;
+          setLeaving(true);
+        }}
         aria-label="Zamknij powiadomienie"
       >
         <X aria-hidden="true" />
@@ -138,6 +182,14 @@ function ChatTeaser({
         <span className="chat-teaser__title">Piszesz z człowiekiem, nie z AI</span>
         <span className="chat-teaser__text">Najczęściej odpisujemy natychmiastowo.</span>
       </button>
+      <span
+        className="chat-teaser__timer"
+        aria-hidden="true"
+        onAnimationEnd={(event) => {
+          event.stopPropagation();
+          setLeaving(true);
+        }}
+      />
     </div>
   );
 }
@@ -172,12 +224,13 @@ export function LiveChat() {
     );
   }, []);
 
-  // A few seconds in, tell visitors the chat is staffed by people (not while
-  // the cookie banner is up, and not again for a week once dismissed).
+  // Two seconds in, tell visitors the chat is staffed by people — once per
+  // visit, not while the cookie banner is up, not for a week once closed.
   useEffect(() => {
-    if (!mode || teaserSnoozed()) return;
+    if (!mode || teaserSnoozed() || teaserSeenThisVisit()) return;
     const timer = window.setTimeout(() => {
       if (document.querySelector(".cookie-consent")) return;
+      markTeaserSeen();
       setTeaser(withinOfficeHours() ? "online" : "offline");
     }, TEASER_DELAY_MS);
     return () => window.clearTimeout(timer);
@@ -201,6 +254,7 @@ export function LiveChat() {
       <ChatTeaser
         online={teaser === "online"}
         onClose={dismissTeaser}
+        onTimeout={() => setTeaser(null)}
         onOpen={() => {
           dismissTeaser();
           onOpen();
@@ -287,7 +341,7 @@ export function LiveChat() {
             </a>
             <a
               href="/#kontakt"
-              className="btn btn--outline btn--sm"
+              className="btn btn--outline btn--sm btn--contact"
               onClick={() => setState("idle")}
             >
               Zostaw kontakt

@@ -73,7 +73,7 @@ export function About({ onContact }: { onContact: () => void }) {
 
           {/* Pyramid: the main action on top, both phone numbers under it. */}
           <div className="about__actions">
-            <Button onClick={onContact} className="about__cta">
+            <Button onClick={onContact} className="about__cta btn--contact">
               Zostaw kontakt
               <ArrowRight className="btn__icon btn__arrow" aria-hidden="true" />
             </Button>

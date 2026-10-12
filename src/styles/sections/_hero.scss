@@ -1,5 +1,13 @@
 @use "../brandbook" as *;
 
+// Short phones (360×640, iPhone SE…): the photo on top would push the main
+// button below the first screen, so the hero gets more compact there.
+@mixin short-phone {
+  @media (max-width: #{$screen-lg - 1px}) and (max-height: 700px) {
+    @content;
+  }
+}
+
 // Full-width and solid (no pattern): the page opens calm, the drifting
 // pattern starts below it. Micro shadow separates it from "O nas".
 .hero {
@@ -21,13 +29,23 @@
   }
 
   &__copy {
+    // Phones/tablets: the text block starts on the faded bottom edge of the
+    // photo above it (the pill sits on the fade, the title on plain cream).
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding-block: $space-12;
+    margin-top: -4.5rem;
+    padding-block: 0 $space-12;
+
+    @include short-phone {
+      margin-top: -5.5rem;
+    }
 
     @include lg {
       grid-column: span 5;
+      margin-top: 0;
       padding-block: $space-16;
       padding-right: $space-8;
     }
@@ -35,7 +53,16 @@
 
   &__center {
     margin-block: auto;
-    padding-block: $space-12;
+    // Tighter on phones so the buttons still fit on the first screen under the photo.
+    padding-block: $space-6 $space-10;
+
+    @include short-phone {
+      padding-block: $space-4 $space-6;
+    }
+
+    @include lg {
+      padding-block: $space-12;
+    }
   }
 
   &__title {
@@ -43,6 +70,10 @@
     font-size: $text-5xl;
     line-height: 0.95;
     letter-spacing: $tracking-tight;
+
+    @include short-phone {
+      font-size: 2.75rem;
+    }
 
     @include sm {
       font-size: $text-6xl;
@@ -60,6 +91,13 @@
   // "Ubezpieczenia dla całej rodziny" sits a little lower, away from the header.
   &__copy > .pill:first-child {
     margin-top: 25px;
+
+    // Narrow phones: slightly tighter letters so it stays on one line.
+    @media (max-width: 399px) {
+      .pill__text {
+        letter-spacing: 0.08em;
+      }
+    }
   }
 
   &__text {
@@ -67,6 +105,10 @@
     max-width: 28rem;
     color: var(--muted-foreground);
     line-height: $leading-relaxed;
+
+    @include short-phone {
+      margin-top: $space-4;
+    }
   }
 
   &__actions {
@@ -74,6 +116,10 @@
     display: flex;
     flex-wrap: wrap;
     gap: $space-3;
+
+    @include short-phone {
+      margin-top: $space-5;
+    }
   }
 
   // Google rating right under the CTAs — social proof where the decision happens.
@@ -144,23 +190,61 @@
   &__media {
     position: relative;
 
+    // Phones and tablets: the photo opens the page — full width, above the
+    // text — so it's on the first screen instead of below the stats.
+    @media (max-width: #{$screen-lg - 1px}) {
+      order: -1;
+      margin-inline: calc(-1 * #{$page-padding-mobile});
+    }
+
+    @media (min-width: $screen-sm) and (max-width: #{$screen-lg - 1px}) {
+      margin-inline: calc(-1 * #{$page-padding-tablet});
+    }
+
     @include lg {
       grid-column: span 7;
     }
   }
 
   &__image-frame {
-    height: 40vh;
+    position: relative;
+    height: clamp(15rem, 40vh, 26rem);
+    height: clamp(15rem, 40svh, 26rem);
     overflow: hidden;
-    border-radius: $radius-2xl;
 
     @include sm {
-      height: 65vh;
+      height: clamp(18rem, 46vh, 32rem);
+      height: clamp(18rem, 46svh, 32rem);
+    }
+
+    @include short-phone {
+      height: clamp(9rem, 26vh, 12rem);
+      height: clamp(9rem, 26svh, 12rem);
+    }
+
+    // The bottom of the photo melts into the cream background, so the text
+    // below never sits on a busy part of the picture.
+    &::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 55%;
+      background: linear-gradient(
+        to bottom,
+        rgb(248 245 236 / 0%) 0%,
+        rgb(248 245 236 / 55%) 45%,
+        rgb(248 245 236 / 92%) 80%,
+        #f8f5ec 100%
+      );
+      pointer-events: none;
     }
 
     @include lg {
       height: 100%;
-      border-radius: 0;
+
+      &::after {
+        content: none;
+      }
     }
   }
 
@@ -168,5 +252,11 @@
     height: 100%;
     width: 100%;
     object-fit: cover;
+    // Faces sit in the upper third of the photo; keep them in the wide crop.
+    object-position: center 35%;
+
+    @include lg {
+      object-position: center;
+    }
   }
 }

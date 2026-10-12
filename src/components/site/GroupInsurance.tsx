@@ -55,7 +55,10 @@ export function GroupInsurance({ onPick }: { onPick: (value: string) => void }) 
           </ul>
 
           <div className="group-insurance__actions">
-            <Button className="group-insurance__cta" onClick={() => onPick("business")}>
+            <Button
+              className="group-insurance__cta btn--contact"
+              onClick={() => onPick("business")}
+            >
               Zostaw kontakt
             </Button>
             {CONTACT_PHONES.map((c) => (

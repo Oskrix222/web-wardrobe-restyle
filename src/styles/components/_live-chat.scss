@@ -194,8 +194,15 @@
   background-color: var(--card);
   border: 1px solid var(--border);
   border-radius: $radius-xl;
-  box-shadow: $shadow-md;
-  animation: chat-teaser-in 0.35s ease-out;
+  box-shadow: $shadow-card-hover;
+  // Grows out of (and later shrinks back into) the chat button below it.
+  transform-origin: calc(100% - 1.9rem) calc(100% + 0.75rem);
+  animation: chat-teaser-in 0.55s cubic-bezier(0.22, 1.25, 0.36, 1) both;
+
+  &.is-leaving {
+    pointer-events: none;
+    animation: chat-teaser-out 0.42s cubic-bezier(0.55, 0, 0.75, 0.2) forwards;
+  }
 
   @include sm {
     right: $space-6;
@@ -302,16 +309,58 @@
     line-height: $leading-relaxed;
     color: var(--muted-foreground);
   }
+
+  // Countdown until the bubble hides by itself; hovering or focusing it pauses
+  // the count (the bar's animation *is* the timer — see ChatTeaser).
+  &__timer {
+    position: absolute;
+    left: $space-4;
+    right: $space-4;
+    bottom: 0.45rem;
+    height: 2px;
+    border-radius: $radius-full;
+    background-color: var(--terracotta);
+    opacity: 0.45;
+    transform-origin: left center;
+    animation: chat-teaser-countdown var(--teaser-time, 5s) linear forwards;
+  }
+
+  &:hover &__timer,
+  &:focus-within &__timer {
+    animation-play-state: paused;
+  }
 }
 
 @keyframes chat-teaser-in {
   from {
     opacity: 0;
-    transform: translateY(8px) scale(0.97);
+    transform: translateY(14px) scale(0.9);
   }
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+@keyframes chat-teaser-out {
+  to {
+    opacity: 0;
+    transform: translateY(10px) scale(0.86);
+  }
+}
+
+@keyframes chat-teaser-countdown {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes chat-teaser-fade {
+  to {
+    opacity: 0;
   }
 }
 
@@ -333,5 +382,10 @@
   .live-chat__icon--spin,
   .chat-teaser {
     animation: none;
+  }
+
+  // Still hides by itself, just with a plain fade (the countdown keeps running).
+  .chat-teaser.is-leaving {
+    animation: chat-teaser-fade 0.3s ease forwards;
   }
 }
